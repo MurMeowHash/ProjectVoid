@@ -19,6 +19,8 @@ set(VENDOR_SRC
 add_executable(ProjectVoid
         ${VENDOR_SRC}
         src/main.cpp
+        src/Shader/Shader.cpp
+        src/Shader/Shader.h
 )
 
 target_link_libraries(ProjectVoid glfw3 assimp)
