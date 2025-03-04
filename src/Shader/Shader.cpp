@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "../Error/Error.h"
 #include "../Utils/Utils.h"
 
 Shader::Shader() : id(-1) {
@@ -18,16 +20,14 @@ int Shader::CheckCompileErrors(const GLuint shader, const std::string &type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            // Error system
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << '\n' << infoLog << '\n';
+            Error::FallWithFatalError("SHADER", "COMPILATION_FAILED", infoLog);
         }
     }
     else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            // Error system
-            std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << '\n' << infoLog << '\n';
+            Error::FallWithFatalError("SHADER_PROGRAM", "LINK_FAILED", infoLog);
         }
     }
     return success;
@@ -58,10 +58,6 @@ void Shader::Load(const char *vertPath, const char *fragPath) {
         }
         id = idTemp;
     }
-    else {
-        // Error system
-        std::cout << "shader failed to compile " << vertPath << ' ' << fragPath << '\n';
-    }
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
@@ -84,10 +80,6 @@ void Shader::Load(const char *vertPath, const char *fragPath, const char *geomPa
         }
         id = idTemp;
     }
-    else {
-        // Error system
-        std::cout << "shader failed to compile " << vertPath << ' ' << fragPath << ' ' << geomPath << '\n';
-    }
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
@@ -95,10 +87,6 @@ void Shader::Load(const char *vertPath, const char *fragPath, const char *geomPa
 
 void Shader::Use() const {
     glUseProgram(id);
-}
-
-void Shader::SetBool(const char *name, const bool value) const {
-    glUniform1i(glGetUniformLocation(id, name), value);
 }
 
 void Shader::SetInt(const char *name, const int value) const {
@@ -119,6 +107,10 @@ void Shader::SetVec3(const char *name, const glm::vec3 &value) const {
 
 void Shader::SetVec4(const char *name, const glm::vec4 &value) const {
     glUniform4fv(glGetUniformLocation(id, name), 1, value_ptr(value));
+}
+
+void Shader::SetMat3(const char *name, const glm::mat3 &value) const {
+    glUniformMatrix3fv(glGetUniformLocation(id, name), 1, GL_FALSE, value_ptr(value));
 }
 
 void Shader::SetMat4(const char *name, const glm::mat4 &value) const {
