@@ -21,6 +21,17 @@ add_executable(ProjectVoid
         src/main.cpp
         src/Shader/Shader.cpp
         src/Shader/Shader.h
+        src/Engine/Engine.cpp
+        src/Engine/Engine.h
+        src/Core/Core.cpp
+        src/Core/Core.h
+        src/Engine/ExecutionMode.h
+        src/Utils/Utils.cpp
+        src/Utils/Utils.h
+        src/Debug/Debug.cpp
+        src/Debug/Debug.h
+        src/Error/Error.cpp
+        src/Error/Error.h
 )
 
 target_link_libraries(ProjectVoid glfw3 assimp)
