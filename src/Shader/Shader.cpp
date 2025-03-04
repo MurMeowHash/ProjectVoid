@@ -6,11 +6,7 @@
 #include "../Error/Error.h"
 #include "../Utils/Utils.h"
 
-Shader::Shader() : id(-1) {
-}
-
-Shader::~Shader() {
-    DeleteShader();
+Shader::Shader() : id(UNINITIALIZED) {
 }
 
 int Shader::CheckCompileErrors(const GLuint shader, const std::string &type) {
@@ -20,14 +16,14 @@ int Shader::CheckCompileErrors(const GLuint shader, const std::string &type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            Error::FallWithFatalError("SHADER", "COMPILATION_FAILED", infoLog);
+            Error::FallWithFatalError("Shader", "Compilation failed", infoLog);
         }
     }
     else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            Error::FallWithFatalError("SHADER_PROGRAM", "LINK_FAILED", infoLog);
+            Error::FallWithFatalError("Shader", "Linking failed", infoLog);
         }
     }
     return success;
@@ -53,7 +49,7 @@ void Shader::Load(const char *vertPath, const char *fragPath) {
     glLinkProgram(idTemp);
 
     if (CheckCompileErrors(idTemp, "PROGRAM")) {
-        if (id != -1) {
+        if (id != UNINITIALIZED) {
             glDeleteProgram(id);
         }
         id = idTemp;
@@ -75,7 +71,7 @@ void Shader::Load(const char *vertPath, const char *fragPath, const char *geomPa
     glLinkProgram(idTemp);
 
     if (CheckCompileErrors(idTemp, "PROGRAM")) {
-        if (id != -1) {
+        if (id != UNINITIALIZED) {
             glDeleteProgram(id);
         }
         id = idTemp;
@@ -83,9 +79,10 @@ void Shader::Load(const char *vertPath, const char *fragPath, const char *geomPa
 
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
+    glDeleteShader(geomShader);
 }
 
-void Shader::Use() const {
+void Shader::Bind() const {
     glUseProgram(id);
 }
 
