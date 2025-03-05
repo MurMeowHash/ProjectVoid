@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "../Debug/Debug.h"
 #include "../Core/Core.h"
+#include "Time/Time.h"
 
 namespace Engine {
     ExecutionMode executionMode;
@@ -13,8 +14,12 @@ namespace Engine {
 
     void Run() {
         while(!Core::WindowShouldClose()) {
+            Time::UpdateDeltaTime();
+
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            Debug::Log(Time::GetDeltaTime(), '\n');
 
             Core::FinishFrame();
         }
