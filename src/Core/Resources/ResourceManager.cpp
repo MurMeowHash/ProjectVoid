@@ -1,0 +1,253 @@
+#include "ResourceManager.h"
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include "../../Debug/Debug.h"
+#include <vector>
+#include <unordered_map>
+#include <stb/stb_image.h>
+
+namespace ResourceManager {
+    constexpr std::string RESOURCES_DIRECTORY = "../resources/";
+
+    std::vector<Model> models;
+    std::vector<Mesh> meshes;
+    std::vector<Texture2D> textures;
+    std::vector<Material> materials;
+    std::unordered_map<std::string, uint> meshIndexMap;
+    std::unordered_map<std::string, uint> modelIndexMap;
+    std::unordered_map<std::string, uint> textureIndexMap;
+    std::unordered_map<std::string, uint> materialIndexMap;
+
+    NODISCARD std::string ConstructFullPath(const char *path);
+
+    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory);
+    uint CreateMesh(const aiMesh *mesh, uint material);
+    void CreateModel(const aiScene *scene, const std::string &name, const std::string &modelTexturesDirectory);
+    NODISCARD int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap);
+    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory);
+    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory);
+
+    void LoadModel(const char *path, const std::string &texturesDirectory) {
+        std::string fullPath = ConstructFullPath(path);
+        Assimp::Importer modelImporter;
+        auto scene = modelImporter.ReadFile(fullPath,
+                                            aiProcess_FlipUVs| aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+        if(!scene) {
+            Debug::LogError("Assimp", path, modelImporter.GetErrorString());
+            return;
+        }
+
+        if(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
+        || !scene->mRootNode) {
+            Debug::LogError("Assimp", path, modelImporter.GetErrorString());
+            return;
+        }
+
+        std::string modelPath(path);
+        std::string modelName = Utils::GetNameFromPath(modelPath);
+        std::string modelTexturesDirectory = modelPath.substr(0, Utils::FindLastSlash(modelPath)) + '/' + texturesDirectory;
+
+        CreateModel(scene, modelName, modelTexturesDirectory);
+    }
+
+    int LoadTexture(const char *path, TextureParameters &params) {
+        std::string textureName = Utils::GetNameFromPath(path);
+
+        if(int texIndex = GetTextureIndexByName(textureName); texIndex != ABSENT_RESOURCE) {
+            Debug::LogError("Texture", path, "Already exists");
+            return texIndex;
+        }
+
+        int imWidth, imHeight, nrChannels;
+        auto imageData = stbi_load(ConstructFullPath(path).c_str(), &imWidth, &imHeight,
+                                   &nrChannels, 0);
+        if(!imageData) {
+            Debug::LogError("Texture", "Failed to load image", path);
+            return ABSENT_RESOURCE;
+        }
+        GLint internalFormat;
+        switch (nrChannels) {
+            case 1:
+                internalFormat = GL_RED;
+                break;
+            case 3:
+                internalFormat = GL_RGB;
+                break;
+            case 4:
+                internalFormat = GL_RGBA;
+                break;
+            default:
+                Debug::LogError("Texture", "Unknown number of channels", path, nrChannels);
+                return ABSENT_RESOURCE;
+        }
+
+        if(params.desiredFormat == TextureFormat::SRGB
+        || params.desiredFormat == TextureFormat::SRGBA) {
+            if(internalFormat == GL_RGB) {
+                internalFormat = GL_SRGB;
+            } else if(internalFormat == GL_RGBA) {
+                internalFormat = GL_SRGB_ALPHA;
+            }
+        }
+
+        params.desiredFormat = static_cast<TextureFormat>(internalFormat);
+        CreateTexture(textureName, imWidth, imHeight, params, imageData);
+        stbi_image_free(imageData);
+        return static_cast<int>(textures.size() - 1);
+    }
+
+    void CreateTexture(const std::string &name, GLsizei width, GLsizei height,
+                       const TextureParameters &params, unsigned char *data) {
+        if(GetTextureIndexByName(name) != ABSENT_RESOURCE) {
+            Debug::LogError("Texture", name, "Already exists");
+            return;
+        }
+
+        const auto &texture = textures.emplace_back(name, width, height, params, data);
+        textureIndexMap[texture.GetName()] = textures.size() - 1;
+    }
+
+    void CreateMaterial(const std::string &name, int albedoMap, int normalMap, int specularMap, float shininess) {
+        if(GetMaterialIndexByName(name) != ABSENT_RESOURCE) {
+            Debug::LogError("Material", name, "Already exists");
+            return;
+        }
+
+        const auto &material = materials.emplace_back(name, albedoMap, normalMap, specularMap, shininess);
+        materialIndexMap[material.name] = materials.size() - 1;
+    }
+
+    Texture2D* GetTextureByIndex(int index) {
+        return (index < 0 || index >= textures.size()) ? nullptr : &textures[index];
+    }
+
+    Model* GetModelByIndex(int index) {
+        return (index < 0 || index >= models.size()) ? nullptr : &models[index];
+    }
+
+    Mesh* GetMeshByIndex(int index) {
+        return (index < 0 || index >= meshes.size()) ? nullptr : &meshes[index];
+    }
+
+    Material *GetMaterialByIndex(int index) {
+        return (index < 0 || index >= materials.size()) ? nullptr : &materials[index];
+    }
+
+    int GetTextureIndexByName(const std::string &name) {
+        return GetIndexByName(name, textureIndexMap);
+    }
+
+    int GetModelIndexByName(const std::string &name) {
+        return GetIndexByName(name, modelIndexMap);
+    }
+
+    int GetMeshIndexByName(const std::string &name) {
+        return GetIndexByName(name, meshIndexMap);
+    }
+
+    int GetMaterialIndexByName(const std::string &name) {
+        return GetIndexByName(name, materialIndexMap);
+    }
+
+    std::string ConstructFullPath(const char *path) {
+        return RESOURCES_DIRECTORY + path;
+    }
+
+    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory) {
+        auto meshNode = new MeshNode;
+        meshNode->name = node->mName.C_Str();
+        aiVector3D position, rotation, scale;
+        node->mTransformation.Decompose(scale, rotation, position);
+        meshNode->transform = {Utils::ToGLMVector(position),
+                              Utils::ToGLMVector(rotation),
+                              Utils::ToGLMVector(scale)};
+        meshNode->meshes.reserve(node->mNumMeshes);
+        for(uint i = 0; i < node->mNumMeshes; i++) {
+            auto currentMesh = scene->mMeshes[node->mMeshes[i]];
+            auto material = CreateMaterialFromAssimp(scene->mMaterials[currentMesh->mMaterialIndex], modelTexturesDirectory);
+            meshNode->meshes.emplace_back(CreateMesh(currentMesh, material));
+        }
+
+        meshNode->children.reserve(node->mNumChildren);
+        for(uint i = 0; i < node->mNumChildren; i++) {
+            meshNode->children.push_back(ProcessNode(node->mChildren[i], scene, modelTexturesDirectory));
+        }
+
+        return meshNode;
+    }
+
+    uint CreateMesh(const aiMesh *mesh, uint material) {
+        if(int meshIndex = GetMeshIndexByName(mesh->mName.C_Str()); meshIndex != ABSENT_RESOURCE) {
+            Debug::LogError("Mesh", mesh->mName.C_Str(), "Already exists");
+            return meshIndex;
+        }
+
+        const auto &createdMesh = meshes.emplace_back(*mesh, material);
+        uint lastMeshIndex = meshes.size() - 1;
+        meshIndexMap[createdMesh.GetName()] = lastMeshIndex;
+        return lastMeshIndex;
+    }
+
+    void CreateModel(const aiScene *scene, const std::string &name, const std::string &modelTexturesDirectory) {
+        if(GetModelIndexByName(name) != ABSENT_RESOURCE) {
+            Debug::LogError("Model", name, "Already exists");
+            return;
+        }
+
+        auto &model = models.emplace_back(name);
+        modelIndexMap[model.name] = models.size() - 1;
+        model.root = ProcessNode(scene->mRootNode, scene, modelTexturesDirectory);
+    }
+
+    int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap) {
+        auto iterator = targetMap.find(name);
+        if(iterator != targetMap.end()) {
+            return static_cast<int>(iterator->second);
+        }
+
+        return ABSENT_RESOURCE;
+    }
+
+    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory) {
+        uint textureCount = mat->GetTextureCount(texType);
+        if(textureCount == 0) {
+            return ABSENT_RESOURCE;
+        }
+
+        if(textureCount > 1) {
+            Debug::LogWarning("Material", mat->GetName().C_Str(), "More than 1 diffuse texture encountered which will be lost");
+        }
+
+        aiString rawTexturePath;
+        mat->GetTexture(texType, 0, &rawTexturePath);
+        std::string texturePath = modelTexturesDirectory + Utils::GetExtendedNameFromPath(rawTexturePath.C_Str());
+        TextureParameters texParams;
+        texParams.minFilter = TextureFiltering::LinearMipMap;
+        texParams.magFilter = TextureFiltering::Linear;
+        texParams.genMipMaps = true;
+        return LoadTexture(texturePath.c_str(), texParams);
+    }
+
+    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory) {
+        if(int matIndex = GetMaterialIndexByName(mat->GetName().C_Str()); matIndex != ABSENT_RESOURCE) {
+            Debug::LogError("Material", mat->GetName().C_Str(), "Already exists");
+            return matIndex;
+        }
+
+        int diffuseMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_DIFFUSE, modelTexturesDirectory);
+        int normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_NORMALS, modelTexturesDirectory);
+        if(normalMap == ABSENT_RESOURCE) {
+            normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_HEIGHT, modelTexturesDirectory);
+        }
+        int specularMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_SPECULAR, modelTexturesDirectory);
+
+        float shininess;
+        if(mat->Get(AI_MATKEY_SHININESS, shininess) != AI_SUCCESS) {
+            shininess = Material::DEFAULT_SHININESS;
+        }
+
+        CreateMaterial(mat->GetName().C_Str(), diffuseMap, normalMap, specularMap, shininess);
+        return materials.size() - 1;
+    }
+}
