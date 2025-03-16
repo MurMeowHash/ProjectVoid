@@ -11,6 +11,7 @@ namespace Core {
                     const char *title = "OpenGL Program", bool fullscreen = false);
     void CreateWindow(int width, int height, bool fullscreen);
     NODISCARD bool WindowShouldClose();
+    NODISCARD GLFWwindow *GetActiveWindow();
     void FinishFrame();
     void Terminate();
 }

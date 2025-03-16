@@ -51,6 +51,10 @@ namespace Core {
         return glfwWindowShouldClose(mainWindow);
     }
 
+    GLFWwindow *GetActiveWindow() {
+        return mainWindow;
+    }
+
     void FinishFrame() {
         glfwPollEvents();
         glfwSwapBuffers(mainWindow);
