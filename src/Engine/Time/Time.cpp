@@ -1,7 +1,6 @@
 #include "Time.h"
 #include <GLFW/glfw3.h>
 
-
 namespace Time {
     float prevTime = 0.0f;
     float deltaTime;

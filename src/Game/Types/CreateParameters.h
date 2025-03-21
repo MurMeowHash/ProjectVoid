@@ -1,5 +1,46 @@
 #pragma once
+
 #include <glad/glad.h>
+#include "Transform/Transform.h"
+#include "../../Core/Core.h"
+#include "../../Utils/Utils.h"
+
+struct ModelLoadParameters {
+    float scaleFactor = 1.0f;
+    const char *textureDirectory = "textures/";
+};
+
+struct GameObjectParameters {
+    std::string name = DEFAULT_OBJECT_NAME;
+    Transform transform;
+    std::string parentName = UNDEFINED_NAME;
+};
+
+enum class ProjectionMode {
+    Perspective,
+    Orthographic
+};
+
+struct PerspectiveParameters {
+    float fov = 45.0f;
+    float aspectRatio = Core::GetAspectRatio();
+};
+
+struct OrthographicParameters {
+    float left = -15.0f;
+    float right = 15.0f;
+    float top = right / Core::GetAspectRatio();
+    float bottom = -top;
+};
+
+struct CameraParameters {
+    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    ProjectionMode projectionMode = ProjectionMode::Perspective;
+    PerspectiveParameters perspectiveParameters;
+    OrthographicParameters orthographicParameters;
+    float nearPlane = 0.1f;
+    float farPlane = 100.0f;
+};
 
 enum class TextureWrap {
     Repeat = GL_REPEAT,
@@ -41,6 +82,4 @@ struct TextureParameters {
     TextureFormat desiredFormat = TextureFormat::RGB;
     TextureDataType dataType = TextureDataType::Byte;
     bool genMipMaps = false;
-
-    static GLenum GetSourceFromDesiredFormat(TextureFormat desiredFormat);
 };
