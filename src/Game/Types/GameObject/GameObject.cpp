@@ -1,34 +1,46 @@
 #include "GameObject.h"
+#include "../../Scene/Scene.h"
 
 GameObject::GameObject(const GameObjectParameters &params)
-: name(params.name), transform{params.transform}, meshes(params.meshes), parent{params.parent} {
-
+: name(params.name), parentName{params.parentName} {
+    AddComponent<Transform>(params.transform);
 }
 
-Transform GameObject::GetTransform() const {
-    return transform;
+void GameObject::UpdatePrioritizedComponents() {
+    prioritizedComponents.clear();
+    for(const auto &component : components) {
+        prioritizedComponents.insert(component.second);
+    }
 }
+
 
 std::string GameObject::GetName() const {
     return name;
-}
-
-void GameObject::SetTransform(const Transform &targetTransform) {
-    transform = targetTransform;
-}
-
-void GameObject::SetPosition(const glm::vec3 &pos) {
-    transform.position = pos;
 }
 
 void GameObject::SetName(std::string targetName) {
     name = std::move(targetName);
 }
 
-void GameObject::SetRotation(const glm::vec3 &rot) {
-    transform.rotation = rot;
+void GameObject::Start() {
+    UpdatePrioritizedComponents();
+
+    for(auto &component : prioritizedComponents) {
+        component->Start();
+    }
 }
 
-void GameObject::SetScale(const glm::vec3 &scl) {
-    transform.scale = scl;
+void GameObject::Update() {
+    UpdatePrioritizedComponents();
+
+    for(auto &component : prioritizedComponents) {
+        component->Update();
+    }
+}
+
+void GameObject::Dispose() {
+    for(auto &component : components) {
+        component.second->Dispose();
+        delete component.second;
+    }
 }

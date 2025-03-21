@@ -6,5 +6,5 @@ namespace Engine {
     void Initialize(ExecutionMode mode);
     void Run();
     NODISCARD bool IsDebugMode();
-    void CleanUp();
+    void Dispose();
 }

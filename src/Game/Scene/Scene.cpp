@@ -3,6 +3,9 @@
 #include "../../Debug/Debug.h"
 #include <regex>
 #include "../../Core/Resources/ResourceManager.h"
+#include "../Types/Camera/Camera.h"
+#include "../ComponentScripts/Movement/Movement.h"
+#include "../ComponentScripts/Movement/MouseLook.h"
 
 namespace Scene {
     std::regex objNamePattern(R"((.*)\s*<(\d+)>$)");
@@ -11,8 +14,13 @@ namespace Scene {
     std::map<std::string, uint> gameObjectIndexMap;
     std::map<std::string, uint> gameObjectNameStat;
 
+    std::string mainCameraName = UNDEFINED_NAME;
+
+    std::vector<RenderItem3D> geometryRenderItems;
+
     std::string CreateUniqueObjectName(const std::string &name);
-    uint ProcessGameObjectNode(MeshNode *node, int parent = ABSENT_OBJECT);
+    uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
+    void UpdateRenderItems();
 
     std::string CreateUniqueObjectName(const std::string &name) {
         std::smatch patternMatchInfo;
@@ -44,22 +52,27 @@ namespace Scene {
         return baseNamePart + " <" + std::to_string(objNumber) + ">";
     }
 
-    uint ProcessGameObjectNode(MeshNode *node, int parent) {
-        GameObjectParameters params = {node->name, node->transform, node->meshes, parent};
+    uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName) {
+        GameObjectParameters params = {node->name, node->transform, parentName};
         CreateGameObject(params);
         uint currentObject = GetLastGameObjectIndex();
+        if(!node->meshes.empty()) {
+            gameObjects[currentObject].AddComponent<MeshRenderData>(node->meshes);
+        }
 
         for(auto child : node->children) {
-            ProcessGameObjectNode(child, static_cast<int>(currentObject));
+            ProcessGameObjectNode(child, gameObjects[currentObject].GetName());
         }
 
         return currentObject;
     }
 
-    void CreateGameObject(GameObjectParameters &params) {
-        params.name = CreateUniqueObjectName(params.name);
-        gameObjects.emplace_back(params);
-        gameObjectIndexMap[params.name] = gameObjects.size() - 1;
+    uint CreateGameObject(const GameObjectParameters &params) {
+        GameObjectParameters adjustedParameters = params;
+        adjustedParameters.name = CreateUniqueObjectName(params.name);
+        gameObjects.emplace_back(adjustedParameters);
+        gameObjectIndexMap[adjustedParameters.name] = GetLastGameObjectIndex();
+        return GetLastGameObjectIndex();
     }
 
     int CreateGameObjectFromModel(Model *model) {
@@ -69,6 +82,44 @@ namespace Scene {
         }
 
         return static_cast<int>(ProcessGameObjectNode(model->root));
+    }
+
+    uint CreateCamera(const GameObjectParameters &objParams, const CameraParameters &camParams) {
+        auto camObjectIndex = CreateGameObject(objParams);
+        auto camObject = GetGameObjectByIndex(static_cast<int>(camObjectIndex));
+        camObject->AddComponent<Camera>(camParams);
+        mainCameraName = camObject->GetName();
+
+        return camObjectIndex;
+    }
+
+    void SetMainCamera(const std::string &cameraName) {
+        auto cameraObject = GetGameObjectByIndex(GetGameObjectIndexByName(cameraName));
+        if(!cameraObject) {
+            Debug::LogError("GameObject", cameraName, "Does not exist");
+            return;
+        }
+
+        auto cameraComponent = cameraObject->GetComponent<Camera>();
+        if(!cameraComponent) {
+            Debug::LogError("GameObject", cameraObject->GetName(), "Missing component camera");
+            return;
+        }
+
+        mainCameraName = cameraName;
+    }
+
+    void SetObjectName(uint objectIndex, const std::string &newName) {
+        auto object = GetGameObjectByIndex(static_cast<int>(objectIndex));
+        if(!object) {
+            return;
+        }
+
+        auto oldName = object->GetName();
+        auto uniqueNewName = CreateUniqueObjectName(newName);
+        object->SetName(uniqueNewName);
+        gameObjectIndexMap.erase(oldName);
+        gameObjectIndexMap[uniqueNewName] = objectIndex;
     }
 
     GameObject *GetGameObjectByIndex(int index) {
@@ -88,12 +139,56 @@ namespace Scene {
         return static_cast<uint>(gameObjects.size() - 1);
     }
 
+    const std::vector<RenderItem3D> &GetGeometryRenderItems() {
+        return geometryRenderItems;
+    }
+
+    const std::string& GetMainCameraName() {
+        return mainCameraName;
+    }
+
     void LoadScene() {
-        ResourceManager::LoadModel("Models/Soldier/soldier.fbx");
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("soldier")));
+        auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
+        mask->GetComponent<Transform>()->position /= 100.0f;
+        auto body = GetGameObjectByIndex(GetGameObjectIndexByName("body"));
+        body->GetComponent<Transform>()->position /= 100.0f;
+
+        GameObjectParameters objParams;
+
+        objParams.name = "Player";
+        auto player = GetGameObjectByIndex(CreateCamera(objParams));
+        player->AddComponent<Movement>();
+        player->AddComponent<MouseLook>();
+
+        //Don't touch
+        for(auto &object : gameObjects) {
+            object.Start();
+        }
     }
 
     void Update() {
-        
+        for(auto &obj : gameObjects) {
+            obj.Update();
+        }
+
+        UpdateRenderItems();
+    }
+
+    void UpdateRenderItems() {
+        geometryRenderItems.clear();
+        for(const auto &obj : gameObjects) {
+            auto objectRenderData = obj.GetComponent<MeshRenderData>();
+            if(objectRenderData) {
+                geometryRenderItems.insert(geometryRenderItems.end(), objectRenderData->renderItems.begin(),
+                                           objectRenderData->renderItems.end());
+            }
+        }
+    }
+
+    void Dispose() {
+        for(auto &obj : gameObjects) {
+            obj.Dispose();
+        }
     }
 }

@@ -88,3 +88,13 @@ std::string Mesh::GetName() const {
 int Mesh::GetMaterial() const {
     return material;
 }
+
+uint Mesh::GetIndicesCount() const {
+    return indices.size();
+}
+
+void Mesh::Dispose() {
+    glDeleteBuffers(1, &ebo);
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
+}

@@ -21,14 +21,15 @@ namespace ResourceManager {
 
     NODISCARD std::string ConstructFullPath(const char *path);
 
-    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory);
+    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory,
+                          const ModelLoadParameters &params);
     uint CreateMesh(const aiMesh *mesh, uint material);
-    void CreateModel(const aiScene *scene, const std::string &name, const std::string &modelTexturesDirectory);
+    void CreateModel(const aiScene *scene, const char *path, const ModelLoadParameters &params);
     NODISCARD int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap);
     int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory);
     uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory);
 
-    void LoadModel(const char *path, const std::string &texturesDirectory) {
+    void LoadModel(const char *path, const ModelLoadParameters &params) {
         std::string fullPath = ConstructFullPath(path);
         Assimp::Importer modelImporter;
         auto scene = modelImporter.ReadFile(fullPath,
@@ -44,11 +45,7 @@ namespace ResourceManager {
             return;
         }
 
-        std::string modelPath(path);
-        std::string modelName = Utils::GetNameFromPath(modelPath);
-        std::string modelTexturesDirectory = modelPath.substr(0, Utils::FindLastSlash(modelPath)) + '/' + texturesDirectory;
-
-        CreateModel(scene, modelName, modelTexturesDirectory);
+        CreateModel(scene, path, params);
     }
 
     int LoadTexture(const char *path, TextureParameters &params) {
@@ -154,14 +151,16 @@ namespace ResourceManager {
         return RESOURCES_DIRECTORY + path;
     }
 
-    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory) {
+    MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory,
+                          const ModelLoadParameters &params) {
         auto meshNode = new MeshNode;
         meshNode->name = node->mName.C_Str();
         aiVector3D position, rotation, scale;
         node->mTransformation.Decompose(scale, rotation, position);
-        meshNode->transform = {Utils::ToGLMVector(position),
-                              Utils::ToGLMVector(rotation),
-                              Utils::ToGLMVector(scale)};
+        float targetScaleFactor = node == scene->mRootNode ? 1.0f : params.scaleFactor;
+        meshNode->transform = Transform{Utils::ToGLMVector(position),
+                              glm::degrees(Utils::ToGLMVector(rotation)),
+                              Utils::ToGLMVector(scale) * targetScaleFactor};
         meshNode->meshes.reserve(node->mNumMeshes);
         for(uint i = 0; i < node->mNumMeshes; i++) {
             auto currentMesh = scene->mMeshes[node->mMeshes[i]];
@@ -171,7 +170,7 @@ namespace ResourceManager {
 
         meshNode->children.reserve(node->mNumChildren);
         for(uint i = 0; i < node->mNumChildren; i++) {
-            meshNode->children.push_back(ProcessNode(node->mChildren[i], scene, modelTexturesDirectory));
+            meshNode->children.push_back(ProcessNode(node->mChildren[i], scene, modelTexturesDirectory, params));
         }
 
         return meshNode;
@@ -189,15 +188,20 @@ namespace ResourceManager {
         return lastMeshIndex;
     }
 
-    void CreateModel(const aiScene *scene, const std::string &name, const std::string &modelTexturesDirectory) {
-        if(GetModelIndexByName(name) != ABSENT_RESOURCE) {
-            Debug::LogError("Model", name, "Already exists");
+    void CreateModel(const aiScene *scene, const char *path, const ModelLoadParameters &params) {
+        std::string modelPath(path);
+        std::string modelName = Utils::GetNameFromPath(modelPath);
+        std::string modelTexturesDirectory = modelPath.substr(0, Utils::FindLastSlash(modelPath)) + '/' + params.textureDirectory;
+
+        if(GetModelIndexByName(modelName) != ABSENT_RESOURCE) {
+            Debug::LogError("Model", modelName, "Already exists");
             return;
         }
 
-        auto &model = models.emplace_back(name);
+        auto &model = models.emplace_back(modelName);
         modelIndexMap[model.name] = models.size() - 1;
-        model.root = ProcessNode(scene->mRootNode, scene, modelTexturesDirectory);
+        scene->mRootNode->mName = modelName;
+        model.root = ProcessNode(scene->mRootNode, scene, modelTexturesDirectory, params);
     }
 
     int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap) {
@@ -249,5 +253,24 @@ namespace ResourceManager {
 
         CreateMaterial(mat->GetName().C_Str(), diffuseMap, normalMap, specularMap, shininess);
         return materials.size() - 1;
+    }
+
+    void LoadAssets() {
+        ModelLoadParameters loadParam {0.01f};
+        LoadModel("Models/Soldier/soldier.fbx", loadParam);
+    }
+
+    void Dispose() {
+        for(auto &model : models) {
+            model.Dispose();
+        }
+
+        for(auto &mesh : meshes) {
+            mesh.Dispose();
+        }
+
+        for(auto &texture : textures) {
+            texture.Dispose();
+        }
     }
 }

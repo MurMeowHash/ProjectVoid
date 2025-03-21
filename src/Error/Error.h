@@ -6,7 +6,7 @@ namespace Error {
     template<typename ... Args>
     void FallWithFatalError(Args ... args) {
         Debug::LogError(args...);
-        Engine::CleanUp();
+        Engine::Dispose();
         exit(1);
     }
 }
