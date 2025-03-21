@@ -22,7 +22,7 @@ void Texture2D::CreateTexture(const TextureParameters &params) {
 void Texture2D::InitializeTexture(unsigned char *data, const TextureParameters &params) const {
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(params.desiredFormat), width, height, 0,
-                 TextureParameters::GetSourceFromDesiredFormat(params.desiredFormat),
+                 Utils::GetSourceFromDesiredFormat(params.desiredFormat),
                  static_cast<GLenum>(params.dataType), data);
     if(params.genMipMaps) {
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -30,36 +30,14 @@ void Texture2D::InitializeTexture(unsigned char *data, const TextureParameters &
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-/*void Texture2D::Load(const char *path) {
-    int imWidth, imHeight, nrChannels;
-    auto imageData = stbi_load(path, &imWidth, &imHeight, &nrChannels, 0);
-    if(!imageData) {
-        Debug::LogError("STB", "Failed to load image", path);
-    }
-
-    GLint internalFormat;
-    GLenum externalFormat;
-    switch (nrChannels) {
-        case 1:
-            externalFormat = internalFormat = GL_RED;
-            break;
-        case 3:
-            internalFormat = params.gammaCorrected ? GL_SRGB : GL_RGB;
-            externalFormat = GL_RGB;
-            break;
-        case 4:
-            internalFormat = params.gammaCorrected ? GL_SRGB_ALPHA : GL_RGBA;
-            externalFormat = GL_RGBA;
-            break;
-        default:
-            Debug::LogError("Texture2D", path, "Unknown number of channels");
-            externalFormat = internalFormat = GL_RGB;
-    }
-
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexImage2D()
-}*/
-
 std::string Texture2D::GetName() const {
     return name;
+}
+
+GLuint Texture2D::GetHandle() const {
+    return textureId;
+}
+
+void Texture2D::Dispose() {
+    glDeleteTextures(1, &textureId);
 }

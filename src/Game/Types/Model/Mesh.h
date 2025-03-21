@@ -4,8 +4,9 @@
 #include "Vertex.h"
 #include <vector>
 #include "../../../Utils/Utils.h"
+#include "../../../Dispose/IDisposable.h"
 
-class Mesh {
+class Mesh : public IDisposable {
 private:
     static constexpr int ABSENT_MATERIAL = -1;
 
@@ -27,4 +28,7 @@ public:
     NODISCARD GLuint GetHandle() const;
     NODISCARD std::string GetName() const;
     NODISCARD int GetMaterial() const;
+    NODISCARD uint GetIndicesCount() const;
+
+    void Dispose() override;
 };

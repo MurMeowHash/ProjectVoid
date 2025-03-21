@@ -12,6 +12,7 @@ namespace Core {
     void CreateWindow(int width, int height, bool fullscreen);
     NODISCARD bool WindowShouldClose();
     NODISCARD GLFWwindow *GetActiveWindow();
+    NODISCARD float GetAspectRatio();
     void FinishFrame();
-    void Terminate();
+    void Dispose();
 }

@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "../Debug/Debug.h"
 #include "../Error/Error.h"
+#include "../Engine/Input/Input.h"
 
 namespace Core {
     GLFWwindow *mainWindow;
@@ -55,12 +56,16 @@ namespace Core {
         return mainWindow;
     }
 
+    float GetAspectRatio() {
+        return static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+    }
+
     void FinishFrame() {
         glfwPollEvents();
         glfwSwapBuffers(mainWindow);
     }
 
-    void Terminate() {
+    void Dispose() {
         glfwTerminate();
     }
 }

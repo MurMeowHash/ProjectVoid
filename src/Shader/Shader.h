@@ -2,8 +2,9 @@
 #include <glad.h>
 #include <string>
 #include <glm/glm.hpp>
+#include "../Dispose/IDisposable.h"
 
-class Shader {
+class Shader : public IDisposable {
 private:
     static constexpr int UNINITIALIZED = -1;
     GLuint id;
@@ -21,5 +22,8 @@ public:
     void SetVec4(const char *name, const glm::vec4& value) const;
     void SetMat3(const char *name, const glm::mat3& value) const;
     void SetMat4(const char *name, const glm::mat4& value) const;
-    void DeleteShader() const;
+
+    static void UnBind();
+
+    void Dispose() override;
 };
