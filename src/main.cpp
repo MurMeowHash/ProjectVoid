@@ -2,6 +2,6 @@
 
 int main() {
     Engine::Initialize(ExecutionMode::Debug);
-    Engine::Run();
+    Engine::Walk();
     return 0;
 }
