@@ -1,26 +1,33 @@
 #include "Scene.h"
 #include <map>
-#include "../../Debug/Debug.h"
 #include <regex>
 #include "../../Core/Resources/ResourceManager.h"
-#include "../Types/Camera/Camera.h"
 #include "../ComponentScripts/Movement/Movement.h"
 #include "../ComponentScripts/Movement/MouseLook.h"
+#include "../ComponentScripts/Light/Light.h"
 
 namespace Scene {
+    static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
+    static constexpr float QUADRATIC_ATT_MULTIPLIER{4.5f};
+    static constexpr float DEFAULT_ATT_COEF{1.0f};
+
+    glm::vec3 environmentAmbient = glm::vec3(0.01f);
+
     std::regex objNamePattern(R"((.*)\s*<(\d+)>$)");
 
     std::vector<GameObject> gameObjects;
     std::map<std::string, uint> gameObjectIndexMap;
     std::map<std::string, uint> gameObjectNameStat;
 
-    std::string mainCameraName = UNDEFINED_NAME;
-
     std::vector<RenderItem3D> geometryRenderItems;
+    std::multiset<GPUCamera, GPUCameraComparator> gpuCameras;
+    std::vector<GPULight> gpuLights;
 
     std::string CreateUniqueObjectName(const std::string &name);
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
-    void UpdateRenderItems();
+    void ExtractRenderItem(const GameObject &obj);
+    void ExtractGPULight(const GameObject &obj);
+    void ExtractGPUCamera(const GameObject &obj);
 
     std::string CreateUniqueObjectName(const std::string &name) {
         std::smatch patternMatchInfo;
@@ -67,6 +74,42 @@ namespace Scene {
         return currentObject;
     }
 
+    void ExtractRenderItem(const GameObject &obj) {
+        auto renderDataComponent = obj.GetComponent<MeshRenderData>();
+        if(!renderDataComponent) return;
+
+        geometryRenderItems.insert(geometryRenderItems.end(), renderDataComponent->renderItems.begin(),
+                                   renderDataComponent->renderItems.end());
+    }
+
+    void ExtractGPULight(const GameObject &obj) {
+        auto light = obj.GetComponent<Light>();
+        if(!light) return;
+
+        auto transform = obj.GetComponent<Transform>();
+        GPULight gpuLight;
+        gpuLight.positionType = glm::vec4(transform->position, static_cast<float>(light->type));
+        gpuLight.colorIntensity = glm::vec4(light->color, light->intensity);
+        gpuLight.direction = transform->ToForwardVector();
+
+        gpuLight.attenuationCoefs = glm::vec3(DEFAULT_ATT_COEF, LINEAR_ATT_MULTIPLIER / light->radius,
+                                              QUADRATIC_ATT_MULTIPLIER / (light->radius * light->radius));
+        gpuLight.cutOffs = glm::vec2(glm::cos(glm::radians(light->innerCutOff)),
+                                     glm::cos(glm::radians(light->outerCutOff)));
+
+        gpuLights.emplace_back(gpuLight);
+    }
+
+    void ExtractGPUCamera(const GameObject &obj) {
+        auto camComponent = obj.GetComponent<Camera>();
+        if(!camComponent) return;
+
+        auto camTransform = obj.GetComponent<Transform>();
+        gpuCameras.emplace(camTransform->position, camComponent->GetProjectionMatrix(),
+                           camComponent->GetViewMatrix(), camComponent->GetRenderTarget(),
+                           camComponent->GetCameraPriority());
+    }
+
     uint CreateGameObject(const GameObjectParameters &params) {
         GameObjectParameters adjustedParameters = params;
         adjustedParameters.name = CreateUniqueObjectName(params.name);
@@ -78,35 +121,26 @@ namespace Scene {
     int CreateGameObjectFromModel(Model *model) {
         if(model == nullptr) {
             Debug::LogError("Scene", "GameObject", "Can not create object from model because the last does not exist");
-            return ABSENT_OBJECT;
+            return ABSENT_RESOURCE;
         }
 
-        return static_cast<int>(ProcessGameObjectNode(model->root));
+        return static_cast<int>(ProcessGameObjectNode(model->GetRoot()));
     }
 
     uint CreateCamera(const GameObjectParameters &objParams, const CameraParameters &camParams) {
         auto camObjectIndex = CreateGameObject(objParams);
         auto camObject = GetGameObjectByIndex(static_cast<int>(camObjectIndex));
         camObject->AddComponent<Camera>(camParams);
-        mainCameraName = camObject->GetName();
 
         return camObjectIndex;
     }
 
-    void SetMainCamera(const std::string &cameraName) {
-        auto cameraObject = GetGameObjectByIndex(GetGameObjectIndexByName(cameraName));
-        if(!cameraObject) {
-            Debug::LogError("GameObject", cameraName, "Does not exist");
-            return;
-        }
+    uint CreateLight(const GameObjectParameters &objParams, const LightParameters &lightParams) {
+        auto lightObjIndex = CreateGameObject(objParams);
+        auto lightObject = GetGameObjectByIndex(static_cast<int>(lightObjIndex));
+        lightObject->AddComponent<Light>(lightParams);
 
-        auto cameraComponent = cameraObject->GetComponent<Camera>();
-        if(!cameraComponent) {
-            Debug::LogError("GameObject", cameraObject->GetName(), "Missing component camera");
-            return;
-        }
-
-        mainCameraName = cameraName;
+        return lightObjIndex;
     }
 
     void SetObjectName(uint objectIndex, const std::string &newName) {
@@ -143,10 +177,19 @@ namespace Scene {
         return geometryRenderItems;
     }
 
-    const std::string& GetMainCameraName() {
-        return mainCameraName;
+    const std::vector<GPULight> &GetGPULights() {
+        return gpuLights;
     }
 
+    const std::multiset<GPUCamera, GPUCameraComparator> &GetGPUCameras() {
+        return gpuCameras;
+    }
+
+    glm::vec3 GetEnvironmentAmbient() {
+        return environmentAmbient;
+    }
+
+    //TODO: strange initial directions
     void LoadScene() {
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("soldier")));
         auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
@@ -156,10 +199,32 @@ namespace Scene {
 
         GameObjectParameters objParams;
 
+        CameraParameters camParams;
+        camParams.cameraPriority = 1;
+
         objParams.name = "Player";
-        auto player = GetGameObjectByIndex(CreateCamera(objParams));
+        auto player = GetGameObjectByIndex(CreateCamera(objParams, camParams));
         player->AddComponent<Movement>();
         player->AddComponent<MouseLook>();
+
+        GameObjectParameters lightObjParams;
+        lightObjParams.name = "Light";
+        lightObjParams.transform.position = glm::vec3(0.0f, 1.0f, 2.0f);
+        lightObjParams.transform.rotation = glm::vec3(0.0f, -90.0f, 0.0f);
+        LightParameters lightParams;
+        lightParams.type = LightType::Spot;
+        lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
+        lightParams.radius = 10.0f;
+        lightParams.intensity = 5.0f;
+        lightParams.innerCutOff = 12.0f;
+        lightParams.outerCutOff = 15.0f;
+        CreateLight(lightObjParams, lightParams);
+        lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
+        lightParams.type = LightType::Point;
+        lightParams.color = glm::vec3(0.0f, 0.0f, 0.5f);
+        lightParams.radius = 20.0f;
+        lightParams.intensity = 2.5f;
+        CreateLight(lightObjParams, lightParams);
 
         //Don't touch
         for(auto &object : gameObjects) {
@@ -168,21 +233,16 @@ namespace Scene {
     }
 
     void Update() {
+        geometryRenderItems.clear();
+        gpuLights.clear();
+        gpuCameras.clear();
+
         for(auto &obj : gameObjects) {
             obj.Update();
-        }
 
-        UpdateRenderItems();
-    }
-
-    void UpdateRenderItems() {
-        geometryRenderItems.clear();
-        for(const auto &obj : gameObjects) {
-            auto objectRenderData = obj.GetComponent<MeshRenderData>();
-            if(objectRenderData) {
-                geometryRenderItems.insert(geometryRenderItems.end(), objectRenderData->renderItems.begin(),
-                                           objectRenderData->renderItems.end());
-            }
+            ExtractRenderItem(obj);
+            ExtractGPULight(obj);
+            ExtractGPUCamera(obj);
         }
     }
 
