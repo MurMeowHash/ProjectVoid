@@ -1,15 +1,15 @@
 #pragma once
-#include "../Transform/Transform.h"
+#include "../../ComponentScripts/Transform/Transform.h"
 #include "../../../Utils/Utils.h"
 #include "../CreateParameters.h"
-#include "../../../Renderer/RenderItem3D.h"
-#include "../Camera/Camera.h"
+#include "../../../Renderer/RenderTypes.h"
+#include "../../ComponentScripts/Camera/Camera.h"
 #include "../../ComponentScripts/ObjectComponent.h"
 #include <unordered_map>
 #include <set>
 #include <typeindex>
 #include "../../../Debug/Debug.h"
-#include "../Model/MeshRenderData.h"
+#include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../../../Dispose/IDisposable.h"
 
 class GameObject : public IDisposable {

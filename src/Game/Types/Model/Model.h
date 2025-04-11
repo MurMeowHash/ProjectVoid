@@ -4,12 +4,18 @@
 #include "../../../Utils/Utils.h"
 #include "../../../Dispose/IDisposable.h"
 
-struct Model : public IDisposable {
+//TODO: set material for entire model
+
+class Model : public IDisposable {
+private:
     std::string name;
     MeshNode *root;
 
-    explicit Model(std::string name, MeshNode *root = nullptr);
-    void Dispose() override;
-private:
     void DisposeNode(MeshNode *node);
+public:
+    explicit Model(std::string name, MeshNode *root = nullptr);
+    void SetRootNode(MeshNode *node);
+    NODISCARD std::string GetName() const;
+    NODISCARD MeshNode *GetRoot() const;
+    void Dispose() override;
 };

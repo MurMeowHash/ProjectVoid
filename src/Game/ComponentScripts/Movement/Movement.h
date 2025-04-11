@@ -7,5 +7,4 @@ private:
 public:
     explicit Movement();
     void Update() override;
-
 };

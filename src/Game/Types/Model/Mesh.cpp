@@ -6,6 +6,16 @@ Mesh::Mesh(const aiMesh &srcMesh, int material)
     SetUpBuffers();
 }
 
+Mesh::Mesh(std::string name, const std::vector<Vertex> &vertices, const std::vector<uint> &indices,
+           bool hasNormals, bool hasTangents)
+: name(std::move(name)), vertices(vertices), indices(indices), hasNormals{hasNormals}, hasTangents{hasTangents}, material{ABSENT_RESOURCE} {
+    SetUpBuffers();
+}
+
+void Mesh::SetMaterial(int matIndex) {
+    material = matIndex;
+}
+
 void Mesh::ParseExternalMesh(const aiMesh &srcMesh) {
     name = srcMesh.mName.C_Str();
     vertices.reserve(srcMesh.mNumVertices);

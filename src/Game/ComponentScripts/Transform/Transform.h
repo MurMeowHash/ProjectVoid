@@ -1,9 +1,9 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "../Axis.h"
+#include "../../Types/Axis.h"
 #include "../../../Utils/Utils.h"
-#include "../../ComponentScripts/ObjectComponent.h"
+#include "../ObjectComponent.h"
 
 struct Transform : public ObjectComponent {
     static constexpr glm::vec3 DEFAULT_POSITION = glm::vec3(0.0f);

@@ -9,29 +9,15 @@
 
 namespace Engine {
     ExecutionMode executionMode;
+    float fpsUpdateFrequency = 2.0f;
+    float currentTime = 0.0f;
 
-    RenderData ConstructRenderData();
-
-    //TODO: review
-    RenderData ConstructRenderData() {
-        RenderData renderData;
-        renderData.geometryRenderItems = Scene::GetGeometryRenderItems();
-        auto cameraObject = Scene::GetGameObjectByIndex(Scene::GetGameObjectIndexByName(Scene::GetMainCameraName()));
-        if(cameraObject) {
-            auto camera = cameraObject->GetComponent<Camera>();
-            if(camera) {
-                renderData.mainCameraData.projectionMatrix = camera->GetProjectionMatrix();
-                renderData.mainCameraData.viewMatrix = camera->GetViewMatrix();
-            }
-        }
-
-        return renderData;
-    }
+    void DebugFps();
 
     void Initialize(ExecutionMode mode) {
         executionMode = mode;
         Debug::Initialize(&std::cout);
-        Core::Initialize(800, 600, "Project Void", true);
+        Core::Initialize(1920, 1080, "Project Void", false);
         Input::Initialize();
         Input::SetCursorLock(true);
 
@@ -44,7 +30,7 @@ namespace Engine {
         while(!Core::WindowShouldClose()) {
             Time::UpdateDeltaTime();
             Scene::Update();
-            Renderer::RenderFrame(ConstructRenderData());
+            Renderer::RenderFrame();
 
             if(Input::GetKeyDown(InputKey::KeyEscape)) {
                 glfwSetWindowShouldClose(Core::GetActiveWindow(), true);
@@ -52,9 +38,17 @@ namespace Engine {
 
             Input::Update();
             Core::FinishFrame();
+
+            DebugFps();
         }
 
         Dispose();
+    }
+
+    void SetFpsUpdateFrequency(float time) {
+        if(time <= 0.0f) return;
+
+        fpsUpdateFrequency = time;
     }
 
     bool IsDebugMode() {
@@ -66,5 +60,16 @@ namespace Engine {
         Scene::Dispose();
         ResourceManager::Dispose();
         Core::Dispose();
+    }
+
+    void DebugFps() {
+        if(!IsDebugMode()) return;
+
+        currentTime += Time::GetDeltaTime();
+        if(currentTime >= fpsUpdateFrequency) {
+            auto fps = 1.0f / Time::GetDeltaTime();
+            Debug::Log("FPS: ", fps, '\n');
+            currentTime = 0.0f;
+        }
     }
 }

@@ -1,8 +1,8 @@
 #pragma once
-#include "../../ComponentScripts/ObjectComponent.h"
+#include "../ObjectComponent.h"
 #include <vector>
 #include "../../../Utils/Utils.h"
-#include "../../../Renderer/RenderItem3D.h"
+#include "../../../Renderer/RenderTypes.h"
 
 struct MeshRenderData : public ObjectComponent {
     std::vector<uint> meshes;

@@ -3,6 +3,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 void UBO::Create(GLuint bindingPoint, GLsizeiptr bufferSize, void *data) {
+    if(bufferSize > MAX_SIZE) {
+        bufferSize = MAX_SIZE;
+        Debug::LogWarning("UBO", "Reached a limit of 16 KB");
+    }
     size = bufferSize;
     CreateBuffer(data);
     BindBuffer(bindingPoint);
@@ -40,13 +44,13 @@ void UBO::SetMat4(GLintptr offset, const glm::mat4 &matrix) const {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void UBO::SetData(GLintptr offset, GLsizeiptr subSize, void *data) const {
+void UBO::SetData(GLintptr offset, GLsizeiptr subSize, const void *data) const {
     if(TrackOverflow(offset, subSize)) {
         return;
     }
 
     glBindBuffer(GL_UNIFORM_BUFFER, uboHandle);
-    glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, subSize, data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

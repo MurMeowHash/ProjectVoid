@@ -6,7 +6,7 @@
 
 Movement::Movement()
 : ObjectComponent(0) {
-    //TODO: update priority of transform
+
 }
 
 void Movement::Update() {

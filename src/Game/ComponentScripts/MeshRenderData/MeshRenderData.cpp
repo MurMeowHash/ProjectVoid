@@ -1,6 +1,6 @@
 #include "MeshRenderData.h"
 #include "../../../Core/Resources/ResourceManager.h"
-#include "../GameObject/GameObject.h"
+#include "../../Types/GameObject/GameObject.h"
 #include "../../Scene/Scene.h"
 
 MeshRenderData::MeshRenderData(const std::vector<uint> &meshes)
@@ -26,9 +26,10 @@ void MeshRenderData::ConstructRenderItems() {
             item.countIndices = mesh->GetIndicesCount();
             auto meshMaterial = ResourceManager::GetMaterialByIndex(mesh->GetMaterial());
             if(meshMaterial) {
-                item.albedoMap = meshMaterial->albedoMap;
-                item.normalMap = meshMaterial->normalMap;
-                item.specularMap = meshMaterial->specularMap;
+                item.albedoMap = meshMaterial->GetAlbedoMap();
+                item.normalMap = meshMaterial->GetNormalMap();
+                item.specularMap = meshMaterial->GetSpecularMap();
+                item.shininess = meshMaterial->GetShininess();
             }
             item.modelMatrix = targetModelMatrix;
             renderItems.emplace_back(item);
