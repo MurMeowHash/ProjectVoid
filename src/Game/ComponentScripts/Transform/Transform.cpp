@@ -1,5 +1,5 @@
 #include "Transform.h"
-#include "../GameObject/GameObject.h"
+#include "../../Types/GameObject/GameObject.h"
 #include "../../Scene/Scene.h"
 
 Transform::Transform(const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &scl)

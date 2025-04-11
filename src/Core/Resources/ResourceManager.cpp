@@ -21,13 +21,16 @@ namespace ResourceManager {
 
     NODISCARD std::string ConstructFullPath(const char *path);
 
+    template<typename T, typename ... Args>
+    uint AddResource(std::vector<T> &resHolder, std::unordered_map<std::string, uint> &resIndexMap, const Args& ... args);
     MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory,
-                          const ModelLoadParameters &params);
+                          const std::string &modelFormat, const ModelLoadParameters &params);
     uint CreateMesh(const aiMesh *mesh, uint material);
     void CreateModel(const aiScene *scene, const char *path, const ModelLoadParameters &params);
     NODISCARD int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap);
     int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory);
-    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory);
+    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory, const std::string &modelFormat);
+    void CreateScreenPlane();
 
     void LoadModel(const char *path, const ModelLoadParameters &params) {
         std::string fullPath = ConstructFullPath(path);
@@ -79,8 +82,8 @@ namespace ResourceManager {
                 return ABSENT_RESOURCE;
         }
 
-        if(params.desiredFormat == TextureFormat::SRGB
-        || params.desiredFormat == TextureFormat::SRGBA) {
+        if(params.desiredFormat == BufferFormat::SRGB
+        || params.desiredFormat == BufferFormat::SRGBA) {
             if(internalFormat == GL_RGB) {
                 internalFormat = GL_SRGB;
             } else if(internalFormat == GL_RGBA) {
@@ -88,7 +91,7 @@ namespace ResourceManager {
             }
         }
 
-        params.desiredFormat = static_cast<TextureFormat>(internalFormat);
+        params.desiredFormat = static_cast<BufferFormat>(internalFormat);
         CreateTexture(textureName, imWidth, imHeight, params, imageData);
         stbi_image_free(imageData);
         return static_cast<int>(textures.size() - 1);
@@ -101,8 +104,7 @@ namespace ResourceManager {
             return;
         }
 
-        const auto &texture = textures.emplace_back(name, width, height, params, data);
-        textureIndexMap[texture.GetName()] = textures.size() - 1;
+        AddResource(textures, textureIndexMap, width, height, name, params, data);
     }
 
     void CreateMaterial(const std::string &name, int albedoMap, int normalMap, int specularMap, float shininess) {
@@ -111,8 +113,17 @@ namespace ResourceManager {
             return;
         }
 
-        const auto &material = materials.emplace_back(name, albedoMap, normalMap, specularMap, shininess);
-        materialIndexMap[material.name] = materials.size() - 1;
+        AddResource(materials, materialIndexMap, name, albedoMap, normalMap, specularMap, shininess);
+    }
+
+    void CreateManualMesh(const std::string &name, const std::vector<Vertex> &vertices, const std::vector<uint> &indices,
+                          bool hasNormals, bool hasTangents) {
+        if(GetMeshIndexByName(name) != ABSENT_RESOURCE) {
+            Debug::LogError("Mesh", name, "Already exists");
+            return;
+        }
+
+        AddResource(meshes, meshIndexMap, name, vertices, indices, hasNormals, hasTangents);
     }
 
     Texture2D* GetTextureByIndex(int index) {
@@ -151,8 +162,16 @@ namespace ResourceManager {
         return RESOURCES_DIRECTORY + path;
     }
 
+    template<typename T, typename ... Args>
+    uint AddResource(std::vector<T> &resHolder, std::unordered_map<std::string, uint> &resIndexMap, const Args& ... args) {
+        auto res = resHolder.emplace_back(args...);
+        uint lastResourceIndex = resHolder.size() - 1;
+        resIndexMap[res.GetName()] = lastResourceIndex;
+        return lastResourceIndex;
+    }
+
     MeshNode *ProcessNode(aiNode *node, const aiScene *scene, const std::string &modelTexturesDirectory,
-                          const ModelLoadParameters &params) {
+                          const std::string &modelFormat, const ModelLoadParameters &params) {
         auto meshNode = new MeshNode;
         meshNode->name = node->mName.C_Str();
         aiVector3D position, rotation, scale;
@@ -164,13 +183,14 @@ namespace ResourceManager {
         meshNode->meshes.reserve(node->mNumMeshes);
         for(uint i = 0; i < node->mNumMeshes; i++) {
             auto currentMesh = scene->mMeshes[node->mMeshes[i]];
-            auto material = CreateMaterialFromAssimp(scene->mMaterials[currentMesh->mMaterialIndex], modelTexturesDirectory);
+            auto material = CreateMaterialFromAssimp(scene->mMaterials[currentMesh->mMaterialIndex],
+                                                     modelTexturesDirectory, modelFormat);
             meshNode->meshes.emplace_back(CreateMesh(currentMesh, material));
         }
 
         meshNode->children.reserve(node->mNumChildren);
         for(uint i = 0; i < node->mNumChildren; i++) {
-            meshNode->children.push_back(ProcessNode(node->mChildren[i], scene, modelTexturesDirectory, params));
+            meshNode->children.push_back(ProcessNode(node->mChildren[i], scene, modelTexturesDirectory, modelFormat, params));
         }
 
         return meshNode;
@@ -182,26 +202,24 @@ namespace ResourceManager {
             return meshIndex;
         }
 
-        const auto &createdMesh = meshes.emplace_back(*mesh, material);
-        uint lastMeshIndex = meshes.size() - 1;
-        meshIndexMap[createdMesh.GetName()] = lastMeshIndex;
-        return lastMeshIndex;
+        return AddResource(meshes, meshIndexMap, *mesh, material);
     }
 
     void CreateModel(const aiScene *scene, const char *path, const ModelLoadParameters &params) {
         std::string modelPath(path);
         std::string modelName = Utils::GetNameFromPath(modelPath);
         std::string modelTexturesDirectory = modelPath.substr(0, Utils::FindLastSlash(modelPath)) + '/' + params.textureDirectory;
+        std::string modelFormat = Utils::GetExtensionFromPath(path);
 
         if(GetModelIndexByName(modelName) != ABSENT_RESOURCE) {
             Debug::LogError("Model", modelName, "Already exists");
             return;
         }
 
-        auto &model = models.emplace_back(modelName);
-        modelIndexMap[model.name] = models.size() - 1;
+        auto modelIndex = static_cast<int>(AddResource(models, modelIndexMap, modelName));
+        auto model = GetModelByIndex(modelIndex);
         scene->mRootNode->mName = modelName;
-        model.root = ProcessNode(scene->mRootNode, scene, modelTexturesDirectory, params);
+        model->SetRootNode(ProcessNode(scene->mRootNode, scene, modelTexturesDirectory, modelFormat, params));
     }
 
     int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap) {
@@ -233,7 +251,7 @@ namespace ResourceManager {
         return LoadTexture(texturePath.c_str(), texParams);
     }
 
-    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory) {
+    uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory, const std::string &modelFormat) {
         if(int matIndex = GetMaterialIndexByName(mat->GetName().C_Str()); matIndex != ABSENT_RESOURCE) {
             Debug::LogError("Material", mat->GetName().C_Str(), "Already exists");
             return matIndex;
@@ -250,12 +268,34 @@ namespace ResourceManager {
         if(mat->Get(AI_MATKEY_SHININESS, shininess) != AI_SUCCESS) {
             shininess = Material::DEFAULT_SHININESS;
         }
+        shininess = Material::NormalizeShininess(shininess, modelFormat);
 
         CreateMaterial(mat->GetName().C_Str(), diffuseMap, normalMap, specularMap, shininess);
         return materials.size() - 1;
     }
 
+    void CreateScreenPlane() {
+        std::vector<Vertex> vertices(4);
+        //upper right corner
+        vertices[0].position = glm::vec3(1.0f, 1.0f, 0.0f);
+        vertices[0].texCoords = glm::vec2(1.0f, 1.0f);
+        //upper left corner
+        vertices[1].position = glm::vec3(-1.0f, 1.0f, 0.0f);
+        vertices[1].texCoords = glm::vec2(0.0f, 1.0f);
+        //lower left corner
+        vertices[2].position = glm::vec3(-1.0f, -1.0f, 0.0f);
+        vertices[2].texCoords = glm::vec2(0.0f, 0.0f);
+        //lower right corner
+        vertices[3].position = glm::vec3(1.0f, -1.0f, 0.0f);
+        vertices[3].texCoords = glm::vec2(1.0f, 0.0f);
+
+        std::vector<uint> indices = { 0, 1, 2, 0, 2, 3 };
+
+        CreateManualMesh("ScreenPlane", vertices, indices);
+    }
+
     void LoadAssets() {
+        CreateScreenPlane();
         ModelLoadParameters loadParam {0.01f};
         LoadModel("Models/Soldier/soldier.fbx", loadParam);
     }

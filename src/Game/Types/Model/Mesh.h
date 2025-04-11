@@ -8,8 +8,6 @@
 
 class Mesh : public IDisposable {
 private:
-    static constexpr int ABSENT_MATERIAL = -1;
-
     std::vector<Vertex> vertices;
     std::vector<uint> indices;
     std::string name;
@@ -24,7 +22,10 @@ private:
     void ParseExternalMesh(const aiMesh &srcMesh);
     void SetUpBuffers();
 public:
-    explicit Mesh(const aiMesh &srcMesh, int material = ABSENT_MATERIAL);
+    explicit Mesh(const aiMesh &srcMesh, int material = ABSENT_RESOURCE);
+    Mesh(std::string name, const std::vector<Vertex> &vertices, const std::vector<uint> &indices,
+         bool hasNormals = false, bool hasTangents = false);
+    void SetMaterial(int matIndex);
     NODISCARD GLuint GetHandle() const;
     NODISCARD std::string GetName() const;
     NODISCARD int GetMaterial() const;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "Transform/Transform.h"
+#include "../ComponentScripts/Transform/Transform.h"
 #include "../../Core/Core.h"
 #include "../../Utils/Utils.h"
 
@@ -40,6 +40,8 @@ struct CameraParameters {
     OrthographicParameters orthographicParameters;
     float nearPlane = 0.1f;
     float farPlane = 100.0f;
+    uint cameraPriority = 0;
+    int renderTarget = DEFAULT_RENDER_TARGET;
 };
 
 enum class TextureWrap {
@@ -56,7 +58,7 @@ enum class TextureFiltering {
     NearestMipMap = GL_NEAREST_MIPMAP_NEAREST
 };
 
-enum class TextureFormat {
+enum class BufferFormat {
     RGB = GL_RGB,
     RGBA = GL_RGBA,
     SRGB = GL_SRGB,
@@ -79,7 +81,21 @@ struct TextureParameters {
     TextureWrap wrapT = TextureWrap::Repeat;
     TextureFiltering minFilter = TextureFiltering::Nearest;
     TextureFiltering magFilter = TextureFiltering::Nearest;
-    TextureFormat desiredFormat = TextureFormat::RGB;
-    TextureDataType dataType = TextureDataType::Byte;
+    BufferFormat desiredFormat = BufferFormat::RGB;
     bool genMipMaps = false;
+};
+
+enum class LightType {
+    Directional = 0,
+    Point = 1,
+    Spot = 2
+};
+
+struct LightParameters {
+    LightType type = LightType::Directional;
+    glm::vec3 color = glm::vec3(0.5f);
+    float intensity = 1.0f;
+    float radius = 5.0f;
+    float innerCutOff = 10.0f;
+    float outerCutOff = 12.0f;
 };

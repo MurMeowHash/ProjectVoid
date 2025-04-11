@@ -13,6 +13,8 @@ namespace Core {
     NODISCARD bool WindowShouldClose();
     NODISCARD GLFWwindow *GetActiveWindow();
     NODISCARD float GetAspectRatio();
+    NODISCARD int GetScreenWidth();
+    NODISCARD int GetScreenHeight();
     void FinishFrame();
     void Dispose();
 }

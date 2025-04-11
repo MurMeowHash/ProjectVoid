@@ -6,6 +6,7 @@
 
 class UBO : public IDisposable {
 private:
+    static constexpr GLsizeiptr MAX_SIZE = 16 * 1024;
     GLuint uboHandle = 0;
     GLsizeiptr size = 0;
 
@@ -15,7 +16,7 @@ private:
 public:
     void Create(GLuint bindingPoint, GLsizeiptr bufferSize, void *data = nullptr);
     void SetMat4(GLintptr offset, const glm::mat4 &matrix) const;
-    void SetData(GLintptr offset, GLsizeiptr subSize, void *data) const;
+    void SetData(GLintptr offset, GLsizeiptr subSize, const void *data) const;
 
     void Dispose() override;
 };

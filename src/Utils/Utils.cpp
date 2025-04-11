@@ -43,28 +43,36 @@ namespace Utils {
         return path.substr(nameBeginning, extensionPos - nameBeginning);
     }
 
-    GLenum GetSourceFromDesiredFormat(TextureFormat desiredFormat) {
-        GLenum srcFormat;
-        switch (desiredFormat) {
-            case TextureFormat::RGB:
-            case TextureFormat::RGB16F:
-            case TextureFormat::RGB32F:
-            case TextureFormat::SRGB:
-                srcFormat = GL_RGB;
-                break;
-            case TextureFormat::RGBA:
-            case TextureFormat::RGBA16F:
-            case TextureFormat::RGBA32F:
-            case TextureFormat::SRGBA:
-                srcFormat = GL_RGBA;
-                break;
-            case TextureFormat::DepthStencil:
-                srcFormat = GL_DEPTH_STENCIL;
-                break;
-            default:
-                srcFormat = static_cast<GLenum>(desiredFormat);
-        }
+    std::string GetExtensionFromPath(const std::string &path) {
+        return path.substr(path.find_last_of('.') + 1);
+    }
 
-        return srcFormat;
+    BufferFormat GetSourceFromDesiredFormat(BufferFormat desiredFormat) {
+        switch (desiredFormat) {
+            case BufferFormat::RGB:
+            case BufferFormat::RGB16F:
+            case BufferFormat::RGB32F:
+            case BufferFormat::SRGB:
+                return BufferFormat::RGB;
+            case BufferFormat::RGBA:
+            case BufferFormat::RGBA16F:
+            case BufferFormat::RGBA32F:
+            case BufferFormat::SRGBA:
+                return BufferFormat::RGBA;
+            default:
+                return desiredFormat;
+        }
+    }
+
+    TextureDataType GetTextureDataTypeFromFormat(BufferFormat format) {
+        switch (format) {
+            case BufferFormat::RGB:
+            case BufferFormat::RGBA:
+            case BufferFormat::SRGB:
+            case BufferFormat::SRGBA:
+                return TextureDataType::Byte;
+            default:
+                return TextureDataType::Float;
+        }
     }
 }

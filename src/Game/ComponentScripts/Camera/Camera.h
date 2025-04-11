@@ -1,6 +1,7 @@
 #pragma once
-#include "../CreateParameters.h"
-#include "../../ComponentScripts/ObjectComponent.h"
+#include "../../Types/CreateParameters.h"
+#include "../ObjectComponent.h"
+#include "../../Types/GLBuffer/FrameBuffer/FrameBuffer.h"
 
 class Camera : public ObjectComponent {
 private:
@@ -14,12 +15,20 @@ private:
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
 
+    uint cameraPriority;
+    int renderTarget;
+
     void UpdateView();
     void UpdateProjection();
 public:
     explicit Camera(const CameraParameters &params = CameraParameters());
     NODISCARD glm::mat4 GetViewMatrix() const;
     NODISCARD glm::mat4 GetProjectionMatrix() const;
+    NODISCARD uint GetCameraPriority() const;
+    NODISCARD int GetRenderTarget() const;
+
+    void SetRenderTexture(int textureIndex);
+    void SetCameraPriority(uint priorityValue);
 
     void Update() override;
 };

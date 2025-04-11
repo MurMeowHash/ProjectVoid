@@ -7,14 +7,14 @@ namespace Debug {
 
     void Initialize(std::ostream *targetStream);
     template<typename ... Args>
-    void Log(Args ... args) {
+    void Log(const Args& ... args) {
         if(!Engine::IsDebugMode()) return;
 
         ((*debugStream << args), ...);
     }
 
     template<typename ... Args>
-    void LogCritical(const std::string &criticalType, Args ... args) {
+    void LogCritical(const std::string &criticalType, const Args& ... args) {
         if(!Engine::IsDebugMode()) return;
 
         *debugStream << criticalType;
@@ -23,12 +23,12 @@ namespace Debug {
     }
 
     template<typename ... Args>
-    void LogError(Args ... args) {
+    void LogError(const Args& ... args) {
         LogCritical("Error", args...);
     }
 
     template<typename ... Args>
-    void LogWarning(Args ... args) {
+    void LogWarning(const Args& ... args) {
         LogCritical("Warning", args...);
     }
 }

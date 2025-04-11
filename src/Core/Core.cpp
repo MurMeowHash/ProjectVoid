@@ -60,6 +60,14 @@ namespace Core {
         return static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
     }
 
+    int GetScreenWidth() {
+        return screenWidth;
+    }
+
+    int GetScreenHeight() {
+        return screenHeight;
+    }
+
     void FinishFrame() {
         glfwPollEvents();
         glfwSwapBuffers(mainWindow);
