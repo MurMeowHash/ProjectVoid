@@ -7,5 +7,9 @@ enum class InputKey {
     KeyA = GLFW_KEY_A,
     KeyD = GLFW_KEY_D,
     KeyS = GLFW_KEY_S,
-    KeyW = GLFW_KEY_W
+    KeyW = GLFW_KEY_W,
+    KeyLeft = GLFW_KEY_LEFT,
+    KeyRight = GLFW_KEY_RIGHT,
+    KeyDown = GLFW_KEY_DOWN,
+    KeyUp = GLFW_KEY_UP,
 };
