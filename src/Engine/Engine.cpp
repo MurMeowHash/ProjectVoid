@@ -45,6 +45,22 @@ namespace Engine {
         Dispose();
     }
 
+    void Walk() {
+            while (!Core::WindowShouldClose()) {
+        Time::UpdateDeltaTime();
+        Scene::Update();
+
+        if (Input::GetKeyDown(InputKey::KeyEscape)) {
+            glfwSetWindowShouldClose(Core::GetActiveWindow(), true);
+        }
+
+        Input::Update();
+        Core::FinishFrame();
+    }
+
+    Dispose();
+        }
+
     void SetFpsUpdateFrequency(float time) {
         if(time <= 0.0f) return;
 
