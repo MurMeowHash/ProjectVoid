@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include <map>
-#include <regex>
+#include <regsex>
 #include "../../Core/Resources/ResourceManager.h"
 #include "../ComponentScripts/Movement/Movement.h"
 #include "../ComponentScripts/Movement/MouseLook.h"
