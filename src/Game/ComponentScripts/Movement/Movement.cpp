@@ -25,6 +25,19 @@ void Movement::Update() {
     if(Input::GetKey(InputKey::KeyA)) {
         movementDirection -= transform->ToRightVector();
     }
+    
+    if(Input::GetKey(InputKey::KeyUp)) {
+        movementDirection += transform->ToForwardVector();
+    }
+    if(Input::GetKey(InputKey::KeyDown)) {
+        movementDirection -= transform->ToForwardVector();
+    }
+    if(Input::GetKey(InputKey::KeyRight)) {
+        movementDirection += transform->ToRightVector();
+    }
+    if(Input::GetKey(InputKey::KeyLeft)) {
+        movementDirection -= transform->ToRightVector();
+    }
 
     transform->position += movementDirection * speed * Time::GetDeltaTime();
 }
