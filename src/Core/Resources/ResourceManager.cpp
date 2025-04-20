@@ -28,9 +28,11 @@ namespace ResourceManager {
     uint CreateMesh(const aiMesh *mesh, uint material);
     void CreateModel(const aiScene *scene, const char *path, const ModelLoadParameters &params);
     NODISCARD int GetIndexByName(const std::string &name, const std::unordered_map<std::string, uint> &targetMap);
-    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory);
+    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, TextureParameters texParams, const std::string &modelTexturesDirectory);
     uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory, const std::string &modelFormat);
-    void CreateScreenPlane();
+    void CreateScreenPlane(const std::string &name);
+    void CreateSphere(float radius, uint stacks, uint slices);
+    void CreateCone(float radius, float height, uint segments);
 
     void LoadModel(const char *path, const ModelLoadParameters &params) {
         std::string fullPath = ConstructFullPath(path);
@@ -231,7 +233,7 @@ namespace ResourceManager {
         return ABSENT_RESOURCE;
     }
 
-    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, const std::string &modelTexturesDirectory) {
+    int LoadTextureFromAssimp(aiMaterial *mat, aiTextureType texType, TextureParameters texParams, const std::string &modelTexturesDirectory) {
         uint textureCount = mat->GetTextureCount(texType);
         if(textureCount == 0) {
             return ABSENT_RESOURCE;
@@ -244,10 +246,6 @@ namespace ResourceManager {
         aiString rawTexturePath;
         mat->GetTexture(texType, 0, &rawTexturePath);
         std::string texturePath = modelTexturesDirectory + Utils::GetExtendedNameFromPath(rawTexturePath.C_Str());
-        TextureParameters texParams;
-        texParams.minFilter = TextureFiltering::LinearMipMap;
-        texParams.magFilter = TextureFiltering::Linear;
-        texParams.genMipMaps = true;
         return LoadTexture(texturePath.c_str(), texParams);
     }
 
@@ -257,12 +255,18 @@ namespace ResourceManager {
             return matIndex;
         }
 
-        int diffuseMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_DIFFUSE, modelTexturesDirectory);
-        int normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_NORMALS, modelTexturesDirectory);
+        TextureParameters texParams;
+        texParams.minFilter = TextureFiltering::LinearMipMap;
+        texParams.magFilter = TextureFiltering::Linear;
+        texParams.desiredFormat = BufferFormat::SRGBA;
+        texParams.genMipMaps = true;
+        int diffuseMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_DIFFUSE, texParams, modelTexturesDirectory);
+        texParams.desiredFormat = BufferFormat::RGBA;
+        int normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_NORMALS, texParams, modelTexturesDirectory);
         if(normalMap == ABSENT_RESOURCE) {
-            normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_HEIGHT, modelTexturesDirectory);
+            normalMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_HEIGHT, texParams, modelTexturesDirectory);
         }
-        int specularMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_SPECULAR, modelTexturesDirectory);
+        int specularMap = LoadTextureFromAssimp(mat, aiTextureType::aiTextureType_SPECULAR, texParams, modelTexturesDirectory);
 
         float shininess;
         if(mat->Get(AI_MATKEY_SHININESS, shininess) != AI_SUCCESS) {
@@ -274,7 +278,7 @@ namespace ResourceManager {
         return materials.size() - 1;
     }
 
-    void CreateScreenPlane() {
+    void CreateScreenPlane(const std::string &name) {
         std::vector<Vertex> vertices(4);
         //upper right corner
         vertices[0].position = glm::vec3(1.0f, 1.0f, 0.0f);
@@ -291,13 +295,131 @@ namespace ResourceManager {
 
         std::vector<uint> indices = { 0, 1, 2, 0, 2, 3 };
 
-        CreateManualMesh("ScreenPlane", vertices, indices);
+        CreateManualMesh(name, vertices, indices);
+    }
+
+    void CreateSphere(float radius, uint stacks, uint slices) {
+        std::vector<Vertex> vertices;
+        auto pi = static_cast<float>(M_PI);
+        for (uint i = 0; i <= stacks; ++i) {
+            Vertex vertex;
+            float stackAngle = pi / 2.0f - static_cast<float>(i) * pi / static_cast<float>(stacks);
+            float xy = radius * cosf(stackAngle);
+            vertex.position.z = radius * sinf(stackAngle);
+
+            for (uint j = 0; j <= slices; ++j) {
+                float sliceAngle = static_cast<float>(j) * 2.0f * pi / static_cast<float>(slices);
+
+                vertex.position.x = xy * cosf(sliceAngle);
+                vertex.position.y = xy * sinf(sliceAngle);
+
+                vertex.texCoords.x = static_cast<float>(j) / static_cast<float>(slices);
+                vertex.texCoords.y = static_cast<float>(i) / static_cast<float>(stacks);
+
+                vertex.normal.x = vertex.position.x / radius;
+                vertex.normal.y = vertex.position.y / radius;
+                vertex.normal.z = vertex.position.z / radius;
+
+                vertices.emplace_back(vertex);
+            }
+        }
+
+        std::vector<uint> indices;
+
+        for (uint i = 0; i < stacks; ++i) {
+            for (uint j = 0; j < slices; ++j) {
+                uint first = (i * (slices + 1)) + j;
+                uint second = first + slices + 1;
+
+                indices.push_back(first);
+                indices.push_back(second);
+                indices.push_back(first + 1);
+
+                indices.push_back(second);
+                indices.push_back(second + 1);
+                indices.push_back(first + 1);
+            }
+        }
+
+        CreateManualMesh("LightVolumeSphere", vertices, indices, true);
+    }
+
+    void CreateCone(float radius, float height, uint segments) {
+        std::vector<Vertex> vertices;
+        Vertex vertex;
+        vertex.position = glm::vec3(0.0f);
+        vertex.normal = glm::vec3(0.0f, 0.0f, -1.0f);
+        vertex.texCoords = glm::vec2(0.5f, 1.0f);
+
+        vertices.emplace_back(vertex);
+        uint tipIndex = 0;
+
+        vertex.position = glm::vec3(0.0f, 0.0f, height);
+        vertex.normal = glm::vec3(0.0f, 0.0f, 1.0f);
+        vertex.texCoords = glm::vec2(0.5f, 0.0f);
+        vertices.emplace_back(vertex);
+        uint baseCenterIndex = 1;
+
+        for (uint i = 0; i <= segments; ++i) {
+            float angle = 2.0f * static_cast<float>(M_PI) * static_cast<float>(i) / static_cast<float>(segments);
+            vertex.position.x = radius * cosf(angle);
+            vertex.position.y = radius * sinf(angle);
+            vertex.position.z = height;
+
+            float dx = vertex.position.x;
+            float dy = vertex.position.y;
+            float dz = height;
+            float length = sqrtf(dx*dx + dy*dy + dz*dz);
+            dx /= length;
+            dy /= length;
+            dz /= length;
+
+            vertex.normal = glm::vec3(dx, dy, dz);
+            vertex.texCoords = glm::vec2(static_cast<float>(i) / static_cast<float>(segments), 0.0f);
+
+            vertices.emplace_back(vertex);
+        }
+
+        std::vector<uint> indices;
+
+        for (uint i = 0; i < segments; ++i) {
+            uint curr = 2 + i;
+            uint next = 2 + (i + 1) % (segments + 1);
+
+            indices.push_back(tipIndex);
+            indices.push_back(next);
+            indices.push_back(curr);
+        }
+
+        for (uint i = 0; i < segments; ++i) {
+            uint curr = 2 + i;
+            uint next = 2 + (i + 1) % (segments + 1);
+
+            indices.push_back(baseCenterIndex);
+            indices.push_back(curr);
+            indices.push_back(next);
+        }
+
+        CreateManualMesh("LightVolumeCone", vertices, indices, true);
     }
 
     void LoadAssets() {
-        CreateScreenPlane();
-        ModelLoadParameters loadParam {0.01f};
-        LoadModel("Models/Soldier/soldier.fbx", loadParam);
+        CreateScreenPlane("ScreenPlane");
+        CreateScreenPlane("LightVolumePlane");
+        CreateSphere(1.0f, 32, 32);
+        CreateCone(1.0f, 1.0f, 32);
+        ModelLoadParameters loadParam {1.0f};
+        LoadModel("Models/Axe/axe.obj", loadParam);
+        TextureParameters texParams;
+        texParams.minFilter = TextureFiltering::LinearMipMap;
+        texParams.magFilter = TextureFiltering::Linear;
+        texParams.genMipMaps = true;
+        texParams.desiredFormat = BufferFormat::SRGBA;
+        auto axeAlbedo = LoadTexture("Models/Axe/textures/axe_Axe_BaseColor.png", texParams);
+        texParams.desiredFormat = BufferFormat::RGBA;
+        auto axeNormal = LoadTexture("Models/Axe/textures/axe_Axe_Normal.png", texParams);
+        CreateMaterial("axeMaterial", axeAlbedo, axeNormal, ABSENT_RESOURCE, 0.3f);
+        GetModelByIndex(GetModelIndexByName("axe"))->SetMaterial(GetMaterialIndexByName("axeMaterial"));
     }
 
     void Dispose() {

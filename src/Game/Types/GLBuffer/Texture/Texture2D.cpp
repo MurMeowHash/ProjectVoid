@@ -1,10 +1,8 @@
 #include "Texture2D.h"
-#include "stb/stb_image.h"
-#include "../../../../Debug/Debug.h"
 
 Texture2D::Texture2D(GLsizei width, GLsizei height, std::string name,
                      const TextureParameters &params, unsigned char *data)
-: GLBuffer(width, height, std::move(name)) {
+        : GLBuffer(width, height, std::move(name)) {
     CreateTexture(params);
     InitializeTexture(data, params);
 }

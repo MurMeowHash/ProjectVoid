@@ -15,7 +15,7 @@ private:
     int specularMap;
     float shininess;
 public:
-    static constexpr float DEFAULT_SHININESS = 32.0f;
+    static constexpr float DEFAULT_SHININESS = 0.5f;
     explicit Material(std::string name = UNDEFINED_NAME, int albedo = ABSENT_RESOURCE,
              int normal = ABSENT_RESOURCE, int specular = ABSENT_RESOURCE, float shin = DEFAULT_SHININESS);
     void SetAlbedoMap(int mapIndex);

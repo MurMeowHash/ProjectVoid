@@ -22,7 +22,9 @@ namespace Scene {
     NODISCARD int GetGameObjectIndexByName(const std::string &name);
     NODISCARD uint GetLastGameObjectIndex();
     NODISCARD const std::vector<RenderItem3D> &GetGeometryRenderItems();
-    NODISCARD const std::vector<GPULight> &GetGPULights();
+    NODISCARD const std::vector<GPULight> &GetGPUDirectionalLights();
+    NODISCARD const std::vector<GPULight> &GetGPUPointLights();
+    NODISCARD const std::vector<GPULight> &GetGPUSpotLights();
     NODISCARD const std::multiset<GPUCamera, GPUCameraComparator> &GetGPUCameras();
     NODISCARD glm::vec3 GetEnvironmentAmbient();
 

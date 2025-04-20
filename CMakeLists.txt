@@ -14,6 +14,7 @@ link_directories(${VENDOR_LIBS})
 set(VENDOR_SRC
         ${VENDOR_DIR}/glad/lib/glad.c
         ${VENDOR_DIR}/stb/lib/stb_image.cpp
+        ${VENDOR_DIR}/stb/lib/stb_image_write.cpp
         src/Game/ComponentScripts/Light/Light.cpp
         src/Game/ComponentScripts/Light/Light.h
 )
@@ -86,6 +87,10 @@ add_executable(ProjectVoid
         src/Game/Types/Material.cpp
         src/Game/PostProcessing/PostProcessing.cpp
         src/Game/PostProcessing/PostProcessing.h
+        src/Renderer/Buffers/BufferObject.cpp
+        src/Renderer/Buffers/BufferObject.h
+        src/Renderer/Buffers/VBO.cpp
+        src/Renderer/Buffers/VBO.h
 )
 
 target_link_libraries(ProjectVoid glfw3 assimp)

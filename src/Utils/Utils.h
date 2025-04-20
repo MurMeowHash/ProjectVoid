@@ -20,6 +20,8 @@ constexpr int DEFAULT_RENDER_TARGET = -1;
 enum class BufferFormat;
 enum class TextureDataType;
 
+class FrameBuffer;
+
 namespace Utils {
     std::string ReadTextFromFile(const std::string &filePath);
     NODISCARD glm::vec3 ToGLMVector(const aiVector3D &target);
@@ -29,4 +31,7 @@ namespace Utils {
     NODISCARD std::string GetExtensionFromPath(const std::string &path);
     NODISCARD BufferFormat GetSourceFromDesiredFormat(BufferFormat desiredFormat);
     NODISCARD TextureDataType GetTextureDataTypeFromFormat(BufferFormat format);
+    NODISCARD GLsizeiptr KBToB(GLsizeiptr kb);
+    NODISCARD GLsizeiptr MBToB(GLsizeiptr mb);
+    void SaveFrameBufferToJPG(const char *fileName, const FrameBuffer &buf, GLenum colorAttachment, int quality);
 }

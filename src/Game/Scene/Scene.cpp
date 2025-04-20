@@ -8,7 +8,7 @@
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
-    static constexpr float QUADRATIC_ATT_MULTIPLIER{4.5f};
+    static constexpr float QUADRATIC_ATT_MULTIPLIER{44.5f};
     static constexpr float DEFAULT_ATT_COEF{1.0f};
 
     glm::vec3 environmentAmbient = glm::vec3(0.01f);
@@ -21,7 +21,9 @@ namespace Scene {
 
     std::vector<RenderItem3D> geometryRenderItems;
     std::multiset<GPUCamera, GPUCameraComparator> gpuCameras;
-    std::vector<GPULight> gpuLights;
+    std::vector<GPULight> gpuDirectionalLights;
+    std::vector<GPULight> gpuPointLights;
+    std::vector<GPULight> gpuSpotLights;
 
     std::string CreateUniqueObjectName(const std::string &name);
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
@@ -90,14 +92,37 @@ namespace Scene {
         GPULight gpuLight;
         gpuLight.positionType = glm::vec4(transform->position, static_cast<float>(light->type));
         gpuLight.colorIntensity = glm::vec4(light->color, light->intensity);
-        gpuLight.direction = transform->ToForwardVector();
+        gpuLight.directionRadius = glm::vec4(transform->ToForwardVector(), light->radius);
 
         gpuLight.attenuationCoefs = glm::vec3(DEFAULT_ATT_COEF, LINEAR_ATT_MULTIPLIER / light->radius,
                                               QUADRATIC_ATT_MULTIPLIER / (light->radius * light->radius));
         gpuLight.cutOffs = glm::vec2(glm::cos(glm::radians(light->innerCutOff)),
                                      glm::cos(glm::radians(light->outerCutOff)));
 
-        gpuLights.emplace_back(gpuLight);
+        switch (light->type) {
+            case LightType::Directional:
+                gpuDirectionalLights.emplace_back(gpuLight);
+                break;
+            case LightType::Point:
+                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, glm::vec3(light->radius));
+                gpuPointLights.emplace_back(gpuLight);
+                break;
+            case LightType::Spot:
+                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
+                                                         glm::radians(transform->rotation.x), Axis::xAxis);
+                gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
+                                                         glm::radians(transform->rotation.y), Axis::yAxis);
+                gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
+                                                         glm::radians(transform->rotation.z), Axis::zAxis);
+                glm::vec3 volumeScale(1.0f);
+                volumeScale.y = volumeScale.x = glm::tan(glm::radians(light->outerCutOff)) * light->radius;
+                volumeScale.z = light->radius;
+                gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, volumeScale);
+                gpuSpotLights.emplace_back(gpuLight);
+                break;
+        }
     }
 
     void ExtractGPUCamera(const GameObject &obj) {
@@ -177,8 +202,16 @@ namespace Scene {
         return geometryRenderItems;
     }
 
-    const std::vector<GPULight> &GetGPULights() {
-        return gpuLights;
+    const std::vector<GPULight> &GetGPUDirectionalLights() {
+        return gpuDirectionalLights;
+    }
+
+    const std::vector<GPULight> &GetGPUPointLights() {
+        return gpuPointLights;
+    }
+
+    const std::vector<GPULight> &GetGPUSpotLights() {
+        return gpuSpotLights;
     }
 
     const std::multiset<GPUCamera, GPUCameraComparator> &GetGPUCameras() {
@@ -189,13 +222,12 @@ namespace Scene {
         return environmentAmbient;
     }
 
-    //TODO: strange initial directions
     void LoadScene() {
-        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("soldier")));
-        auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
-        mask->GetComponent<Transform>()->position /= 100.0f;
-        auto body = GetGameObjectByIndex(GetGameObjectIndexByName("body"));
-        body->GetComponent<Transform>()->position /= 100.0f;
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("axe")));
+//        auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
+//        mask->GetComponent<Transform>()->position /= 100.0f;
+//        auto body = GetGameObjectByIndex(GetGameObjectIndexByName("body"));
+//        body->GetComponent<Transform>()->position /= 100.0f;
 
         GameObjectParameters objParams;
 
@@ -203,14 +235,14 @@ namespace Scene {
         camParams.cameraPriority = 1;
 
         objParams.name = "Player";
-        auto player = GetGameObjectByIndex(CreateCamera(objParams, camParams));
+        auto player = GetGameObjectByIndex(static_cast<int>(CreateCamera(objParams, camParams)));
         player->AddComponent<Movement>();
         player->AddComponent<MouseLook>();
 
         GameObjectParameters lightObjParams;
         lightObjParams.name = "Light";
         lightObjParams.transform.position = glm::vec3(0.0f, 1.0f, 2.0f);
-        lightObjParams.transform.rotation = glm::vec3(0.0f, -90.0f, 0.0f);
+        lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
         LightParameters lightParams;
         lightParams.type = LightType::Spot;
         lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
@@ -222,8 +254,8 @@ namespace Scene {
         lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
         lightParams.type = LightType::Point;
         lightParams.color = glm::vec3(0.0f, 0.0f, 0.5f);
-        lightParams.radius = 20.0f;
-        lightParams.intensity = 2.5f;
+        lightParams.radius = 10.0f;
+        lightParams.intensity = 10.0f;
         CreateLight(lightObjParams, lightParams);
 
         //Don't touch
@@ -234,7 +266,9 @@ namespace Scene {
 
     void Update() {
         geometryRenderItems.clear();
-        gpuLights.clear();
+        gpuDirectionalLights.clear();
+        gpuPointLights.clear();
+        gpuSpotLights.clear();
         gpuCameras.clear();
 
         for(auto &obj : gameObjects) {
