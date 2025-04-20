@@ -16,9 +16,10 @@ struct RenderItem3D {
 struct GPULight {
     glm::vec4 positionType = glm::vec4(0.0f);
     glm::vec4 colorIntensity = glm::vec4(0.0f);
-    glm::vec3 direction = glm::vec3(0.0f);
-    alignas(16) glm::vec3 attenuationCoefs = glm::vec3(1.0f);
-    alignas(16) glm::vec2 cutOffs = glm::vec2(0.0f);
+    glm::vec4 directionRadius = glm::vec4(0.0f);
+    glm::vec3 attenuationCoefs = glm::vec3(1.0f);
+    glm::vec2 cutOffs = glm::vec2(0.0f);
+    glm::mat4 volumeModelMatrix = glm::mat4(1.0f);
 };
 
 struct GPUCamera {
