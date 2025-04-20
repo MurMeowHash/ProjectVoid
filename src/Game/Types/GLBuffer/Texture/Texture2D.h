@@ -2,7 +2,6 @@
 #include "glad/glad.h"
 #include "../GLBuffer.h"
 #include "../../CreateParameters.h"
-#include "stb/stb_image.h"
 
 class Texture2D : public GLBuffer {
 private:

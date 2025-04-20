@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include "../../Types/GameObject/GameObject.h"
 #include "../../Scene/Scene.h"
+#include <glm/gtc/quaternion.hpp>
 
 Transform::Transform(const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &scl)
 : ObjectComponent(1), position{pos}, rotation{rot}, scale{scl} {
@@ -28,20 +29,21 @@ glm::vec3 Transform::ToForwardVector() const {
     glm::vec3 forwardVector;
     float radiansPitch = glm::radians(rotation.x);
     float radiansYaw = glm::radians(rotation.y);
-    forwardVector.x = glm::cos(radiansYaw) * glm::cos(radiansPitch);
+    forwardVector.x = glm::sin(radiansYaw) * glm::cos(radiansPitch);
     forwardVector.y = glm::sin(radiansPitch);
-    forwardVector.z = glm::sin(radiansYaw) * glm::cos(radiansPitch);
+    forwardVector.z = glm::cos(radiansYaw) * glm::cos(radiansPitch);
 
     return forwardVector;
 }
 
-//TODO: shit approximation
+//TODO: suspicious approximation
 glm::vec3 Transform::ToRightVector() const {
     glm::vec3 rightVector;
     float radiansYaw = glm::radians(90.0f - rotation.y);
-    rightVector.x = -glm::cos(radiansYaw);
-    rightVector.y = 0;
-    rightVector.z = glm::sin(radiansYaw);
+    float radiansRoll = glm::radians(rotation.z);
+    rightVector.x = -glm::sin(radiansYaw) * glm::cos(radiansRoll);
+    rightVector.y = glm::sin(radiansRoll);
+    rightVector.z = glm::cos(radiansYaw) * glm::cos(radiansRoll);
 
     return rightVector;
 }

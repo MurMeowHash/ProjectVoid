@@ -2,8 +2,13 @@
 #include <fstream>
 #include "../Game/Types/CreateParameters.h"
 #include <sstream>
+#include "../Game/Types/GLBuffer/FrameBuffer/FrameBuffer.h"
+#include <stb/stb_image_write.h>
 
 namespace Utils {
+    constexpr GLsizeiptr MB_TO_B_MULTIPLIER = 1024 * 1024;
+    constexpr GLsizeiptr KB_TO_B_MULTIPLIER = 1024;
+
     size_t FindNameBeginning(const std::string &path);
 
     size_t FindNameBeginning(const std::string &path) {
@@ -74,5 +79,28 @@ namespace Utils {
             default:
                 return TextureDataType::Float;
         }
+    }
+
+    GLsizeiptr KBToB(GLsizeiptr kb) {
+        return kb * KB_TO_B_MULTIPLIER;
+    }
+
+    GLsizeiptr MBToB(GLsizeiptr mb) {
+        return mb * MB_TO_B_MULTIPLIER;
+    }
+
+    void SaveFrameBufferToJPG(const char *fileName, const FrameBuffer &buf, GLenum colorAttachment, int quality) {
+        GLsizei bufWidth = buf.GetWidth();
+        GLsizei bufHeight = buf.GetHeight();
+        auto *bufData = new unsigned char[bufWidth * bufHeight * 3];
+        GLint prevFrameBuffer = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFrameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, buf.GetHandle());
+        glReadBuffer(colorAttachment);
+        glReadPixels(0, 0, bufWidth, bufHeight, GL_RGB, GL_UNSIGNED_BYTE, bufData);
+        stbi_flip_vertically_on_write(true);
+        stbi_write_jpg(fileName, bufWidth, bufHeight, 3, bufData, quality);
+        delete [] bufData;
+        glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
     }
 }
