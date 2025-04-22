@@ -79,7 +79,6 @@ vec3 CalculateLightImpact(vec3 worldPos, vec3 normal, vec3 viewDir) {
         case SPOT_LIGHT:
             return CalculateSpotLight(worldPos, normal, viewDir);
     }
-
     return vec3(0.0);
 }
 
