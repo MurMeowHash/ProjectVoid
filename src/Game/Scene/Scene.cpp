@@ -223,11 +223,15 @@ namespace Scene {
     }
 
     void LoadScene() {
-        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("axe")));
-//        auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
-//        mask->GetComponent<Transform>()->position /= 100.0f;
-//        auto body = GetGameObjectByIndex(GetGameObjectIndexByName("body"));
-//        body->GetComponent<Transform>()->position /= 100.0f;
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("XenoRaven")));
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Mirage_V1")));
+        auto v1 = GetGameObjectByIndex(GetGameObjectIndexByName("Mirage_V1"));
+        v1->AddComponent<Transform>()->position = glm::vec3(5, -6.5, 10);
+        v1->AddComponent<Transform>()->rotation = glm::vec3(0, 220, 0);
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("freddy-fazbear-special-delivery")));
+        auto freddy = GetGameObjectByIndex(GetGameObjectIndexByName("freddy-fazbear-special-delivery"));
+        freddy->AddComponent<Transform>()->position = glm::vec3(0, -6.5, 10);
+        freddy->AddComponent<Transform>()->rotation = glm::vec3(0, 180, 0);
 
         GameObjectParameters objParams;
 
@@ -244,16 +248,16 @@ namespace Scene {
         lightObjParams.transform.position = glm::vec3(0.0f, 1.0f, 2.0f);
         lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
         LightParameters lightParams;
-        lightParams.type = LightType::Spot;
-        lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
-        lightParams.radius = 10.0f;
-        lightParams.intensity = 5.0f;
-        lightParams.innerCutOff = 12.0f;
-        lightParams.outerCutOff = 15.0f;
-        CreateLight(lightObjParams, lightParams);
+        // lightParams.type = LightType::Spot;
+        // lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
+        // lightParams.radius = 10.0f;
+        // lightParams.intensity = 5.0f;
+        // lightParams.innerCutOff = 12.0f;
+        // lightParams.outerCutOff = 15.0f;
+        // CreateLight(lightObjParams, lightParams);
         lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
         lightParams.type = LightType::Point;
-        lightParams.color = glm::vec3(0.0f, 0.0f, 0.5f);
+        lightParams.color = glm::vec3(0.2f, 0.2f, 0.5f);
         lightParams.radius = 10.0f;
         lightParams.intensity = 10.0f;
         CreateLight(lightObjParams, lightParams);
