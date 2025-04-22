@@ -70,7 +70,7 @@ vec3 GetSpecularColor(vec3 lightDir, vec3 viewDir, vec3 normal, vec3 lightColor)
 }
 
 vec3 CalculateLightImpact(vec3 worldPos, vec3 normal, vec3 viewDir) {
-    int lightType = int(lightData.PositionType.w);
+    int lightType = int(round(lightData.PositionType.w));
     switch(lightType) {
         case DIRECTIONAL_LIGHT:
             return CalculateDirectionalLight(normal, viewDir);
