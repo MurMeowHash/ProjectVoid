@@ -1,7 +1,7 @@
 #include "Engine/Engine.h"
 
 int main() {
-    Engine::Initialize(ExecutionMode::Debug);
+    Engine::Initialize(ExecutionMode::Release);
     Engine::Run();
     return 0;
 }

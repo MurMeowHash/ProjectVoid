@@ -251,7 +251,7 @@ namespace ResourceManager {
 
     uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory, const std::string &modelFormat) {
         if(int matIndex = GetMaterialIndexByName(mat->GetName().C_Str()); matIndex != ABSENT_RESOURCE) {
-            Debug::LogError("Material", mat->GetName().C_Str(), "Already exists");
+            Debug::LogError("Material", mat->GetName().C_Str(), "Already exists"); // todo: remove error
             return matIndex;
         }
 

@@ -251,22 +251,33 @@ namespace Scene {
 
         GameObjectParameters lightObjParams;
         lightObjParams.name = "Light";
-        lightObjParams.transform.position = glm::vec3(0.0f, 1.0f, 2.0f);
-        lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+        lightObjParams.transform.position = glm::vec3(-1.0f, 3.8f, 8.0f);
+        lightObjParams.transform.rotation = glm::vec3(0.0f, 180.0f, 0.0f);
         LightParameters lightParams;
-        // lightParams.type = LightType::Spot;
-        // lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
-        // lightParams.radius = 10.0f;
-        // lightParams.intensity = 5.0f;
-        // lightParams.innerCutOff = 12.0f;
-        // lightParams.outerCutOff = 15.0f;
-        // CreateLight(lightObjParams, lightParams);
+        lightParams.type = LightType::Spot;
+        lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
+        lightParams.radius = 100.0f;
+        lightParams.intensity = 5.0f;
+        lightParams.innerCutOff = 10.0f;
+        lightParams.outerCutOff = 20.0f;
+        CreateLight(lightObjParams, lightParams);
+        lightObjParams.transform.position = glm::vec3(0.0f, -3.0f, 8.0f);
+        lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+        lightParams.type = LightType::Spot;
+        lightParams.color = glm::vec3(0.0f, 0.3f, 0.0f);
+        lightParams.radius = 100.0f;
+        lightParams.intensity = 2.0f;
+        lightParams.innerCutOff = 60.0f;
+        lightParams.outerCutOff = 70.0f;
+        CreateLight(lightObjParams, lightParams);
         lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
+        lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
         lightParams.type = LightType::Point;
         lightParams.color = glm::vec3(0.2f, 0.2f, 0.5f);
         lightParams.radius = 10.0f;
         lightParams.intensity = 10.0f;
         CreateLight(lightObjParams, lightParams);
+        lightObjParams.transform.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
 
         //Don't touch
         for(auto &object : gameObjects) {
