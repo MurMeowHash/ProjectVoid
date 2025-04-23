@@ -224,14 +224,20 @@ namespace Scene {
 
     void LoadScene() {
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("XenoRaven")));
+        auto xeno = GetGameObjectByIndex(GetGameObjectIndexByName("XenoRaven"));
+        xeno->GetComponent<Transform>()->position = glm::vec3(-1.0f, 3.8f, -2.0f);
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Mirage_V1")));
         auto v1 = GetGameObjectByIndex(GetGameObjectIndexByName("Mirage_V1"));
-        v1->AddComponent<Transform>()->position = glm::vec3(5, -6.5, 10);
-        v1->AddComponent<Transform>()->rotation = glm::vec3(0, 220, 0);
+        v1->GetComponent<Transform>()->position = glm::vec3(5.0f, -6.5f, 10.0f);
+        v1->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 220.0f, 0.0f);
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("freddy-fazbear-special-delivery")));
         auto freddy = GetGameObjectByIndex(GetGameObjectIndexByName("freddy-fazbear-special-delivery"));
-        freddy->AddComponent<Transform>()->position = glm::vec3(0, -6.5, 10);
-        freddy->AddComponent<Transform>()->rotation = glm::vec3(0, 180, 0);
+        freddy->GetComponent<Transform>()->position = glm::vec3(0.0f, -6.5f, 10.0f);
+        freddy->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 180.0f, 0.0f);
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("RockyDesertMesh")));
+        auto desert = GetGameObjectByIndex(GetGameObjectIndexByName("RockyDesertMesh"));
+        desert->GetComponent<Transform>()->rotation = glm::vec3(270.0f, 0.0f, 0.0f);
+        desert->GetComponent<Transform>()->position = glm::vec3(-5.0f, -14.0f, -1.0f);
 
         GameObjectParameters objParams;
 

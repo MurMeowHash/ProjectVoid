@@ -414,6 +414,8 @@ namespace ResourceManager {
         LoadModel("Models/V1/Mirage_V1.fbx", loadParam);
         loadParam.scaleFactor = 2.0f;
         LoadModel("Models/Freddy/freddy-fazbear-special-delivery.fbx", loadParam);
+        loadParam.scaleFactor = 100.0f;
+        LoadModel("Models/Desert/RockyDesertMesh.obj", loadParam);
         TextureParameters texParams;
         texParams.minFilter = TextureFiltering::LinearMipMap;
         texParams.magFilter = TextureFiltering::Linear;
@@ -422,6 +424,7 @@ namespace ResourceManager {
         auto xenoBodyAlbedo = LoadTexture("Models/Xeno/textures/XenoRaven_Body_D.tga.png", texParams);
         auto xenoHeadAlbedo = LoadTexture("Models/Xeno/textures/XenoRaven_Head_D.tga.png", texParams);
         auto freddyAlbedo = LoadTexture("Models/Freddy/textures/freddy_body_color.jpg", texParams);
+        auto desertAlbedo = LoadTexture("Models/Desert/textures/RockyDesert_Bitmap_Output_4096.png", texParams);
         texParams.desiredFormat = BufferFormat::RGBA;
         auto xenoBodyNormal = LoadTexture("Models/Xeno/textures/XenoRaven_body_N.tga.png", texParams);
         auto xenoBodySpecular = LoadTexture("Models/Xeno/textures/XenoRaven_Body_S.tga.png", texParams);
@@ -434,7 +437,8 @@ namespace ResourceManager {
         GetMeshByIndex(GetMeshIndexByName("head"))->SetMaterial(GetMaterialIndexByName("xenoHeadMaterial"));
         CreateMaterial("freddyMaterial", freddyAlbedo, freddyNormal, ABSENT_RESOURCE, 0.6f);
         GetModelByIndex(GetModelIndexByName("freddy-fazbear-special-delivery"))->SetMaterial(GetMaterialIndexByName("freddyMaterial"));
-
+        CreateMaterial("desertMaterial", desertAlbedo, ABSENT_RESOURCE, ABSENT_RESOURCE, 0.2f);
+        GetModelByIndex(GetModelIndexByName("RockyDesertMesh"))->SetMaterial(GetMaterialIndexByName("desertMaterial"));
     }
 
     void Dispose() {
