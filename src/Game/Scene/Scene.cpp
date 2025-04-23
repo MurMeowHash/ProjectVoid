@@ -254,7 +254,7 @@ namespace Scene {
         lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
         lightParams.type = LightType::Point;
         lightParams.color = glm::vec3(0.0f, 0.0f, 0.5f);
-        lightParams.radius = 10.0f;
+        lightParams.radius = 97.0f;
         lightParams.intensity = 10.0f;
         CreateLight(lightObjParams, lightParams);
 

@@ -6,10 +6,11 @@
 #include "../Game/Scene/Scene.h"
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
+#include "Physics/Physics.h"
 
 namespace Engine {
     ExecutionMode executionMode;
-    float fpsUpdateFrequency = 2.0f;
+    float fpsUpdateFrequency = 3.0f;
     float currentTime = 0.0f;
 
     void DebugFps();
@@ -23,12 +24,14 @@ namespace Engine {
 
         ResourceManager::LoadAssets();
         Scene::LoadScene();
+        Physics::Initialize();
         Renderer::Initialize();
     }
 
     void Run() {
         while(!Core::WindowShouldClose()) {
             Time::UpdateDeltaTime();
+            Physics::Update();
             Scene::Update();
             Renderer::RenderFrame();
 
@@ -57,6 +60,7 @@ namespace Engine {
 
     void Dispose() {
         Renderer::Dispose();
+        Physics::Dispose();
         Scene::Dispose();
         ResourceManager::Dispose();
         Core::Dispose();

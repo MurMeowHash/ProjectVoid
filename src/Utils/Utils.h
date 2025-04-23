@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
+#include <LinearMath/btVector3.h>
 #include <assimp/types.h>
 #include <vector>
 
@@ -25,6 +26,7 @@ class FrameBuffer;
 namespace Utils {
     std::string ReadTextFromFile(const std::string &filePath);
     NODISCARD glm::vec3 ToGLMVector(const aiVector3D &target);
+    NODISCARD btVector3 ToBulletVector(const glm::vec3 &target);
     NODISCARD size_t FindLastSlash(const std::string &path);
     NODISCARD std::string GetExtendedNameFromPath(const std::string &path);
     NODISCARD std::string GetNameFromPath(const std::string &path);

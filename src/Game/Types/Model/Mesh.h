@@ -5,6 +5,7 @@
 #include <vector>
 #include "../../../Utils/Utils.h"
 #include "../../../Dispose/IDisposable.h"
+#include "../BoundingBox/AABB.h"
 
 class Mesh : public IDisposable {
 private:
@@ -18,6 +19,8 @@ private:
     GLuint vao;
 
     bool hasNormals, hasTangents;
+
+//    AABB aabb;
 
     void ParseExternalMesh(const aiMesh &srcMesh);
     void SetUpBuffers();

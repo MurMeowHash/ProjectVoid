@@ -15,8 +15,6 @@ set(VENDOR_SRC
         ${VENDOR_DIR}/glad/lib/glad.c
         ${VENDOR_DIR}/stb/lib/stb_image.cpp
         ${VENDOR_DIR}/stb/lib/stb_image_write.cpp
-        src/Game/ComponentScripts/Light/Light.cpp
-        src/Game/ComponentScripts/Light/Light.h
 )
 
 add_executable(ProjectVoid
@@ -91,6 +89,21 @@ add_executable(ProjectVoid
         src/Renderer/Buffers/BufferObject.h
         src/Renderer/Buffers/VBO.cpp
         src/Renderer/Buffers/VBO.h
+        src/Game/ComponentScripts/Light/Light.cpp
+        src/Game/ComponentScripts/Light/Light.h
+        src/Engine/Physics/Physics.cpp
+        src/Engine/Physics/Physics.h
+        src/Game/ComponentScripts/Collider/Collider.cpp
+        src/Game/ComponentScripts/Collider/Collider.h
+        src/Game/Types/BoundingBox/AABB.h
+        src/Game/Types/BoundingBox/AABB.cpp
 )
 
-target_link_libraries(ProjectVoid glfw3 assimp)
+target_link_libraries(ProjectVoid
+        glfw3
+        assimp
+        BulletDynamics
+        BulletCollision
+        Bullet3Common
+        LinearMath
+)

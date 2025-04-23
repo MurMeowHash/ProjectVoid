@@ -29,6 +29,10 @@ namespace Utils {
         return {target.x, target.y, target.z};
     }
 
+    btVector3 ToBulletVector(const glm::vec3 &target) {
+        return btVector3(target.x, target.y, target.z);
+    }
+
     size_t FindLastSlash(const std::string &path) {
         auto lastSlashPos = path.find_last_of('/');
         if(lastSlashPos == std::string::npos) {
