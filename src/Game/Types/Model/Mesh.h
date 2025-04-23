@@ -20,7 +20,7 @@ private:
 
     bool hasNormals, hasTangents;
 
-//    AABB aabb;
+    AABB aabb;
 
     void ParseExternalMesh(const aiMesh &srcMesh);
     void SetUpBuffers();
@@ -33,6 +33,7 @@ public:
     NODISCARD std::string GetName() const;
     NODISCARD int GetMaterial() const;
     NODISCARD uint GetIndicesCount() const;
+    NODISCARD const AABB& GetAABB() const;
 
     void Dispose() override;
 };

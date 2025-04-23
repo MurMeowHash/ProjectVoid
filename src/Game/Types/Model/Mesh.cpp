@@ -58,6 +58,8 @@ void Mesh::ParseExternalMesh(const aiMesh &srcMesh) {
             indices.push_back(face.mIndices[j]);
         }
     }
+
+    aabb.DefineBoundingBox(minPos, maxPos);
 }
 
 void Mesh::SetUpBuffers() {
@@ -107,6 +109,10 @@ int Mesh::GetMaterial() const {
 
 uint Mesh::GetIndicesCount() const {
     return indices.size();
+}
+
+const AABB& Mesh::GetAABB() const {
+    return aabb;
 }
 
 void Mesh::Dispose() {
