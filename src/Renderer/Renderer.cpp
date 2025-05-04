@@ -10,6 +10,8 @@
 #include "../Game/PostProcessing/PostProcessing.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <stb/stb_image_write.h>
+#include "../Game/Types/GLBuffer/FrameBuffer/FrameBuffer.h"
+#include <unordered_map>
 
 namespace Renderer {
     const std::string SHADERS_DIRECTORY = "../src/Shader/GLSLShaders/";

@@ -18,13 +18,14 @@ namespace Engine {
     void Initialize(ExecutionMode mode) {
         executionMode = mode;
         Debug::Initialize(&std::cout);
-        Core::Initialize(1920, 1080, "Project Void", false);
+        Core::Initialize(800, 600, "Project Void", false);
         Input::Initialize();
         Input::SetCursorLock(true);
 
         ResourceManager::LoadAssets();
-        Scene::LoadScene();
         Physics::Initialize();
+        Scene::LoadScene();
+        Scene::Start();
         Renderer::Initialize();
     }
 
@@ -35,7 +36,7 @@ namespace Engine {
             Scene::Update();
             Renderer::RenderFrame();
 
-            if(Input::GetKeyDown(InputKey::KeyEscape)) {
+            if(Input::GetKeyDown(Input::Key::KeyEscape)) {
                 glfwSetWindowShouldClose(Core::GetActiveWindow(), true);
             }
 
@@ -60,8 +61,8 @@ namespace Engine {
 
     void Dispose() {
         Renderer::Dispose();
-        Physics::Dispose();
         Scene::Dispose();
+        Physics::Dispose();
         ResourceManager::Dispose();
         Core::Dispose();
     }

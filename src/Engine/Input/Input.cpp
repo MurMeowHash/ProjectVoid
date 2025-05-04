@@ -107,27 +107,27 @@ namespace Input {
         scrollOffset = 0.0f;
     }
 
-    bool GetKeyDown(InputKey key) {
+    bool GetKeyDown(Key key) {
         return GetInputDown(prevKeysStates, curKeysStates, static_cast<int>(key));
     }
 
-    bool GetKey(InputKey key) {
+    bool GetKey(Key key) {
         return GetInputPressed(curKeysStates, static_cast<int>(key));
     }
 
-    bool GetKeyUp(InputKey key) {
+    bool GetKeyUp(Key key) {
         return GetInputUp(prevKeysStates, curKeysStates, static_cast<int>(key));
     }
 
-    bool GetMouseButtonDown(InputMouseButton mouseButton) {
+    bool GetMouseButtonDown(MouseButton mouseButton) {
         return GetInputDown(prevMouseButtonStates, curMouseButtonStates, static_cast<int>(mouseButton));
     }
 
-    bool GetMouseButton(InputMouseButton mouseButton) {
+    bool GetMouseButton(MouseButton mouseButton) {
         return GetInputPressed(curMouseButtonStates, static_cast<int>(mouseButton));
     }
 
-    bool GetMouseButtonUp(InputMouseButton mouseButton) {
+    bool GetMouseButtonUp(MouseButton mouseButton) {
         return GetInputUp(prevMouseButtonStates, curMouseButtonStates, static_cast<int>(mouseButton));
     }
 

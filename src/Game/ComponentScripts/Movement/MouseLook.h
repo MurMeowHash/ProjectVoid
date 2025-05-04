@@ -3,6 +3,7 @@
 #include "../ObjectComponent.h"
 
 class MouseLook : public ObjectComponent {
+DEFINE_BASE(void)
 private:
     float minVerticalAngle = -89.0f;
     float maxVerticalAngle = 89.0f;

@@ -6,6 +6,8 @@
 #include "../ObjectComponent.h"
 
 struct Transform : public ObjectComponent {
+DEFINE_BASE(void)
+
     static constexpr glm::vec3 DEFAULT_POSITION = glm::vec3(0.0f);
     static constexpr glm::vec3 DEFAULT_ROTATION = glm::vec3(0.0f);
     static constexpr glm::vec3 DEFAULT_SCALE = glm::vec3(1.0f);
@@ -21,6 +23,8 @@ struct Transform : public ObjectComponent {
     NODISCARD glm::mat4 ToModelMatrix() const;
     NODISCARD glm::vec3 ToForwardVector() const;
     NODISCARD glm::vec3 ToRightVector() const;
+    NODISCARD glm::vec3 GetWorldPosition() const;
+    NODISCARD glm::vec3 GetWorldScale() const;
 
     void Update() override;
 private:

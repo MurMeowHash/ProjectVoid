@@ -5,6 +5,12 @@
 #include "../ComponentScripts/Movement/Movement.h"
 #include "../ComponentScripts/Movement/MouseLook.h"
 #include "../ComponentScripts/Light/Light.h"
+#include "../ComponentScripts/Collider/BoxCollider.h"
+#include "../ComponentScripts/Collider/CapsuleCollider.h"
+#include "../ComponentScripts/Rigidbody/Rigidbody.h"
+#include "../ComponentScripts/Test/RayCastTest.h"
+#include "../Types/GameObject/GameObject.h"
+#include "../ObjectGroup/ObjectGroupManager.h"
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
@@ -24,6 +30,8 @@ namespace Scene {
     std::vector<GPULight> gpuDirectionalLights;
     std::vector<GPULight> gpuPointLights;
     std::vector<GPULight> gpuSpotLights;
+
+    bool sceneInitialized = false;
 
     std::string CreateUniqueObjectName(const std::string &name);
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
@@ -67,6 +75,7 @@ namespace Scene {
         uint currentObject = GetLastGameObjectIndex();
         if(!node->meshes.empty()) {
             gameObjects[currentObject].AddComponent<MeshRenderData>(node->meshes);
+            gameObjects[currentObject].AddComponent<BoxCollider>();
         }
 
         for(auto child : node->children) {
@@ -179,6 +188,7 @@ namespace Scene {
         object->SetName(uniqueNewName);
         gameObjectIndexMap.erase(oldName);
         gameObjectIndexMap[uniqueNewName] = objectIndex;
+        //TODO: components must know about new name
     }
 
     GameObject *GetGameObjectByIndex(int index) {
@@ -222,46 +232,48 @@ namespace Scene {
         return environmentAmbient;
     }
 
+    bool IsInitialized() {
+        return sceneInitialized;
+    }
+
     void LoadScene() {
-        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("axe")));
-//        auto mask = GetGameObjectByIndex(GetGameObjectIndexByName("masklow"));
-//        mask->GetComponent<Transform>()->position /= 100.0f;
-//        auto body = GetGameObjectByIndex(GetGameObjectIndexByName("body"));
-//        body->GetComponent<Transform>()->position /= 100.0f;
+        auto planeIndex = CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Plane")));
+        auto planeHolder = GetGameObjectByIndex(planeIndex);
+        planeHolder->GetComponent<Transform>()->position = glm::vec3(0.0f, -20.0f, 0.0f);
+        planeHolder->GetComponent<Transform>()->scale = glm::vec3(10.0f, 0.1f, 10.0f);
 
-        GameObjectParameters objParams;
+//        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube")));
+//        auto cube = GetGameObjectByIndex(GetGameObjectIndexByName("Cube <1>"));
+//        cube->GetComponent<Transform>()->position = glm::vec3(0.0f, 10.0f, 0.0f);
+//        cube->GetComponent<Transform>()->rotation = glm::vec3(60.0f, 45.0f, 15.0f);
+//        cube->AddComponent<Rigidbody>();
 
-        CameraParameters camParams;
-        camParams.cameraPriority = 1;
-
-        objParams.name = "Player";
-        auto player = GetGameObjectByIndex(static_cast<int>(CreateCamera(objParams, camParams)));
+        GameObjectParameters params;
+        params.name = "Player";
+        ObjectGroupManager::RegisterGroup("Player");
+        params.groupCode = ObjectGroupManager::GetGroupCode("Player");
+        auto player = GetGameObjectByIndex(static_cast<int>(CreateGameObject(params)));
+        player->GetComponent<Transform>()->scale =  glm::vec3(0.5f, 1.8f, 0.5f);
+        player->AddComponent<CapsuleCollider>();
+        RigidbodyParameters rbParams;
+        rbParams.rotationConstraints = glm::bvec3(true, false, true);
+        player->AddComponent<Rigidbody>(rbParams);
         player->AddComponent<Movement>();
-        player->AddComponent<MouseLook>();
+        params.name = "PlayerCamera";
+        auto playerCamera = GetGameObjectByIndex(static_cast<int>(CreateCamera(params)));
+        playerCamera->SetParentName("Player");
+        playerCamera->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.7f, 0.0f);
+        playerCamera->AddComponent<MouseLook>();
+        playerCamera->AddComponent<RayCastTest>();
+        player->GetComponent<Movement>()->SetCameraTransform(playerCamera->GetComponent<Transform>());
+    }
 
-        GameObjectParameters lightObjParams;
-        lightObjParams.name = "Light";
-        lightObjParams.transform.position = glm::vec3(0.0f, 1.0f, 2.0f);
-        lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-        LightParameters lightParams;
-        lightParams.type = LightType::Spot;
-        lightParams.color = glm::vec3(0.5f, 0.0f, 0.0f);
-        lightParams.radius = 10.0f;
-        lightParams.intensity = 5.0f;
-        lightParams.innerCutOff = 12.0f;
-        lightParams.outerCutOff = 15.0f;
-        CreateLight(lightObjParams, lightParams);
-        lightObjParams.transform.position = glm::vec3(0.0f, 1.5f, 2.0f);
-        lightParams.type = LightType::Point;
-        lightParams.color = glm::vec3(0.0f, 0.0f, 0.5f);
-        lightParams.radius = 97.0f;
-        lightParams.intensity = 10.0f;
-        CreateLight(lightObjParams, lightParams);
-
-        //Don't touch
-        for(auto &object : gameObjects) {
-            object.Start();
+    void Start() {
+        for(auto &obj : gameObjects) {
+            obj.Start();
         }
+
+        sceneInitialized = true;
     }
 
     void Update() {

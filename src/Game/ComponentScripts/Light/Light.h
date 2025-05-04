@@ -3,6 +3,7 @@
 #include "../../Types/CreateParameters.h"
 
 struct Light : public ObjectComponent {
+DEFINE_BASE(void)
     static constexpr LightParameters DEFAULT_LIGHT_PARAMS = LightParameters();
 
     LightType type;

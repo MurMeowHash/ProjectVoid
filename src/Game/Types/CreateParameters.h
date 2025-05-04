@@ -4,6 +4,7 @@
 #include "../ComponentScripts/Transform/Transform.h"
 #include "../../Core/Core.h"
 #include "../../Utils/Utils.h"
+#include <functional>
 
 struct ModelLoadParameters {
     float scaleFactor = 1.0f;
@@ -14,6 +15,7 @@ struct GameObjectParameters {
     std::string name = DEFAULT_OBJECT_NAME;
     Transform transform;
     std::string parentName = UNDEFINED_NAME;
+    int groupCode = ALL_GROUPS_CODE;
 };
 
 enum class ProjectionMode {
@@ -98,4 +100,12 @@ struct LightParameters {
     float radius = 5.0f;
     float innerCutOff = 10.0f;
     float outerCutOff = 12.0f;
+};
+
+struct RigidbodyParameters {
+    float mass = 1.0f;
+    bool isKinematic = false;
+    float friction = 0.5f;
+    glm::bvec3 translationConstraints = glm::bvec3(false);
+    glm::bvec3 rotationConstraints = glm::bvec3(false);
 };

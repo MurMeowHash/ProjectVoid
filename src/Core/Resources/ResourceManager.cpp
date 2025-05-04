@@ -251,7 +251,6 @@ namespace ResourceManager {
 
     uint CreateMaterialFromAssimp(aiMaterial *mat, const std::string &modelTexturesDirectory, const std::string &modelFormat) {
         if(int matIndex = GetMaterialIndexByName(mat->GetName().C_Str()); matIndex != ABSENT_RESOURCE) {
-            Debug::LogError("Material", mat->GetName().C_Str(), "Already exists");
             return matIndex;
         }
 
@@ -408,18 +407,9 @@ namespace ResourceManager {
         CreateScreenPlane("LightVolumePlane");
         CreateSphere(1.0f, 32, 32);
         CreateCone(1.0f, 1.0f, 32);
-        ModelLoadParameters loadParam {1.0f};
-        LoadModel("Models/Axe/axe.obj", loadParam);
-        TextureParameters texParams;
-        texParams.minFilter = TextureFiltering::LinearMipMap;
-        texParams.magFilter = TextureFiltering::Linear;
-        texParams.genMipMaps = true;
-        texParams.desiredFormat = BufferFormat::SRGBA;
-        auto axeAlbedo = LoadTexture("Models/Axe/textures/axe_Axe_BaseColor.png", texParams);
-        texParams.desiredFormat = BufferFormat::RGBA;
-        auto axeNormal = LoadTexture("Models/Axe/textures/axe_Axe_Normal.png", texParams);
-        CreateMaterial("axeMaterial", axeAlbedo, axeNormal, ABSENT_RESOURCE, 0.3f);
-        GetModelByIndex(GetModelIndexByName("axe"))->SetMaterial(GetMaterialIndexByName("axeMaterial"));
+        ModelLoadParameters loadParam {0.01f};
+        LoadModel("Models/Plane/Plane.fbx", loadParam);
+        LoadModel("Models/Cube/Cube.fbx", loadParam);
     }
 
     void Dispose() {
