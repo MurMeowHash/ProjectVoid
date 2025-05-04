@@ -4,7 +4,7 @@
 #include "../../Scene/Scene.h"
 
 MeshRenderData::MeshRenderData(const std::vector<uint> &meshes)
-: ObjectComponent(2), meshes(meshes) {
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 3), meshes(meshes) {
 
 }
 
@@ -39,4 +39,15 @@ void MeshRenderData::ConstructRenderItems() {
 
 void MeshRenderData::Update() {
     ConstructRenderItems();
+}
+
+AABB MeshRenderData::GetCommonAABB() const {
+    glm::vec3 minCommonVert(0.0f), maxCommonVert(0.0f);
+    for(auto meshIndex : meshes) {
+        const auto &meshAABB = ResourceManager::GetMeshByIndex(static_cast<int>(meshIndex))->GetAABB();
+        minCommonVert = glm::min(minCommonVert, meshAABB.GetMinVertex());
+        maxCommonVert = glm::max(maxCommonVert, meshAABB.GetMaxVertex());
+    }
+
+    return {minCommonVert, maxCommonVert};
 }

@@ -7,6 +7,10 @@ void AABB::DefineBoundingBox(const glm::vec3 &minVert, const glm::vec3 &maxVert)
     RepositionOrigin();
 }
 
+AABB::AABB(const glm::vec3 &minVert, const glm::vec3 &maxVert) {
+    DefineBoundingBox(minVert, maxVert);
+}
+
 void AABB::RepositionOrigin() {
     origin = (minVertex + maxVertex) / 2.0f;
 }
@@ -16,5 +20,13 @@ glm::vec3 AABB::GetOrigin() const {
 }
 
 glm::vec3 AABB::GetBoxSize() const {
-    return maxVertex - minVertex;
+    return glm::max(maxVertex - minVertex, MIN_BOX_SIZE);
+}
+
+glm::vec3 AABB::GetMinVertex() const {
+    return minVertex;
+}
+
+glm::vec3 AABB::GetMaxVertex() const {
+    return maxVertex;
 }
