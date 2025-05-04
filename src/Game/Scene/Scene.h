@@ -1,9 +1,10 @@
 #pragma once
-#include "../Types/GameObject/GameObject.h"
 #include "../Types/Model/Model.h"
 #include "../Types/CreateParameters.h"
 #include "../../Renderer/RenderTypes.h"
 #include <set>
+
+class GameObject;
 
 namespace Scene {
     const GameObjectParameters DEFAULT_OBJECT_PARAMETERS = GameObjectParameters();
@@ -27,9 +28,11 @@ namespace Scene {
     NODISCARD const std::vector<GPULight> &GetGPUSpotLights();
     NODISCARD const std::multiset<GPUCamera, GPUCameraComparator> &GetGPUCameras();
     NODISCARD glm::vec3 GetEnvironmentAmbient();
+    NODISCARD bool IsInitialized();
 
     //scene management
     void LoadScene();
+    void Start();
     void Update();
     void Dispose();
 }

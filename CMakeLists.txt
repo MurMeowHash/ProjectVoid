@@ -15,8 +15,6 @@ set(VENDOR_SRC
         ${VENDOR_DIR}/glad/lib/glad.c
         ${VENDOR_DIR}/stb/lib/stb_image.cpp
         ${VENDOR_DIR}/stb/lib/stb_image_write.cpp
-        src/Game/ComponentScripts/Light/Light.cpp
-        src/Game/ComponentScripts/Light/Light.h
 )
 
 add_executable(ProjectVoid
@@ -39,8 +37,6 @@ add_executable(ProjectVoid
         src/Engine/Time/Time.h
         src/Engine/Input/Input.cpp
         src/Engine/Input/Input.h
-        src/Engine/Input/InputKey.h
-        src/Engine/Input/InputMouseButton.h
         src/Game/Types/GameObject/GameObject.cpp
         src/Game/Types/GameObject/GameObject.h
         src/Game/ComponentScripts/Transform/Transform.h
@@ -91,6 +87,33 @@ add_executable(ProjectVoid
         src/Renderer/Buffers/BufferObject.h
         src/Renderer/Buffers/VBO.cpp
         src/Renderer/Buffers/VBO.h
+        src/Game/ComponentScripts/Light/Light.cpp
+        src/Game/ComponentScripts/Light/Light.h
+        src/Engine/Physics/Physics.cpp
+        src/Engine/Physics/Physics.h
+        src/Game/ComponentScripts/Collider/Collider.cpp
+        src/Game/ComponentScripts/Collider/Collider.h
+        src/Game/Types/BoundingBox/AABB.h
+        src/Game/Types/BoundingBox/AABB.cpp
+        src/Game/ComponentScripts/Collider/BoxCollider.cpp
+        src/Game/ComponentScripts/Collider/BoxCollider.h
+        src/Game/ComponentScripts/Rigidbody/Rigidbody.cpp
+        src/Game/ComponentScripts/Rigidbody/Rigidbody.h
+        src/Engine/Physics/PhysicsConstructionInfo.h
+        src/Game/ComponentScripts/Collider/CapsuleCollider.cpp
+        src/Game/ComponentScripts/Collider/CapsuleCollider.h
+        src/Engine/Physics/Ray.h
+        src/Game/ComponentScripts/Test/RayCastTest.cpp
+        src/Game/ComponentScripts/Test/RayCastTest.h
+        src/Game/ObjectGroup/ObjectGroupManager.cpp
+        src/Game/ObjectGroup/ObjectGroupManager.h
 )
 
-target_link_libraries(ProjectVoid glfw3 assimp)
+target_link_libraries(ProjectVoid
+        glfw3
+        assimp
+        BulletDynamics
+        BulletCollision
+        Bullet3Common
+        LinearMath
+)

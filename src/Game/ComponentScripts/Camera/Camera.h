@@ -2,8 +2,10 @@
 #include "../../Types/CreateParameters.h"
 #include "../ObjectComponent.h"
 #include "../../Types/GLBuffer/FrameBuffer/FrameBuffer.h"
+#include "../../../Engine/Physics/Ray.h"
 
 class Camera : public ObjectComponent {
+DEFINE_BASE(void)
 private:
     glm::vec3 worldUp;
     ProjectionMode projectionMode;
@@ -26,6 +28,7 @@ public:
     NODISCARD glm::mat4 GetProjectionMatrix() const;
     NODISCARD uint GetCameraPriority() const;
     NODISCARD int GetRenderTarget() const;
+    NODISCARD Ray GetRayFromScreenPoint(int scrX, int scrY) const;
 
     void SetRenderTexture(int textureIndex);
     void SetCameraPriority(uint priorityValue);

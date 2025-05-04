@@ -4,6 +4,7 @@
 #include <sstream>
 #include "../Game/Types/GLBuffer/FrameBuffer/FrameBuffer.h"
 #include <stb/stb_image_write.h>
+#include "../Game/ComponentScripts/Camera/Camera.h"
 
 namespace Utils {
     constexpr GLsizeiptr MB_TO_B_MULTIPLIER = 1024 * 1024;
@@ -27,6 +28,34 @@ namespace Utils {
 
     glm::vec3 ToGLMVector(const aiVector3D &target) {
         return {target.x, target.y, target.z};
+    }
+
+    glm::vec3 ToGLMVector(const btVector3 &target) {
+        return {target.x(), target.y(), target.z()};
+    }
+
+    btVector3 ToBulletVector(const glm::vec3 &target) {
+        return {target.x, target.y, target.z};
+    }
+
+    Transform ToEngineTransform(const btTransform &transform) {
+        Transform convertedTransform;
+        convertedTransform.position = ToGLMVector(transform.getOrigin());
+        auto quatRotation = transform.getRotation();
+        quatRotation.getEulerZYX(convertedTransform.rotation.z, convertedTransform.rotation.y, convertedTransform.rotation.x);
+        convertedTransform.rotation = glm::degrees(convertedTransform.rotation);
+        return convertedTransform;
+    }
+
+    btTransform ToBulletTransform(const Transform &transform) {
+        btTransform bulletTransform;
+        bulletTransform.setIdentity();
+        bulletTransform.setOrigin(ToBulletVector(transform.position));
+        btQuaternion bulletRotation;
+        bulletRotation.setEulerZYX(glm::radians(transform.rotation.z), glm::radians(transform.rotation.y),
+                                   glm::radians(transform.rotation.x));
+        bulletTransform.setRotation(bulletRotation);
+        return bulletTransform;
     }
 
     size_t FindLastSlash(const std::string &path) {
@@ -102,5 +131,27 @@ namespace Utils {
         stbi_write_jpg(fileName, bufWidth, bufHeight, 3, bufData, quality);
         delete [] bufData;
         glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
+    }
+
+    glm::vec3 GetTranslationFromMatrix(const glm::mat4 &matrix) {
+        return {matrix[3][0], matrix[3][1], matrix[3][2]};
+    }
+
+    glm::vec3 GetScaleFromMatrix(const glm::mat4 &matrix) {
+        glm::vec3 scale;
+        scale.x = glm::length(glm::vec3(matrix[0]));
+        scale.y = glm::length(glm::vec3(matrix[1]));
+        scale.z = glm::length(glm::vec3(matrix[2]));
+        return scale;
+    }
+
+    glm::bvec3 InvertVector3(const glm::bvec3 &vec) {
+        return {!vec.x, !vec.y, !vec.z};
+    }
+
+    glm::vec3 NDCToWorld(const glm::vec4 &ndcCoord, const Camera &cam) {
+        glm::mat4 viewProjInverse = glm::inverse(cam.GetViewMatrix() * cam.GetProjectionMatrix());
+        glm::vec4 rawWorldCoord = viewProjInverse * ndcCoord;
+        return {rawWorldCoord / rawWorldCoord.w};
     }
 }

@@ -4,7 +4,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 Transform::Transform(const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &scl)
-: ObjectComponent(1), position{pos}, rotation{rot}, scale{scl} {
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 2), position{pos}, rotation{rot}, scale{scl} {
 
 }
 
@@ -46,6 +46,14 @@ glm::vec3 Transform::ToRightVector() const {
     rightVector.z = glm::cos(radiansYaw) * glm::cos(radiansRoll);
 
     return rightVector;
+}
+
+glm::vec3 Transform::GetWorldPosition() const {
+    return Utils::GetTranslationFromMatrix(GetWorldModelMatrix());
+}
+
+glm::vec3 Transform::GetWorldScale() const {
+    return Utils::GetScaleFromMatrix(GetWorldModelMatrix());
 }
 
 glm::mat4 Transform::GetWorldModelMatrix() const {

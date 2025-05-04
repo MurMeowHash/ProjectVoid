@@ -2,9 +2,10 @@
 #include "../../../Debug/Debug.h"
 #include "../../Types/GameObject/GameObject.h"
 #include "../../../Renderer/Renderer.h"
+#include "../../../Core/Core.h"
 
 Camera::Camera(const CameraParameters &params)
-: ObjectComponent(2), worldUp{params.worldUp}, projectionMode{params.projectionMode},
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 3), worldUp{params.worldUp}, projectionMode{params.projectionMode},
   perspectiveParameters{params.perspectiveParameters}, orthographicParameters{params.orthographicParameters},
   nearPlane{params.nearPlane}, farPlane{params.farPlane}, renderTarget{params.renderTarget}, cameraPriority{params.cameraPriority} {
 
@@ -16,7 +17,8 @@ void Camera::UpdateView() {
 
     auto ownerTransform = owner->GetComponent<Transform>();
     auto forwardDirection = glm::normalize(ownerTransform->ToForwardVector());
-    viewMatrix = glm::lookAt(ownerTransform->position, ownerTransform->position + forwardDirection, worldUp);
+    auto worldPos = ownerTransform->GetWorldPosition();
+    viewMatrix = glm::lookAt(worldPos, worldPos + forwardDirection, worldUp);
 }
 
 void Camera::UpdateProjection() {
@@ -47,6 +49,23 @@ uint Camera::GetCameraPriority() const {
 
 int Camera::GetRenderTarget() const {
     return renderTarget;
+}
+
+Ray Camera::GetRayFromScreenPoint(int scrX, int scrY) const {
+    auto ndcX = 2.0f * static_cast<float>(scrX) / static_cast<float>(Core::GetScreenWidth()) - 1.0f;
+    auto ndcY = 1.0f - 2.0f * static_cast<float>(scrY) / static_cast<float>(Core::GetScreenHeight());
+    auto ndcZ = 1.0f;
+
+    glm::vec4 rayDirection = glm::vec4(ndcX, ndcY, ndcZ, 1.0f);
+    rayDirection = glm::inverse(projectionMatrix) * rayDirection;
+    rayDirection.w = 0.0f;
+    rayDirection = glm::inverse(viewMatrix) * rayDirection;
+    auto normalizedRayDir = glm::normalize(glm::vec3(rayDirection));
+    auto owner = GetGameObject();
+    if(!owner) return Ray{glm::vec3(0.0f), normalizedRayDir};
+
+    glm::vec3 origin = owner->GetComponent<Transform>()->GetWorldPosition();
+    return Ray{origin, normalizedRayDir};
 }
 
 void Camera::Update() {

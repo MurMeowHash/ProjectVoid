@@ -18,6 +18,9 @@ void Mesh::SetMaterial(int matIndex) {
 
 void Mesh::ParseExternalMesh(const aiMesh &srcMesh) {
     name = srcMesh.mName.C_Str();
+
+    glm::vec3 minPos(0.0f), maxPos(0.0f);
+
     vertices.reserve(srcMesh.mNumVertices);
     for(uint i = 0; i < srcMesh.mNumVertices; i++) {
         Vertex transformedVertex;
@@ -43,6 +46,9 @@ void Mesh::ParseExternalMesh(const aiMesh &srcMesh) {
             transformedVertex.texCoords = Utils::ToGLMVector(srcMesh.mTextureCoords[0][i]);
         }
 
+        minPos = glm::min(minPos, transformedVertex.position);
+        maxPos = glm::max(maxPos, transformedVertex.position);
+
         vertices.push_back(transformedVertex);
     }
 
@@ -52,6 +58,8 @@ void Mesh::ParseExternalMesh(const aiMesh &srcMesh) {
             indices.push_back(face.mIndices[j]);
         }
     }
+
+    aabb.DefineBoundingBox(minPos, maxPos);
 }
 
 void Mesh::SetUpBuffers() {
@@ -101,6 +109,10 @@ int Mesh::GetMaterial() const {
 
 uint Mesh::GetIndicesCount() const {
     return indices.size();
+}
+
+const AABB& Mesh::GetAABB() const {
+    return aabb;
 }
 
 void Mesh::Dispose() {

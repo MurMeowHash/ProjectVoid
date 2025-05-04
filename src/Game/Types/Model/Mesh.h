@@ -5,6 +5,7 @@
 #include <vector>
 #include "../../../Utils/Utils.h"
 #include "../../../Dispose/IDisposable.h"
+#include "../BoundingBox/AABB.h"
 
 class Mesh : public IDisposable {
 private:
@@ -19,6 +20,8 @@ private:
 
     bool hasNormals, hasTangents;
 
+    AABB aabb;
+
     void ParseExternalMesh(const aiMesh &srcMesh);
     void SetUpBuffers();
 public:
@@ -30,6 +33,7 @@ public:
     NODISCARD std::string GetName() const;
     NODISCARD int GetMaterial() const;
     NODISCARD uint GetIndicesCount() const;
+    NODISCARD const AABB& GetAABB() const;
 
     void Dispose() override;
 };
