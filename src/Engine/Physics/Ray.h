@@ -13,4 +13,5 @@ struct RayHitInfo {
     Collider *collider;
     glm::vec3 surfacePoint;
     glm::vec3 surfaceNormal;
+    float distance;
 };

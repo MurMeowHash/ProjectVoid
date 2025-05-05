@@ -148,6 +148,7 @@ namespace Physics {
         hitInfo.collider = static_cast<Collider*>(rayCastCallback.m_collisionObject->getUserPointer());
         hitInfo.surfacePoint = Utils::ToGLMVector(rayCastCallback.m_hitPointWorld);
         hitInfo.surfaceNormal = Utils::ToGLMVector(rayCastCallback.m_hitNormalWorld);
+        hitInfo.distance = glm::length(hitInfo.surfacePoint - ray.origin);
         return true;
     }
 
