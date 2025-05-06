@@ -344,6 +344,7 @@ namespace ResourceManager {
     }
 
     void CreateCone(float radius, float height, uint segments) {
+        height = -height;
         std::vector<Vertex> vertices;
         Vertex vertex;
         vertex.position = glm::vec3(0.0f);
