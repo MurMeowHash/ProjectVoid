@@ -387,8 +387,8 @@ namespace ResourceManager {
             uint next = 2 + (i + 1) % (segments + 1);
 
             indices.push_back(tipIndex);
-            indices.push_back(next);
             indices.push_back(curr);
+            indices.push_back(next);
         }
 
         for (uint i = 0; i < segments; ++i) {
@@ -396,8 +396,8 @@ namespace ResourceManager {
             uint next = 2 + (i + 1) % (segments + 1);
 
             indices.push_back(baseCenterIndex);
-            indices.push_back(curr);
             indices.push_back(next);
+            indices.push_back(curr);
         }
 
         CreateManualMesh("LightVolumeCone", vertices, indices, true);
