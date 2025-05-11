@@ -18,6 +18,7 @@ class GameObject : public IDisposable {
 private:
     std::string name;
     std::string parentName;
+    std::string tag;
     int groupCode;
 
     std::unordered_map<int, ObjectComponent*> components;
@@ -57,9 +58,11 @@ public:
     explicit GameObject(const GameObjectParameters &params);
     NODISCARD std::string GetName() const;
     NODISCARD int GetGroupCode() const;
+    NODISCARD std::string GetTag() const;
     void SetName(std::string targetName);
     void SetParentName(std::string targetName);
     void SetGroup(const std::string &group);
+    void SetTag(std::string tagValue);
     void Start();
     void Update();
     void Dispose() override;

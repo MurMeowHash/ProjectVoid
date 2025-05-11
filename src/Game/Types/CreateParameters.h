@@ -15,6 +15,7 @@ struct GameObjectParameters {
     std::string name = DEFAULT_OBJECT_NAME;
     Transform transform;
     std::string parentName = UNDEFINED_NAME;
+    std::string tag = "Default";
     int groupCode = ALL_GROUPS_CODE;
 };
 

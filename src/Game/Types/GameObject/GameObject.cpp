@@ -2,10 +2,9 @@
 #include "../../ObjectGroup/ObjectGroupManager.h"
 #include "../../ComponentScripts/Collider/Collider.h"
 #include "../../ComponentScripts/Rigidbody/Rigidbody.h"
-#include "../../../Engine/Physics/Physics.h"
 
 GameObject::GameObject(const GameObjectParameters &params)
-: name(params.name), parentName{params.parentName}, groupCode(params.groupCode) {
+: name(params.name), parentName{params.parentName}, tag(params.tag), groupCode(params.groupCode) {
     AddComponent<Transform>(params.transform);
 }
 
@@ -39,6 +38,10 @@ int GameObject::GetGroupCode() const {
     return groupCode;
 }
 
+std::string GameObject::GetTag() const {
+    return tag;
+}
+
 void GameObject::SetName(std::string targetName) {
     name = std::move(targetName);
 }
@@ -51,6 +54,10 @@ void GameObject::SetGroup(const std::string &group) {
     groupCode = ObjectGroupManager::GetGroupCode(group);
     UpdateColliderGroup();
     UpdateRbGroup();
+}
+
+void GameObject::SetTag(std::string tagValue) {
+    tag = std::move(tagValue);
 }
 
 void GameObject::Start() {
