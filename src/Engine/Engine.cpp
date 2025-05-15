@@ -18,7 +18,7 @@ namespace Engine {
     void Initialize(ExecutionMode mode) {
         executionMode = mode;
         Debug::Initialize(&std::cout);
-        Core::Initialize(800, 600, "Project Void", false);
+        Core::Initialize(1920, 1200, "Project Void", false);
         Input::Initialize();
         Input::SetCursorLock(true);
 
