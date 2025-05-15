@@ -27,7 +27,8 @@ uniform sampler2D gAlbedoSpec;
 uniform vec3 viewPos;
 uniform vec2 viewportSize;
 
-const float volumeEdgesThreshold = 0.999;
+const float VOLUME_EDGES_THRESHOLD = 0.999;
+const int LIGHT_TYPE = int(round(lightData.PositionType.w));
 
 vec3 GetDiffuseColor(vec3 lightDir, vec3 normal, vec3 lightColor);
 vec3 GetSpecularColor(vec3 lightDir, vec3 viewDir, vec3 normal, vec3 lightColor);
@@ -40,12 +41,16 @@ void main() {
     vec2 texCoords = gl_FragCoord.xy / viewportSize;
     vec3 worldPos = texture(gPosition, texCoords).rgb;
 
-    float distanceRatio = length(worldPos - lightData.PositionType.xyz) / lightData.DirectionRadius.w;
-    if(distanceRatio > 1.0) {
-        discard;
-    }
+    float softEdgesIntensity = 1.0;
 
-    float softEdgesIntensity = clamp((1.0 - distanceRatio) / (1.0 - volumeEdgesThreshold), 0.0, 1.0);
+    if(LIGHT_TYPE != DIRECTIONAL_LIGHT) {
+        float distanceRatio = length(worldPos - lightData.PositionType.xyz) / lightData.DirectionRadius.w;
+        if(distanceRatio > 1.0) {
+            discard;
+        }
+
+        float softEdgesIntensity = clamp((1.0 - distanceRatio) / (1.0 - VOLUME_EDGES_THRESHOLD), 0.0, 1.0);
+    }
 
     vec4 normalShininess = texture(gNormalShininess, texCoords);
     vec4 albedoSpec = texture(gAlbedoSpec, texCoords);
@@ -70,8 +75,7 @@ vec3 GetSpecularColor(vec3 lightDir, vec3 viewDir, vec3 normal, vec3 lightColor)
 }
 
 vec3 CalculateLightImpact(vec3 worldPos, vec3 normal, vec3 viewDir) {
-    int lightType = int(round(lightData.PositionType.w));
-    switch(lightType) {
+    switch(LIGHT_TYPE) {
         case DIRECTIONAL_LIGHT:
             return CalculateDirectionalLight(normal, viewDir);
         case POINT_LIGHT:
@@ -86,9 +90,8 @@ vec3 CalculateDirectionalLight(vec3 normal, vec3 viewDir) {
     vec3 lightColor = lightData.ColorIntensity.rgb * lightData.ColorIntensity.a;
     vec3 lightDir = normalize(-lightData.DirectionRadius.xyz);
     vec3 diffuse = GetDiffuseColor(lightDir, normal, lightColor);
-    vec3 specular = GetSpecularColor(lightDir, viewDir, normal, lightColor);
 
-    return diffuse + specular;
+    return diffuse;
 }
 
 vec3 CalculatePointLight(vec3 worldPos, vec3 normal, vec3 viewDir) {

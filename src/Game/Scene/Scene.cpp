@@ -240,7 +240,7 @@ namespace Scene {
         auto planeIndex = CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Plane")));
         auto planeHolder = GetGameObjectByIndex(planeIndex);
         planeHolder->GetComponent<Transform>()->position = glm::vec3(0.0f, -20.0f, 0.0f);
-        planeHolder->GetComponent<Transform>()->scale = glm::vec3(10.0f, 0.1f, 10.0f);
+        planeHolder->GetComponent<Transform>()->scale = glm::vec3(100.0f, 0.1f, 100.0f);
 
 //        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube")));
 //        auto cube = GetGameObjectByIndex(GetGameObjectIndexByName("Cube <1>"));
@@ -266,6 +266,17 @@ namespace Scene {
         playerCamera->AddComponent<MouseLook>();
         playerCamera->AddComponent<RayCastTest>();
         player->GetComponent<Movement>()->SetCameraTransform(playerCamera->GetComponent<Transform>());
+
+        GameObjectParameters lightObjParams;
+        lightObjParams.name = "Light";
+        lightObjParams.transform.position = glm::vec3(0.5f, -10.0f, 0.5f);
+        lightObjParams.transform.rotation = glm::vec3(-20.0f, 0.0f, 0.0f);
+        LightParameters lightParams;
+        lightParams.type = LightType::Directional;
+        lightParams.color = glm::vec3(0.1f, 0.1f, 0.1f);
+        lightParams.intensity = 1000.0f;
+        lightParams.radius = 20.0f;
+        CreateLight(lightObjParams, lightParams);
     }
 
     void Start() {

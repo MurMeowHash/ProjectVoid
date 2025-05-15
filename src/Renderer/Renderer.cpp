@@ -233,8 +233,8 @@ namespace Renderer {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDisable(GL_DEPTH_TEST);
-        glCullFace(GL_FRONT);
         DrawInstancedLightVolumes("LightVolumePlane", renderData.gpuDirectionalLights);
+        glCullFace(GL_FRONT);
         DrawInstancedLightVolumes("LightVolumeSphere", renderData.gpuPointLights);
         DrawInstancedLightVolumes("LightVolumeCone", renderData.gpuSpotLights);
         glEnable(GL_DEPTH_TEST);

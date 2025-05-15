@@ -31,7 +31,7 @@ void main() {
     lightData.AttenuationCoefs = aLightAttenuationCoefs;
     lightData.CutOffs = aLightCutOffs;
 
-    if(aLightPositionType.w == DIRECTIONAL_LIGHT_TYPE) {
+    if(int(round(aLightPositionType.w)) == DIRECTIONAL_LIGHT_TYPE) {
         gl_Position = vec4(aPos, 1.0);
     }
     else {
