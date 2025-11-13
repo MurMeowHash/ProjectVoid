@@ -4,6 +4,8 @@
 #include "Time/Time.h"
 #include "Input/Input.h"
 #include "../Game/Scene/Scene.h"
+#include "../Game/Scene/SceneDeserializer/SceneDeserializer.h"
+#include "../Game/Scene/SceneSerializer/SceneSerializer.h"
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
 #include "Physics/Physics.h"
@@ -24,7 +26,9 @@ namespace Engine {
 
         ResourceManager::LoadAssets();
         Physics::Initialize();
+
         Scene::LoadScene();
+        
         Scene::Start();
         Renderer::Initialize();
     }
@@ -60,6 +64,7 @@ namespace Engine {
     }
 
     void Dispose() {
+        SceneSerializer::SerializeSceneToFile("../resources/Scenes/Scene.json");
         Renderer::Dispose();
         Scene::Dispose();
         Physics::Dispose();

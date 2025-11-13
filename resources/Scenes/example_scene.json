@@ -1,0 +1,148 @@
+{
+  "name": "DefaultScene",
+  "objects": [
+    {
+      "name": "Plane",
+      "transform": {
+        "position": [0.0, -20.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [10.0, 0.1, 10.0]
+      },
+      "model": "Cube",
+      "components": [
+        {
+          "type": "BoxCollider",
+          "params": {
+            "isTrigger": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cube",
+      "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "model": "Cube",
+      "components": [
+        {
+          "type": "Rigidbody",
+          "params": {
+            "mass": 1.0,
+            "isKinematic": false,
+            "friction": 0.5,
+            "translationConstraints": [false, false, false],
+            "rotationConstraints": [false, false, false]
+          }
+        },
+        {
+          "type": "BoxCollider",
+          "params": {
+            "isTrigger": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "Player",
+      "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "group": "Player",
+      "components": [
+        {
+          "type": "Movement",
+          "params": {
+            "speed": 10.0
+          }
+        },
+        {
+          "type": "Rigidbody",
+          "params": {
+            "mass": 1.0,
+            "isKinematic": false,
+            "friction": 0.5,
+            "translationConstraints": [false, false, false],
+            "rotationConstraints": [true, false, true]
+          }
+        },
+        {
+          "type": "CapsuleCollider",
+          "params": {
+            "isTrigger": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "PlayerCamera",
+      "transform": {
+        "position": [0.0, 1.7, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "parent": "Player",
+      "components": [
+        {
+          "type": "Camera",
+          "params": {
+            "worldUp": [0.0, 1.0, 0.0],
+            "projectionMode": 0,
+            "nearPlane": 0.1,
+            "farPlane": 1000.0,
+            "cameraPriority": 0,
+            "renderTarget": -1,
+            "perspectiveParameters": {
+              "fov": 45.0,
+              "aspectRatio": 1.6
+            },
+            "orthographicParameters": {
+              "left": -15.0,
+              "right": 15.0,
+              "top": 9.375,
+              "bottom": -9.375
+            }
+          }
+        },
+        {
+          "type": "MouseLook",
+          "params": {
+            "minVerticalAngle": -89.0,
+            "maxVerticalAngle": 89.0,
+            "sensitivityX": 0.1,
+            "sensitivityY": 0.1
+          }
+        },
+        {
+          "type": "RayCastTest",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "Light",
+      "transform": {
+        "position": [0.5, -10.0, 0.5],
+        "rotation": [-20.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+      },
+      "components": [
+        {
+          "type": "Light",
+          "params": {
+            "type": 1,
+            "intensity": 10.0,
+            "radius": 20.0,
+            "innerCutOff": 10.0,
+            "outerCutOff": 12.0,
+            "color": [1.0, 0.0, 0.0]
+          }
+        }
+      ]
+    }
+  ]
+}

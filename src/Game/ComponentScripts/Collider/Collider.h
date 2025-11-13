@@ -3,6 +3,10 @@
 #include "../../Types/BoundingBox/AABB.h"
 #include <functional>
 
+struct ColliderParameters {
+    bool isTrigger;
+};
+
 class Rigidbody;
 
 class Collider : public ObjectComponent {
@@ -21,6 +25,7 @@ protected:
     virtual void DetectSize() = 0;
 public:
     explicit Collider(bool isTrigger = false);
+    explicit Collider(const ColliderParameters& params);
     NODISCARD int GetColliderIndex() const;
 
     void UpdateGroup(int groupCode) const;

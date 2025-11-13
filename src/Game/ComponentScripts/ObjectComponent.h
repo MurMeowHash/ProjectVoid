@@ -1,6 +1,8 @@
 #pragma once
 #include "../../Utils/Utils.h"
 #include "../../Dispose/IDisposable.h"
+#include <nlohmann/json.hpp>
+#include <string>
 
 #define DEFINE_BASE(base_class) \
 public:                         \
@@ -30,6 +32,9 @@ public:
     virtual void Start() {}
     virtual void Update() {}
     void Dispose() override {}
+    
+    NODISCARD virtual nlohmann::json SerializeToJson() const { return nlohmann::json::object(); }
+    NODISCARD virtual std::string GetComponentTypeName() const { return ""; }
 };
 
 struct ObjectComponentComparator {

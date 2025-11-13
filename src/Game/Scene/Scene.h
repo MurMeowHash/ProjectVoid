@@ -14,6 +14,7 @@ namespace Scene {
     constexpr uint ABSENT_OBJECT_NUMBER = 0;
     uint CreateGameObject(const GameObjectParameters &params = DEFAULT_OBJECT_PARAMETERS);
     int CreateGameObjectFromModel(Model *model);
+    void AddModelMeshesToGameObject(GameObject *obj, Model *model);
     uint CreateCamera(const GameObjectParameters &objParams = DEFAULT_OBJECT_PARAMETERS,
                              const CameraParameters &camParams = CameraParameters());
     uint CreateLight(const GameObjectParameters &objParams = DEFAULT_OBJECT_PARAMETERS,

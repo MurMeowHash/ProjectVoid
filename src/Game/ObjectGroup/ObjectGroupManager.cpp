@@ -35,4 +35,18 @@ namespace ObjectGroupManager {
 
         return groupIterator->second;
     }
+
+    std::string GetGroupName(int groupCode) {
+        if(groupCode == ALL_GROUPS_CODE) {
+            return "Default";
+        }
+
+        for(const auto& [name, code] : groups) {
+            if(code == groupCode) {
+                return name;
+            }
+        }
+
+        return "Default";
+    }
 }

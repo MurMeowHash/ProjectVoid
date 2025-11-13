@@ -8,6 +8,12 @@ Collider::Collider(bool isTrigger)
 
 }
 
+Collider::Collider(const ColliderParameters &params)
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(params.isTrigger) {
+
+}
+
+
 void Collider::ExtractAABB() {
     delete aabb;
 

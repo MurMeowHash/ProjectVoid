@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.29)
+cmake_minimum_required(VERSION 3.30)
 project(ProjectVoid)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(VENDOR_DIR vendor)
+set(VENDOR_DIR ${CMAKE_SOURCE_DIR}/vendor)
 
 file(GLOB_RECURSE VENDOR_INCLUDE LIST_DIRECTORIES true ${VENDOR_DIR}/*/include)
 file(GLOB_RECURSE VENDOR_LIBS LIST_DIRECTORIES true ${VENDOR_DIR}/*/lib)
@@ -107,7 +107,15 @@ add_executable(ProjectVoid
         src/Game/ComponentScripts/Test/RayCastTest.h
         src/Game/ObjectGroup/ObjectGroupManager.cpp
         src/Game/ObjectGroup/ObjectGroupManager.h
+        src/Game/Scene/SceneDeserializer/SceneDeserializer.cpp
+        src/Game/Scene/SceneDeserializer/SceneDeserializer.h
+        src/Game/Scene/SceneSerializer/SceneSerializer.cpp
+        src/Game/Scene/SceneSerializer/SceneSerializer.h
+        src/Game/ComponentScripts/ComponentMacros.h
+        src/Game/ComponentScripts/ComponentRegistry.h
 )
+
+target_include_directories(ProjectVoid PRIVATE ${VENDOR_DIR}/nlohmann)
 
 target_link_libraries(ProjectVoid
         glfw3

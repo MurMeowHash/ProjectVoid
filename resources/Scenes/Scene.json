@@ -1,0 +1,298 @@
+{
+  "name": "DefaultScene",
+  "objects": [
+    {
+      "components": [
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        }
+      ],
+      "model": "Cube",
+      "name": "Plane",
+      "transform": {
+        "position": [
+          0.0,
+          -20.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          10.0,
+          0.10000000149011612,
+          10.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        }
+      ],
+      "model": "Cube",
+      "name": "LoverPlane",
+      "transform": {
+        "position": [
+          0.0,
+          -30.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          20.0,
+          0.10000000149011612,
+          20.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
+            "friction": 0.5,
+            "isKinematic": false,
+            "mass": 1.0,
+            "rotationConstraints": [
+              false,
+              false,
+              false
+            ],
+            "translationConstraints": [
+              false,
+              false,
+              false
+            ]
+          },
+          "type": "Rigidbody"
+        }
+      ],
+      "model": "Cube",
+      "name": "Cube",
+      "transform": {
+        "position": [
+          -3.504755973815918,
+          -18.90300178527832,
+          0.42544126510620117
+        ],
+        "rotation": [
+          89.97791290283203,
+          6.6334099769592285,
+          179.8299560546875
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "CapsuleCollider"
+        },
+        {
+          "params": {
+            "friction": 0.5,
+            "isKinematic": false,
+            "mass": 1.0,
+            "rotationConstraints": [
+              true,
+              false,
+              true
+            ],
+            "translationConstraints": [
+              false,
+              false,
+              false
+            ]
+          },
+          "type": "Rigidbody"
+        },
+        {
+          "params": {
+            "speed": 10.0
+          },
+          "type": "Movement"
+        }
+      ],
+      "group": "Player",
+      "name": "Player",
+      "transform": {
+        "position": [
+          7.351163387298584,
+          -18.899999618530273,
+          2.2190494537353516
+        ],
+        "rotation": [
+          -179.99786376953125,
+          -14.379151344299316,
+          -179.99928283691406
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {},
+          "type": "RayCastTest"
+        },
+        {
+          "params": {
+            "maxVerticalAngle": 89.0,
+            "minVerticalAngle": -89.0,
+            "sensitivityX": 0.10000000149011612,
+            "sensitivityY": 0.10000000149011612
+          },
+          "type": "MouseLook"
+        },
+        {
+          "params": {
+            "cameraPriority": 0,
+            "farPlane": 1000.0,
+            "nearPlane": 0.10000000149011612,
+            "orthographicParameters": {
+              "bottom": -9.375,
+              "left": -15.0,
+              "right": 15.0,
+              "top": 9.375
+            },
+            "perspectiveParameters": {
+              "aspectRatio": 1.600000023841858,
+              "fov": 45.0
+            },
+            "projectionMode": 0,
+            "renderTarget": -1,
+            "worldUp": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "type": "Camera"
+        }
+      ],
+      "name": "PlayerCamera",
+      "parent": "Player",
+      "transform": {
+        "position": [
+          0.0,
+          1.7000000476837158,
+          0.0
+        ],
+        "rotation": [
+          -5.90022611618042,
+          -1182.30126953125,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 10.0,
+            "outerCutOff": 12.0,
+            "radius": 20.0,
+            "type": 1
+          },
+          "type": "Light"
+        }
+      ],
+      "name": "Light",
+      "transform": {
+        "position": [
+          0.5,
+          -10.0,
+          0.5
+        ],
+        "rotation": [
+          -20.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 1.0,
+            "outerCutOff": 12.0,
+            "radius": 5.0,
+            "type": 0
+          },
+          "type": "Light"
+        }
+      ],
+      "name": "Sun",
+      "transform": {
+        "position": [
+          0.5,
+          -10.0,
+          0.5
+        ],
+        "rotation": [
+          -45.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

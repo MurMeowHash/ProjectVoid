@@ -1,6 +1,10 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
+#include "../ComponentMacros.h"
+#include <nlohmann/json_fwd.hpp>
+
+class GameObject;
 
 struct Light : public ObjectComponent {
 DEFINE_BASE(void)
@@ -15,4 +19,8 @@ DEFINE_BASE(void)
 
     explicit Light(const LightParameters &params = DEFAULT_LIGHT_PARAMS);
     void Update() override;
+    
+    nlohmann::json SerializeToJson() const override;
+    GET_COMPONENT_TYPE_NAME(Light)
+    static Light* CreateFromJson(GameObject* owner, const nlohmann::json& params);
 };

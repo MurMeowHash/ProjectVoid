@@ -110,3 +110,17 @@ struct RigidbodyParameters {
     glm::bvec3 translationConstraints = glm::bvec3(false);
     glm::bvec3 rotationConstraints = glm::bvec3(false);
 };
+
+struct MouseLookParameters {
+    float minVerticalAngle = -89.0f;
+    float maxVerticalAngle = 89.0f;
+    float sensitivityX = 0.1f;
+    float sensitivityY = 0.1f;
+};
+
+struct MovementParameters {
+    float speed = 10.0f;
+};
+
+struct RayCastTestParameters {
+};

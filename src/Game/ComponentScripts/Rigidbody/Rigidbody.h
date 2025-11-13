@@ -1,6 +1,10 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
+#include "../ComponentMacros.h"
+#include <nlohmann/json_fwd.hpp>
+
+class GameObject;
 
 class Rigidbody : public ObjectComponent {
 DEFINE_BASE(void)
@@ -35,4 +39,8 @@ public:
     void Start() override;
     void Update() override;
     void Dispose() override;
+    
+    nlohmann::json SerializeToJson() const override;
+    GET_COMPONENT_TYPE_NAME(Rigidbody)
+    static Rigidbody* CreateFromJson(GameObject* owner, const nlohmann::json& params);
 };

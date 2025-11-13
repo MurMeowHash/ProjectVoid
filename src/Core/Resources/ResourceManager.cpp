@@ -5,6 +5,7 @@
 #include "../../Debug/Debug.h"
 #include <vector>
 #include <unordered_map>
+#include <set>
 #include <stb/stb_image.h>
 
 namespace ResourceManager {
@@ -411,6 +412,44 @@ namespace ResourceManager {
         ModelLoadParameters loadParam {0.01f};
         LoadModel("Models/Plane/Plane.fbx", loadParam);
         LoadModel("Models/Cube/Cube.fbx", loadParam);
+    }
+
+    void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
+        meshes.insert(meshes.end(), node->meshes.begin(), node->meshes.end());
+        for(auto child : node->children) {
+            CollectMeshesFromNode(child, meshes);
+        }
+    }
+
+    std::string GetModelNameByMeshes(const std::vector<uint>& targetMeshes) {
+        if(targetMeshes.empty()) {
+            return "";
+        }
+
+        // Створюємо set для швидшого пошуку
+        std::set<uint> targetMeshesSet(targetMeshes.begin(), targetMeshes.end());
+
+        // Перебираємо всі моделі
+        for(uint i = 0; i < models.size(); ++i) {
+            auto* model = GetModelByIndex(static_cast<int>(i));
+            if(!model || !model->GetRoot()) {
+                continue;
+            }
+
+            // Збираємо всі меші з моделі
+            std::vector<uint> modelMeshes;
+            CollectMeshesFromNode(model->GetRoot(), modelMeshes);
+
+            // Порівнюємо меші через set
+            if(modelMeshes.size() == targetMeshes.size()) {
+                std::set<uint> modelMeshesSet(modelMeshes.begin(), modelMeshes.end());
+                if(targetMeshesSet == modelMeshesSet) {
+                    return model->GetName();
+                }
+            }
+        }
+
+        return "";
     }
 
     void Dispose() {

@@ -4,9 +4,17 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../Collider/Collider.h"
 #include "../../ObjectGroup/ObjectGroupManager.h"
+#include "../ComponentMacros.h"
+#include "../../../Utils/JsonUtils.h"
+#include <nlohmann/json.hpp>
 
-RayCastTest::RayCastTest() : ObjectComponent(0) {
+RayCastTest::RayCastTest()
+: ObjectComponent(0) {
 
+}
+
+RayCastTest::RayCastTest(const RayCastTestParameters& params)
+: ObjectComponent(0) {
 }
 
 void RayCastTest::Start() {
@@ -27,3 +35,14 @@ void RayCastTest::Update() {
         }
     }
 }
+
+RayCastTest* RayCastTest::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
+    auto rayCastParams = RayCastTestParameters();
+    return owner->AddComponent<RayCastTest>(rayCastParams);
+}
+
+nlohmann::json RayCastTest::SerializeToJson() const {
+    return nlohmann::json::object();
+}
+
+REGISTER_COMPONENT_FROM_JSON(RayCastTest)

@@ -9,8 +9,10 @@
 #include "../ComponentScripts/Collider/CapsuleCollider.h"
 #include "../ComponentScripts/Rigidbody/Rigidbody.h"
 #include "../ComponentScripts/Test/RayCastTest.h"
+#include "../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../Types/GameObject/GameObject.h"
 #include "../ObjectGroup/ObjectGroupManager.h"
+#include "SceneDeserializer/SceneDeserializer.h"
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
@@ -35,6 +37,7 @@ namespace Scene {
 
     std::string CreateUniqueObjectName(const std::string &name);
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
+    void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes);
     void ExtractRenderItem(const GameObject &obj);
     void ExtractGPULight(const GameObject &obj);
     void ExtractGPUCamera(const GameObject &obj);
@@ -70,19 +73,38 @@ namespace Scene {
     }
 
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName) {
+        // Завжди створюємо об'єкт для поточного вузла
         GameObjectParameters params = {node->name, node->transform, parentName};
         CreateGameObject(params);
         uint currentObject = GetLastGameObjectIndex();
-        if(!node->meshes.empty()) {
-            gameObjects[currentObject].AddComponent<MeshRenderData>(node->meshes);
+        
+        // Збираємо всі меші з поточного вузла та дочірніх вузлів
+        std::vector<uint> allMeshes = node->meshes;
+        
+        // Обробляємо дочірні вузли
+        for(auto child : node->children) {
+            // Рекурсивно обробляємо дочірні вузли, але не створюємо для них об'єкти
+            // Замість цього збираємо їх меші
+            CollectMeshesFromNode(child, allMeshes);
+        }
+        
+        // Додаємо всі зібрані меші до об'єкта
+        if(!allMeshes.empty()) {
+            gameObjects[currentObject].AddComponent<MeshRenderData>(allMeshes);
             gameObjects[currentObject].AddComponent<BoxCollider>();
         }
 
-        for(auto child : node->children) {
-            ProcessGameObjectNode(child, gameObjects[currentObject].GetName());
-        }
-
         return currentObject;
+    }
+    
+    void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
+        // Додаємо меші з поточного вузла
+        meshes.insert(meshes.end(), node->meshes.begin(), node->meshes.end());
+        
+        // Рекурсивно збираємо меші з дочірніх вузлів
+        for(auto child : node->children) {
+            CollectMeshesFromNode(child, meshes);
+        }
     }
 
     void ExtractRenderItem(const GameObject &obj) {
@@ -161,6 +183,34 @@ namespace Scene {
         return static_cast<int>(ProcessGameObjectNode(model->GetRoot()));
     }
 
+    void AddModelMeshesToGameObject(GameObject *obj, Model *model) {
+        if(obj == nullptr || model == nullptr) {
+            Debug::LogError("Scene", "AddModelMeshesToGameObject", "Object or model is null");
+            return;
+        }
+
+        // Збираємо всі меші з моделі
+        std::vector<uint> allMeshes;
+        CollectMeshesFromNode(model->GetRoot(), allMeshes);
+
+        // Додаємо MeshRenderData компонент з мешами
+        if(!allMeshes.empty()) {
+            // Перевіряємо, чи вже є MeshRenderData компонент
+            auto existingMeshData = obj->GetComponent<MeshRenderData>();
+            if(existingMeshData) {
+                // Якщо є, додаємо нові меші до існуючих
+                existingMeshData->meshes.insert(existingMeshData->meshes.end(), allMeshes.begin(), allMeshes.end());
+            } else {
+                // Якщо немає, створюємо новий компонент
+                obj->AddComponent<MeshRenderData>(allMeshes);
+                // Додаємо BoxCollider тільки якщо його ще немає
+                if(!obj->GetComponent<BoxCollider>()) {
+                    obj->AddComponent<BoxCollider>();
+                }
+            }
+        }
+    }
+
     uint CreateCamera(const GameObjectParameters &objParams, const CameraParameters &camParams) {
         auto camObjectIndex = CreateGameObject(objParams);
         auto camObject = GetGameObjectByIndex(static_cast<int>(camObjectIndex));
@@ -237,46 +287,13 @@ namespace Scene {
     }
 
     void LoadScene() {
-        auto planeIndex = CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Plane")));
-        auto planeHolder = GetGameObjectByIndex(planeIndex);
-        planeHolder->GetComponent<Transform>()->position = glm::vec3(0.0f, -20.0f, 0.0f);
-        planeHolder->GetComponent<Transform>()->scale = glm::vec3(100.0f, 0.1f, 100.0f);
+        SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
 
-//        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube")));
-//        auto cube = GetGameObjectByIndex(GetGameObjectIndexByName("Cube <1>"));
-//        cube->GetComponent<Transform>()->position = glm::vec3(0.0f, 10.0f, 0.0f);
-//        cube->GetComponent<Transform>()->rotation = glm::vec3(60.0f, 45.0f, 15.0f);
-//        cube->AddComponent<Rigidbody>();
+        auto gameObjectsg = gameObjects;
 
-        GameObjectParameters params;
-        params.name = "Player";
-        ObjectGroupManager::RegisterGroup("Player");
-        params.groupCode = ObjectGroupManager::GetGroupCode("Player");
-        auto player = GetGameObjectByIndex(static_cast<int>(CreateGameObject(params)));
-        player->GetComponent<Transform>()->scale =  glm::vec3(0.5f, 1.8f, 0.5f);
-        player->AddComponent<CapsuleCollider>();
-        RigidbodyParameters rbParams;
-        rbParams.rotationConstraints = glm::bvec3(true, false, true);
-        player->AddComponent<Rigidbody>(rbParams);
-        player->AddComponent<Movement>();
-        params.name = "PlayerCamera";
-        auto playerCamera = GetGameObjectByIndex(static_cast<int>(CreateCamera(params)));
-        playerCamera->SetParentName("Player");
-        playerCamera->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.7f, 0.0f);
-        playerCamera->AddComponent<MouseLook>();
-        playerCamera->AddComponent<RayCastTest>();
-        player->GetComponent<Movement>()->SetCameraTransform(playerCamera->GetComponent<Transform>());
-
-        GameObjectParameters lightObjParams;
-        lightObjParams.name = "Light";
-        lightObjParams.transform.position = glm::vec3(0.5f, -10.0f, 0.5f);
-        lightObjParams.transform.rotation = glm::vec3(-20.0f, 0.0f, 0.0f);
-        LightParameters lightParams;
-        lightParams.type = LightType::Directional;
-        lightParams.color = glm::vec3(0.1f, 0.1f, 0.1f);
-        lightParams.intensity = 1000.0f;
-        lightParams.radius = 20.0f;
-        CreateLight(lightObjParams, lightParams);
+        const auto movement = GetGameObjectByIndex(GetGameObjectIndexByName("Player"))->GetComponent<Movement>();
+        const auto cameraTransform = GetGameObjectByIndex(GetGameObjectIndexByName("PlayerCamera"))->GetComponent<Transform>();
+        movement->SetCameraTransform(cameraTransform);
     }
 
     void Start() {

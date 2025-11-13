@@ -59,6 +59,7 @@ public:
     NODISCARD std::string GetName() const;
     NODISCARD int GetGroupCode() const;
     NODISCARD std::string GetTag() const;
+    NODISCARD std::string GetParentName() const;
     void SetName(std::string targetName);
     void SetParentName(std::string targetName);
     void SetGroup(const std::string &group);
@@ -66,6 +67,8 @@ public:
     void Start();
     void Update();
     void Dispose() override;
+    
+    nlohmann::json SerializeToJson() const;
 
     template<typename T, typename... Args> requires std::is_base_of_v<ObjectComponent, T>
     T* AddComponent(Args&& ... args) {
