@@ -1,3 +1,0 @@
-D:/Projects/OpenGL/ProjectVoid/cmake-build-debug/CMakeFiles/ProjectVoid.dir
-D:/Projects/OpenGL/ProjectVoid/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Projects/OpenGL/ProjectVoid/cmake-build-debug/CMakeFiles/rebuild_cache.dir
