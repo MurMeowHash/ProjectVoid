@@ -24,7 +24,7 @@ public:
     void SetSensitivityX(float sens) { sensitivityX = sens; }
     void SetSensitivityY(float sens) { sensitivityY = sens; }
     
-    nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(MouseLook)
+    NODISCARD nlohmann::json SerializeToJson() const override;
     static MouseLook* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(MouseLook)
 };

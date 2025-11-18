@@ -34,6 +34,8 @@ namespace Utils {
     NODISCARD Transform ToEngineTransform(const btTransform &transform);
     NODISCARD btTransform ToBulletTransform(const Transform &transform);
     NODISCARD size_t FindLastSlash(const std::string &path);
+    NODISCARD std::string NormalizePath(const std::string &path);
+    NODISCARD int FindOptimalTextLength(const std::string &text, float availableWidth);
     NODISCARD std::string GetExtendedNameFromPath(const std::string &path);
     NODISCARD std::string GetNameFromPath(const std::string &path);
     NODISCARD std::string GetExtensionFromPath(const std::string &path);
@@ -46,4 +48,5 @@ namespace Utils {
     NODISCARD glm::vec3 GetScaleFromMatrix(const glm::mat4 &matrix);
     NODISCARD glm::bvec3 InvertVector3(const glm::bvec3 &vec);
     NODISCARD glm::vec3 NDCToWorld(const glm::vec4 &ndcCoord, const Camera &cam);
+    void OpenInExplorer(const std::string &path);
 }

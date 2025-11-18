@@ -1,7 +1,6 @@
 #include "Movement.h"
 #include "../../../Engine/Input/Input.h"
 #include "../../Types/GameObject/GameObject.h"
-#include "../../../Engine/Time/Time.h"
 #include "../../../Debug/Debug.h"
 #include "../ComponentMacros.h"
 #include "../../../Utils/JsonUtils.h"
@@ -23,20 +22,24 @@ void Movement::Start() {
 }
 
 void Movement::Update() {
-    if(!cameraTransform) return;
+    if(!cameraTransform || !rb) return;
 
     auto movementDirection = glm::vec3(0.0f);
+
+    glm::vec3 forward = glm::normalize(cameraTransform->ToForwardVector());
+    glm::vec3 right = glm::normalize(cameraTransform->ToRightVector());
+    
     if(Input::GetKey(Input::Key::KeyW)) {
-        movementDirection += cameraTransform->ToForwardVector();
+        movementDirection += forward;
     }
     if(Input::GetKey(Input::Key::KeyS)) {
-        movementDirection -= cameraTransform->ToForwardVector();
+        movementDirection -= forward;
     }
     if(Input::GetKey(Input::Key::KeyD)) {
-        movementDirection += cameraTransform->ToRightVector();
+        movementDirection += right;
     }
     if(Input::GetKey(Input::Key::KeyA)) {
-        movementDirection -= cameraTransform->ToRightVector();
+        movementDirection -= right;
     }
 
     if(movementDirection != glm::vec3(0.0f)) {

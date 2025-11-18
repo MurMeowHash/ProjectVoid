@@ -1,6 +1,7 @@
 #pragma once
 #include "ExecutionMode.h"
 #include "../Utils/Utils.h"
+#include <string>
 
 namespace Engine {
     void Initialize(ExecutionMode mode);

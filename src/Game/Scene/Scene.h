@@ -20,6 +20,7 @@ namespace Scene {
     uint CreateLight(const GameObjectParameters &objParams = DEFAULT_OBJECT_PARAMETERS,
                      const LightParameters &lightParams = DEFAULT_LIGHT_PARAMETERS);
     void SetObjectName(uint objectIndex, const std::string &newName);
+    void RemoveGameObject(uint objectIndex);
     GameObject *GetGameObjectByIndex(int index);
     NODISCARD int GetGameObjectIndexByName(const std::string &name);
     NODISCARD uint GetLastGameObjectIndex();

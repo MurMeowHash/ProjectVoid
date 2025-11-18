@@ -11,11 +11,30 @@ file(GLOB_RECURSE VENDOR_LIBS LIST_DIRECTORIES true ${VENDOR_DIR}/*/lib)
 include_directories(${VENDOR_INCLUDE})
 link_directories(${VENDOR_LIBS})
 
+set(IMGUI_DIR ${VENDOR_DIR}/imgui/include/imgui)
+
 set(VENDOR_SRC
         ${VENDOR_DIR}/glad/lib/glad.c
         ${VENDOR_DIR}/stb/lib/stb_image.cpp
         ${VENDOR_DIR}/stb/lib/stb_image_write.cpp
 )
+
+add_library(imgui STATIC
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui PUBLIC
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+)
+
+target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
+target_link_libraries(imgui PUBLIC glfw3 opengl32)
 
 add_executable(ProjectVoid
         ${VENDOR_SRC}
@@ -113,9 +132,27 @@ add_executable(ProjectVoid
         src/Game/Scene/SceneSerializer/SceneSerializer.h
         src/Game/ComponentScripts/ComponentMacros.h
         src/Game/ComponentScripts/ComponentRegistry.h
+        src/EditorUI/EditorPanel.cpp
+        src/EditorUI/EditorPanel.h
+        src/EditorUI/ScenePanel/ScenePanel.cpp
+        src/EditorUI/ScenePanel/ScenePanel.h
+        src/EditorUI/InspectorPanel/InspectorPanel.cpp
+        src/EditorUI/InspectorPanel/InspectorPanel.h
+        src/EditorUI/ProjectPanel/ProjectPanel.cpp
+        src/EditorUI/ProjectPanel/ProjectPanel.h
+        src/EditorUI/ProjectPanel/FileItem.cpp
+        src/EditorUI/ProjectPanel/FileItem.h
+        src/EditorUI/ConsolePanel/ConsolePanel.cpp
+        src/EditorUI/ConsolePanel/ConsolePanel.h
+        src/EditorUI/EditorManager.cpp
+        src/EditorUI/EditorManager.h
 )
 
-target_include_directories(ProjectVoid PRIVATE ${VENDOR_DIR}/nlohmann)
+target_include_directories(ProjectVoid PRIVATE
+        ${VENDOR_DIR}/nlohmann
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+)
 
 target_link_libraries(ProjectVoid
         glfw3
@@ -124,4 +161,5 @@ target_link_libraries(ProjectVoid
         BulletCollision
         Bullet3Common
         LinearMath
+        imgui
 )

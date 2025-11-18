@@ -412,6 +412,16 @@ namespace ResourceManager {
         ModelLoadParameters loadParam {0.01f};
         LoadModel("Models/Plane/Plane.fbx", loadParam);
         LoadModel("Models/Cube/Cube.fbx", loadParam);
+
+        TextureParameters iconParams;
+        iconParams.minFilter = TextureFiltering::Linear;
+        iconParams.magFilter = TextureFiltering::Linear;
+        iconParams.wrapS = TextureWrap::ClampToEdge;
+        iconParams.wrapT = TextureWrap::ClampToEdge;
+        iconParams.desiredFormat = BufferFormat::RGBA;
+
+        LoadTexture("Textures/Folder.png", iconParams);
+        LoadTexture("Textures/File.jpg", iconParams);
     }
 
     void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
@@ -420,27 +430,19 @@ namespace ResourceManager {
             CollectMeshesFromNode(child, meshes);
         }
     }
-
     std::string GetModelNameByMeshes(const std::vector<uint>& targetMeshes) {
         if(targetMeshes.empty()) {
             return "";
         }
-
-        // Створюємо set для швидшого пошуку
         std::set<uint> targetMeshesSet(targetMeshes.begin(), targetMeshes.end());
-
-        // Перебираємо всі моделі
         for(uint i = 0; i < models.size(); ++i) {
             auto* model = GetModelByIndex(static_cast<int>(i));
             if(!model || !model->GetRoot()) {
                 continue;
             }
 
-            // Збираємо всі меші з моделі
             std::vector<uint> modelMeshes;
             CollectMeshesFromNode(model->GetRoot(), modelMeshes);
-
-            // Порівнюємо меші через set
             if(modelMeshes.size() == targetMeshes.size()) {
                 std::set<uint> modelMeshesSet(modelMeshes.begin(), modelMeshes.end());
                 if(targetMeshesSet == modelMeshesSet) {
@@ -450,6 +452,15 @@ namespace ResourceManager {
         }
 
         return "";
+    }
+
+    std::vector<std::string> GetAllModelNames() {
+        std::vector<std::string> modelNames;
+        modelNames.reserve(modelIndexMap.size());
+        for(const auto& [name, index] : modelIndexMap) {
+            modelNames.push_back(name);
+        }
+        return modelNames;
     }
 
     void Dispose() {

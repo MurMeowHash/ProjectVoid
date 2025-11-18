@@ -2,6 +2,9 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../../Scene/Scene.h"
 #include <glm/gtc/quaternion.hpp>
+#include "../../../Utils/JsonUtils.h"
+#include "../ComponentMacros.h"
+#include <nlohmann/json.hpp>
 
 Transform::Transform(const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &scl)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 2), position{pos}, rotation{rot}, scale{scl} {
@@ -52,6 +55,27 @@ glm::vec3 Transform::GetWorldPosition() const {
     return Utils::GetTranslationFromMatrix(GetWorldModelMatrix());
 }
 
+glm::vec3 Transform::GetWorldRotation() const {
+    // Витягуємо rotation зі світової матриці
+    glm::mat4 worldMatrix = GetWorldModelMatrix();
+    glm::vec3 worldScale = GetWorldScale();
+    
+    // Видаляємо scale зі світової матриці для отримання чистої rotation матриці
+    glm::mat3 rotationMatrix;
+    if(worldScale.x > 0.0f && worldScale.y > 0.0f && worldScale.z > 0.0f) {
+        rotationMatrix[0] = glm::vec3(worldMatrix[0]) / worldScale.x;
+        rotationMatrix[1] = glm::vec3(worldMatrix[1]) / worldScale.y;
+        rotationMatrix[2] = glm::vec3(worldMatrix[2]) / worldScale.z;
+    } else {
+        rotationMatrix = glm::mat3(worldMatrix);
+    }
+    
+    // Конвертуємо rotation матрицю в кватерніон, а потім в Euler angles
+    glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
+    glm::vec3 eulerAngles = glm::eulerAngles(rotationQuat);
+    return glm::degrees(eulerAngles);
+}
+
 glm::vec3 Transform::GetWorldScale() const {
     return Utils::GetScaleFromMatrix(GetWorldModelMatrix());
 }
@@ -73,3 +97,83 @@ glm::mat4 Transform::GetWorldModelMatrix() const {
 void Transform::Update() {
     worldModelMatrix = GetWorldModelMatrix();
 }
+
+void Transform::AdjustToParent() {
+    auto owner = GetGameObject();
+    if(!owner) {
+        return;
+    }
+
+    std::string parentName = owner->GetParentName();
+    if(parentName.empty() || parentName == UNDEFINED_NAME) {
+        return;
+    }
+
+    auto parentObject = Scene::GetGameObjectByIndex(Scene::GetGameObjectIndexByName(parentName));
+    if(!parentObject) {
+        return;
+    }
+
+    auto* parentTransform = parentObject->GetComponent<Transform>();
+    if(!parentTransform) {
+        return;
+    }
+
+    // Зберігаємо поточну світову матрицю
+    glm::mat4 worldMatrix = GetWorldModelMatrix();
+    
+    // Отримуємо батьківську світову матрицю
+    glm::mat4 parentWorldMatrix = parentTransform->GetWorldModelMatrix();
+    
+    // Обчислюємо локальну матрицю: LocalMatrix = inverse(ParentWorldMatrix) * WorldMatrix
+    glm::mat4 localMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
+    
+    // Витягуємо position, rotation, scale з локальної матриці
+    position = Utils::GetTranslationFromMatrix(localMatrix);
+    scale = Utils::GetScaleFromMatrix(localMatrix);
+    
+    // Витягуємо rotation з матриці (видаляємо scale для отримання чистої rotation матриці)
+    glm::mat3 rotationMatrix;
+    if(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f) {
+        rotationMatrix[0] = glm::vec3(localMatrix[0]) / scale.x;
+        rotationMatrix[1] = glm::vec3(localMatrix[1]) / scale.y;
+        rotationMatrix[2] = glm::vec3(localMatrix[2]) / scale.z;
+    } else {
+        rotationMatrix = glm::mat3(localMatrix);
+    }
+    
+    // Конвертуємо rotation матрицю в кватерніон, а потім в Euler angles
+    glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
+    glm::vec3 eulerAngles = glm::eulerAngles(rotationQuat);
+    rotation = glm::degrees(eulerAngles);
+}
+
+Transform* Transform::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
+    glm::vec3 pos = DEFAULT_POSITION;
+    glm::vec3 rot = DEFAULT_ROTATION;
+    glm::vec3 scl = DEFAULT_SCALE;
+    
+    SetIfExists(params, "position", pos);
+    SetIfExists(params, "rotation", rot);
+    SetIfExists(params, "scale", scl);
+
+    auto* existingTransform = owner->GetComponent<Transform>();
+    if(existingTransform) {
+        existingTransform->position = pos;
+        existingTransform->rotation = rot;
+        existingTransform->scale = scl;
+        return existingTransform;
+    }
+    
+    return owner->AddComponent<Transform>(pos, rot, scl);
+}
+
+nlohmann::json Transform::SerializeToJson() const {
+    nlohmann::json params;
+    params["position"] = nlohmann::json::array({position.x, position.y, position.z});
+    params["rotation"] = nlohmann::json::array({rotation.x, rotation.y, rotation.z});
+    params["scale"] = nlohmann::json::array({scale.x, scale.y, scale.z});
+    return params;
+}
+
+REGISTER_COMPONENT_FROM_JSON_WITH_UI_NO_REMOVE(Transform, "Transform")

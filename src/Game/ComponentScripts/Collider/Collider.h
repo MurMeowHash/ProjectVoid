@@ -31,5 +31,6 @@ public:
     void UpdateGroup(int groupCode) const;
 
     void Start() override;
+    void Update() override;
     void Dispose() override;
 };

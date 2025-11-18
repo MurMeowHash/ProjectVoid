@@ -10,7 +10,12 @@ namespace Input {
         KeyD = GLFW_KEY_D,
         KeyS = GLFW_KEY_S,
         KeyW = GLFW_KEY_W,
-        KeySpace = GLFW_KEY_SPACE
+        KeySpace = GLFW_KEY_SPACE,
+        KeyM = GLFW_KEY_M,
+        KeyLeftControl = GLFW_KEY_LEFT_CONTROL,
+        KeyRightControl = GLFW_KEY_RIGHT_CONTROL,
+        KeyLeftShift = GLFW_KEY_LEFT_SHIFT,
+        KeyRightShift = GLFW_KEY_RIGHT_SHIFT
     };
 
     enum class MouseButton {
@@ -33,4 +38,6 @@ namespace Input {
     NODISCARD unsigned int GetMousePosX();
     NODISCARD unsigned int GetMousePosY();
     void SetCursorLock(bool lock);
+    NODISCARD bool IsControlPressed();
+    NODISCARD bool IsShiftPressed();
 }

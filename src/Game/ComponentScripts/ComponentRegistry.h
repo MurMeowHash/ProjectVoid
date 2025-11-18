@@ -13,6 +13,15 @@ class ComponentRegistry {
 public:
     using CreateFromJsonFunc = std::function<ObjectComponent*(GameObject*, const nlohmann::json&)>;
     using SerializeToJsonFunc = std::function<nlohmann::json(const ObjectComponent*)>;
+    using CreateForUIFunc = std::function<void(GameObject*)>;
+    using RemoveForUIFunc = std::function<void(GameObject*)>;
+    
+    struct UIComponentInfo {
+        std::string displayName;
+        CreateForUIFunc createFunc;
+        std::function<bool(GameObject*)> hasComponentFunc;
+        RemoveForUIFunc removeFunc;
+    };
     
     static ComponentRegistry& Instance() {
         static ComponentRegistry instance;
@@ -25,6 +34,12 @@ public:
     
     void RegisterSerializer(const std::string& typeName, SerializeToJsonFunc serializeFunc) {
         serializers[typeName] = std::move(serializeFunc);
+    }
+    
+    void RegisterForUI(const std::string& typeName, const std::string& displayName, 
+                       CreateForUIFunc createFunc, std::function<bool(GameObject*)> hasComponentFunc,
+                       RemoveForUIFunc removeFunc) {
+        uiComponents[typeName] = UIComponentInfo{displayName, std::move(createFunc), std::move(hasComponentFunc), std::move(removeFunc)};
     }
     
     ObjectComponent* Create(const std::string& typeName, GameObject* owner, const nlohmann::json& params) {
@@ -51,8 +66,13 @@ public:
         return serializers.contains(typeName);
     }
     
+    const std::unordered_map<std::string, UIComponentInfo>& GetUIComponents() const {
+        return uiComponents;
+    }
+    
 private:
     std::unordered_map<std::string, CreateFromJsonFunc> factories;
     std::unordered_map<std::string, SerializeToJsonFunc> serializers;
+    std::unordered_map<std::string, UIComponentInfo> uiComponents;
 };
 

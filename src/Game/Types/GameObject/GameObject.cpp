@@ -9,6 +9,8 @@
 #include <nlohmann/json.hpp>
 #include <typeindex>
 #include <algorithm>
+#include <vector>
+#include <ranges>
 
 GameObject::GameObject(const GameObjectParameters &params)
 : name(params.name), parentName{params.parentName}, tag(params.tag), groupCode(params.groupCode) {
@@ -59,6 +61,12 @@ void GameObject::SetName(std::string targetName) {
 
 void GameObject::SetParentName(std::string targetName) {
     parentName = std::move(targetName);
+    
+    // Після встановлення батька, прив'язуємо Transform до батька
+    auto* transform = GetComponent<Transform>();
+    if(transform && !parentName.empty() && parentName != UNDEFINED_NAME) {
+        transform->AdjustToParent();
+    }
 }
 
 void GameObject::SetGroup(const std::string &group) {
@@ -100,19 +108,14 @@ nlohmann::json GameObject::SerializeToJson() const {
 
     auto meshRenderData = GetComponent<MeshRenderData>();
     if(meshRenderData && !meshRenderData->meshes.empty()) {
-        std::string modelName = ResourceManager::GetModelNameByMeshes(meshRenderData->meshes);
+        // Використовуємо збережену назву моделі, або намагаємося знайти її за мешами
+        std::string modelName = meshRenderData->modelName;
+        if(modelName.empty()) {
+            modelName = ResourceManager::GetModelNameByMeshes(meshRenderData->meshes);
+        }
         if(!modelName.empty()) {
             objJson["model"] = modelName;
         }
-    }
-
-    auto transform = GetComponent<Transform>();
-    if(transform) {
-        nlohmann::json transformJson;
-        transformJson["position"] = nlohmann::json::array({transform->position.x, transform->position.y, transform->position.z});
-        transformJson["rotation"] = nlohmann::json::array({transform->rotation.x, transform->rotation.y, transform->rotation.z});
-        transformJson["scale"] = nlohmann::json::array({transform->scale.x, transform->scale.y, transform->scale.z});
-        objJson["transform"] = transformJson;
     }
 
     if(!parentName.empty() && parentName != UNDEFINED_NAME) {
@@ -126,10 +129,6 @@ nlohmann::json GameObject::SerializeToJson() const {
 
     nlohmann::json componentsArray = nlohmann::json::array();
     for(const auto &component: components | std::views::values) {
-        if(std::type_index(typeid(*component)) == std::type_index(typeid(Transform))) {
-            continue;
-        }
-
         std::string typeName = component->GetComponentTypeName();
         if(typeName.empty() || !ComponentRegistry::Instance().HasSerializer(typeName)) {
             continue;
@@ -146,4 +145,13 @@ nlohmann::json GameObject::SerializeToJson() const {
     }
 
     return objJson;
+}
+
+std::vector<ObjectComponent*> GameObject::GetAllComponents() const {
+    std::vector<ObjectComponent*> result;
+    result.reserve(components.size());
+    for(const auto& component : components | std::views::values) {
+        result.push_back(component);
+    }
+    return result;
 }

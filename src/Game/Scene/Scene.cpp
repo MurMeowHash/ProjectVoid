@@ -73,22 +73,16 @@ namespace Scene {
     }
 
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName) {
-        // Завжди створюємо об'єкт для поточного вузла
         GameObjectParameters params = {node->name, node->transform, parentName};
         CreateGameObject(params);
         uint currentObject = GetLastGameObjectIndex();
-        
-        // Збираємо всі меші з поточного вузла та дочірніх вузлів
+
         std::vector<uint> allMeshes = node->meshes;
-        
-        // Обробляємо дочірні вузли
+
         for(auto child : node->children) {
-            // Рекурсивно обробляємо дочірні вузли, але не створюємо для них об'єкти
-            // Замість цього збираємо їх меші
             CollectMeshesFromNode(child, allMeshes);
         }
-        
-        // Додаємо всі зібрані меші до об'єкта
+
         if(!allMeshes.empty()) {
             gameObjects[currentObject].AddComponent<MeshRenderData>(allMeshes);
             gameObjects[currentObject].AddComponent<BoxCollider>();
@@ -98,10 +92,7 @@ namespace Scene {
     }
     
     void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
-        // Додаємо меші з поточного вузла
         meshes.insert(meshes.end(), node->meshes.begin(), node->meshes.end());
-        
-        // Рекурсивно збираємо меші з дочірніх вузлів
         for(auto child : node->children) {
             CollectMeshesFromNode(child, meshes);
         }
@@ -121,7 +112,14 @@ namespace Scene {
 
         auto transform = obj.GetComponent<Transform>();
         GPULight gpuLight;
-        gpuLight.positionType = glm::vec4(transform->position, static_cast<float>(light->type));
+        
+        // Для Directional світла використовуємо локальну позицію (не важливо)
+        // Для Point та Spot світла використовуємо світову позицію
+        glm::vec3 lightPosition = (light->type == LightType::Directional) 
+            ? transform->position 
+            : transform->GetWorldPosition();
+        
+        gpuLight.positionType = glm::vec4(lightPosition, static_cast<float>(light->type));
         gpuLight.colorIntensity = glm::vec4(light->color, light->intensity);
         gpuLight.directionRadius = glm::vec4(transform->ToForwardVector(), light->radius);
 
@@ -135,18 +133,19 @@ namespace Scene {
                 gpuDirectionalLights.emplace_back(gpuLight);
                 break;
             case LightType::Point:
-                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
                 gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, glm::vec3(light->radius));
                 gpuPointLights.emplace_back(gpuLight);
                 break;
             case LightType::Spot:
-                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.x), Axis::xAxis);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.y), Axis::yAxis);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.z), Axis::zAxis);
+                gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, glm::vec3(light->radius));
                 glm::vec3 volumeScale(1.0f);
                 volumeScale.y = volumeScale.x = glm::tan(glm::radians(light->outerCutOff)) * light->radius;
                 volumeScale.z = light->radius;
@@ -189,21 +188,18 @@ namespace Scene {
             return;
         }
 
-        // Збираємо всі меші з моделі
         std::vector<uint> allMeshes;
         CollectMeshesFromNode(model->GetRoot(), allMeshes);
 
-        // Додаємо MeshRenderData компонент з мешами
         if(!allMeshes.empty()) {
-            // Перевіряємо, чи вже є MeshRenderData компонент
             auto existingMeshData = obj->GetComponent<MeshRenderData>();
             if(existingMeshData) {
-                // Якщо є, додаємо нові меші до існуючих
-                existingMeshData->meshes.insert(existingMeshData->meshes.end(), allMeshes.begin(), allMeshes.end());
+                // Замінюємо меші замість додавання, щоб зберегти відповідність моделі
+                existingMeshData->meshes = allMeshes;
+                existingMeshData->modelName = model->GetName();
             } else {
-                // Якщо немає, створюємо новий компонент
-                obj->AddComponent<MeshRenderData>(allMeshes);
-                // Додаємо BoxCollider тільки якщо його ще немає
+                auto* meshRenderData = obj->AddComponent<MeshRenderData>(allMeshes);
+                meshRenderData->modelName = model->GetName();
                 if(!obj->GetComponent<BoxCollider>()) {
                     obj->AddComponent<BoxCollider>();
                 }
@@ -239,6 +235,39 @@ namespace Scene {
         gameObjectIndexMap.erase(oldName);
         gameObjectIndexMap[uniqueNewName] = objectIndex;
         //TODO: components must know about new name
+    }
+
+    void RemoveGameObject(uint objectIndex) {
+        if(gameObjects.empty() || objectIndex >= gameObjects.size()) {
+            return;
+        }
+        
+        auto* object = GetGameObjectByIndex(static_cast<int>(objectIndex));
+        if(!object) {
+            return;
+        }
+
+        std::string objectName = object->GetName();
+
+        if(!gameObjects.empty()) {
+            for(int i = 0; i <= static_cast<int>(GetLastGameObjectIndex()); ++i) {
+                auto* obj = GetGameObjectByIndex(i);
+                if(obj && obj->GetParentName() == objectName) {
+                    obj->SetParentName(UNDEFINED_NAME);
+                }
+            }
+        }
+
+        object->Dispose();
+        gameObjectIndexMap.erase(objectName);
+        gameObjects.erase(gameObjects.begin() + objectIndex);
+
+        for(int i = static_cast<int>(objectIndex); i < static_cast<int>(gameObjects.size()); ++i) {
+            auto* obj = &gameObjects[i];
+            if(obj) {
+                gameObjectIndexMap[obj->GetName()] = static_cast<uint>(i);
+            }
+        }
     }
 
     GameObject *GetGameObjectByIndex(int index) {
@@ -288,8 +317,6 @@ namespace Scene {
 
     void LoadScene() {
         SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
-
-        auto gameObjectsg = gameObjects;
 
         const auto movement = GetGameObjectByIndex(GetGameObjectIndexByName("Player"))->GetComponent<Movement>();
         const auto cameraTransform = GetGameObjectByIndex(GetGameObjectIndexByName("PlayerCamera"))->GetComponent<Transform>();

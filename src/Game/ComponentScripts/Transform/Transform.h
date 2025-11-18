@@ -4,6 +4,10 @@
 #include "../../Types/Axis.h"
 #include "../../../Utils/Utils.h"
 #include "../ObjectComponent.h"
+#include "../ComponentMacros.h"
+#include <nlohmann/json_fwd.hpp>
+
+class GameObject;
 
 struct Transform : public ObjectComponent {
 DEFINE_BASE(void)
@@ -24,9 +28,15 @@ DEFINE_BASE(void)
     NODISCARD glm::vec3 ToForwardVector() const;
     NODISCARD glm::vec3 ToRightVector() const;
     NODISCARD glm::vec3 GetWorldPosition() const;
+    NODISCARD glm::vec3 GetWorldRotation() const;
     NODISCARD glm::vec3 GetWorldScale() const;
 
     void Update() override;
+    void AdjustToParent();
+
+    static Transform* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    NODISCARD nlohmann::json SerializeToJson() const override;
+    GET_COMPONENT_TYPE_NAME(Transform)
 private:
     NODISCARD glm::mat4 GetWorldModelMatrix() const;
     void ApplyRotation(glm::mat4 &matrix) const;

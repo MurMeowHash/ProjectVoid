@@ -7,6 +7,7 @@
 #include "../../ComponentScripts/ObjectComponent.h"
 #include <unordered_map>
 #include <set>
+#include <vector>
 #include <typeindex>
 #include "../../../Debug/Debug.h"
 #include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
@@ -113,4 +114,6 @@ public:
 
         return nullptr;
     }
+    
+    NODISCARD std::vector<ObjectComponent*> GetAllComponents() const;
 };

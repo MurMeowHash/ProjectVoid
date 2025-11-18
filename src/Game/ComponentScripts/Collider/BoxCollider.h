@@ -18,7 +18,7 @@ public:
 
     void Start() override;
     
-    nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(BoxCollider)
+    NODISCARD nlohmann::json SerializeToJson() const override;
     static BoxCollider* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(BoxCollider)
 };

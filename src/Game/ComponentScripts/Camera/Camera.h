@@ -39,7 +39,7 @@ public:
 
     void Update() override;
     
-    nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(Camera)
+    NODISCARD nlohmann::json SerializeToJson() const override;
     static Camera* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(Camera)
 };

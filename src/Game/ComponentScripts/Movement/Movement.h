@@ -20,10 +20,9 @@ public:
     void SetSpeed(float speedValue) { speed = speedValue; }
 
     void Update() override;
-
     void Start() override;
     
-    nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(Movement)
+    NODISCARD nlohmann::json SerializeToJson() const override;
     static Movement* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(Movement)
 };

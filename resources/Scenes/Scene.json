@@ -8,56 +8,39 @@
             "isTrigger": false
           },
           "type": "BoxCollider"
-        }
-      ],
-      "model": "Cube",
-      "name": "Plane",
-      "transform": {
-        "position": [
-          0.0,
-          -20.0,
-          0.0
-        ],
-        "rotation": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          10.0,
-          0.10000000149011612,
-          10.0
-        ]
-      }
-    },
-    {
-      "components": [
+        },
         {
           "params": {
-            "isTrigger": false
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
           },
-          "type": "BoxCollider"
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -0.0002997627016156912,
+              -10.800000190734863,
+              -0.0021081119775772095
+            ],
+            "rotation": [
+              0.0005100350826978683,
+              3.890864718414377e-06,
+              -0.00035446291440166533
+            ],
+            "scale": [
+              10.0,
+              0.10000000149011612,
+              10.0
+            ]
+          },
+          "type": "Transform"
         }
       ],
       "model": "Cube",
-      "name": "LoverPlane",
-      "transform": {
-        "position": [
-          0.0,
-          -30.0,
-          0.0
-        ],
-        "rotation": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          20.0,
-          0.10000000149011612,
-          20.0
-        ]
-      }
+      "name": "Plane"
     },
     {
       "components": [
@@ -69,42 +52,77 @@
         },
         {
           "params": {
-            "friction": 0.5,
-            "isKinematic": false,
-            "mass": 1.0,
-            "rotationConstraints": [
-              false,
-              false,
-              false
+            "meshes": [
+              5
             ],
-            "translationConstraints": [
-              false,
-              false,
-              false
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              -20.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              20.0,
+              0.10000000149011612,
+              20.0
             ]
           },
-          "type": "Rigidbody"
+          "type": "Transform"
         }
       ],
       "model": "Cube",
-      "name": "Cube",
-      "transform": {
-        "position": [
-          -3.504755973815918,
-          -18.90300178527832,
-          0.42544126510620117
-        ],
-        "rotation": [
-          89.97791290283203,
-          6.6334099769592285,
-          179.8299560546875
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
+      "name": "LoverPlane"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              5.344114303588867,
+              -9.900001525878906,
+              5.870929718017578
+            ],
+            "rotation": [
+              180.0,
+              0.7651625275611877,
+              180.0
+            ],
+            "scale": [
+              0.9999992251396179,
+              1.0,
+              0.9999992251396179
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Cube",
+      "name": "CubeSimple"
     },
     {
       "components": [
@@ -137,27 +155,30 @@
             "speed": 10.0
           },
           "type": "Movement"
+        },
+        {
+          "params": {
+            "position": [
+              2.221538543701172,
+              -9.700006484985352,
+              -0.819137692451477
+            ],
+            "rotation": [
+              -179.99929809570313,
+              -47.17737579345703,
+              179.9988250732422
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
         }
       ],
       "group": "Player",
-      "name": "Player",
-      "transform": {
-        "position": [
-          7.351163387298584,
-          -18.899999618530273,
-          2.2190494537353516
-        ],
-        "rotation": [
-          -179.99786376953125,
-          -14.379151344299316,
-          -179.99928283691406
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
+      "name": "Player"
     },
     {
       "components": [
@@ -187,7 +208,7 @@
             },
             "perspectiveParameters": {
               "aspectRatio": 1.600000023841858,
-              "fov": 45.0
+              "fov": 80.0
             },
             "projectionMode": 0,
             "renderTarget": -1,
@@ -198,64 +219,71 @@
             ]
           },
           "type": "Camera"
+        },
+        {
+          "params": {
+            "position": [
+              5.960464477539063e-08,
+              1.8300228118896484,
+              1.2576580047607422e-05
+            ],
+            "rotation": [
+              -26.61956214904785,
+              -346.00823974609375,
+              -87.80360412597656
+            ],
+            "scale": [
+              0.9999998807907104,
+              1.0000005960464478,
+              0.9999997615814209
+            ]
+          },
+          "type": "Transform"
         }
       ],
       "name": "PlayerCamera",
-      "parent": "Player",
-      "transform": {
-        "position": [
-          0.0,
-          1.7000000476837158,
-          0.0
-        ],
-        "rotation": [
-          -5.90022611618042,
-          -1182.30126953125,
-          0.0
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
+      "parent": "Player"
     },
     {
       "components": [
         {
           "params": {
             "color": [
-              1.0,
-              0.0,
-              0.0
+              0.5147058963775635,
+              0.2169838547706604,
+              0.2169838547706604
             ],
             "innerCutOff": 10.0,
-            "intensity": 10.0,
+            "intensity": 100.0,
             "outerCutOff": 12.0,
-            "radius": 20.0,
+            "radius": 5.0,
             "type": 1
           },
           "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              -9.5367431640625e-07,
+              -2.86102294921875e-06,
+              2.9206275939941406e-06
+            ],
+            "rotation": [
+              -90.0,
+              -5.333154057263201e-11,
+              5.9764697653008625e-06
+            ],
+            "scale": [
+              0.9999990463256836,
+              1.0000005960464478,
+              1.000000238418579
+            ]
+          },
+          "type": "Transform"
         }
       ],
       "name": "Light",
-      "transform": {
-        "position": [
-          0.5,
-          -10.0,
-          0.5
-        ],
-        "rotation": [
-          -20.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
+      "parent": "Player"
     },
     {
       "components": [
@@ -267,32 +295,110 @@
               0.5
             ],
             "innerCutOff": 10.0,
-            "intensity": 1.0,
+            "intensity": 0.0,
             "outerCutOff": 12.0,
             "radius": 5.0,
             "type": 0
           },
           "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
         }
       ],
-      "name": "Sun",
-      "transform": {
-        "position": [
-          0.5,
-          -10.0,
-          0.5
-        ],
-        "rotation": [
-          -45.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      }
+      "name": "Sun"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 10.0,
+            "outerCutOff": 12.0,
+            "radius": 20.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "RedLight"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -5.174418038222939e-05,
+              1.2649999856948853,
+              -0.0007225935696624219
+            ],
+            "rotation": [
+              1.834590193539043e-06,
+              0.0004950760048814118,
+              9.671003681432921e-06
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Cube",
+      "name": "NewCube"
     }
   ]
 }

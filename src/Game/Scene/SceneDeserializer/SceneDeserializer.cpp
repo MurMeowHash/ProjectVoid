@@ -6,24 +6,13 @@
 #include "../../Types/CreateParameters.h"
 #include "../../Types/GameObject/GameObject.h"
 #include "../../ComponentScripts/Transform/Transform.h"
+#include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../../ObjectGroup/ObjectGroupManager.h"
 #include "../../../Core/Resources/ResourceManager.h"
-#include <glm/glm.hpp>
 #include "../../ComponentScripts/ComponentRegistry.h"
 #include "../../../Utils/JsonUtils.h"
 
 namespace SceneDeserializer {
-    Transform ParseTransform(const nlohmann::json &json) {
-        Transform transform;
-        if(json.contains("transform") && json["transform"].is_object()) {
-            const auto &t = json["transform"];
-            SetIfExists(t, "position", transform.position);
-            SetIfExists(t, "rotation", transform.rotation);
-            SetIfExists(t, "scale", transform.scale);
-        }
-        return transform;
-    }
-
     std::string ParseGameObjectName(const nlohmann::json& objJson) {
         if(!objJson.contains("name") || !objJson["name"].is_string()) {
             Debug::LogError("SceneDeserializer", "GameObject missing name");
@@ -35,7 +24,9 @@ namespace SceneDeserializer {
     GameObjectParameters ParseGameObjectParameters(const nlohmann::json& objJson, const std::string& name) {
         GameObjectParameters params;
         params.name = name;
-        params.transform = ParseTransform(objJson);
+        // Transform тепер створюється автоматично в конструкторі GameObject
+        // і може бути оновлений через масив components
+        params.transform = Transform(); // Дефолтний Transform
         params.parentName = UNDEFINED_NAME;
 
         if(objJson.contains("group") && objJson["group"].is_string()) {
@@ -62,14 +53,6 @@ namespace SceneDeserializer {
         auto model = ResourceManager::GetModelByIndex(modelIndex);
         Scene::AddModelMeshesToGameObject(obj, model);
         return true;
-    }
-
-    void ApplyTransformToGameObject(GameObject* obj, const Transform& transform) {
-        if(auto transformComponent = obj->GetComponent<Transform>()) {
-            transformComponent->position = transform.position;
-            transformComponent->rotation = transform.rotation;
-            transformComponent->scale = transform.scale;
-        }
     }
 
     void ApplyGroupToGameObject(GameObject* obj, const nlohmann::json& objJson) {
@@ -106,15 +89,36 @@ namespace SceneDeserializer {
             return Scene::ABSENT_OBJECT;
         }
 
-        ApplyTransformToGameObject(obj, params.transform);
         ApplyGroupToGameObject(obj, objJson);
 
+        // Завантажуємо компоненти з масиву (включаючи Transform, якщо він там є)
+        // Transform створюється автоматично в конструкторі GameObject,
+        // але якщо він вказаний в масиві components, то Transform::CreateFromJson оновить його
         if(objJson.contains("components")) {
             CreateComponentsFromJson(obj, objJson["components"]);
         }
 
         if(!ApplyModelToGameObject(obj, objJson)) {
             return Scene::ABSENT_OBJECT;
+        }
+
+        // Якщо MeshRenderData існує, але modelName не встановлено, намагаємося знайти його
+        auto* meshRenderData = obj->GetComponent<MeshRenderData>();
+        if(meshRenderData && meshRenderData->modelName.empty() && !meshRenderData->meshes.empty()) {
+            // Спочатку перевіряємо, чи є поле "model" в JSON
+            if(objJson.contains("model") && objJson["model"].is_string()) {
+                std::string modelName = objJson["model"].get<std::string>();
+                // Перевіряємо, чи модель існує
+                if(ResourceManager::GetModelIndexByName(modelName) != ABSENT_RESOURCE) {
+                    meshRenderData->modelName = modelName;
+                }
+            } else {
+                // Якщо поля "model" немає, намагаємося знайти за мешами
+                std::string foundModelName = ResourceManager::GetModelNameByMeshes(meshRenderData->meshes);
+                if(!foundModelName.empty()) {
+                    meshRenderData->modelName = foundModelName;
+                }
+            }
         }
 
         objectIndexMap[name] = static_cast<uint>(objectIndex);
@@ -167,6 +171,18 @@ namespace SceneDeserializer {
                 }
             } else {
                 Debug::LogWarning("SceneDeserializer", "Parent not found", link.second);
+            }
+        }
+        
+        // Після встановлення всіх батьків, прив'язуємо Transform до батьків для всіх об'єктів
+        // Це потрібно для випадків, коли об'єкт створювався з батьком, але батько ще не існував
+        for(int i = 0; i <= static_cast<int>(Scene::GetLastGameObjectIndex()); ++i) {
+            auto obj = Scene::GetGameObjectByIndex(i);
+            if(obj && !obj->GetParentName().empty() && obj->GetParentName() != UNDEFINED_NAME) {
+                auto* transform = obj->GetComponent<Transform>();
+                if(transform) {
+                    transform->AdjustToParent();
+                }
             }
         }
     }

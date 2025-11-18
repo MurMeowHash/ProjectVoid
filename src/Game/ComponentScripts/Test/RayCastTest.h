@@ -17,7 +17,7 @@ public:
     void Start() override;
     void Update() override;
     
-    nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(RayCastTest)
+    NODISCARD nlohmann::json SerializeToJson() const override;
     static RayCastTest* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(RayCastTest)
 };

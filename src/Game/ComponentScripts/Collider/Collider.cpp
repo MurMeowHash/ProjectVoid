@@ -56,6 +56,34 @@ void Collider::Start() {
     DetectSize();
 }
 
+void Collider::Update() {
+    // Оновлюємо колайдер тільки якщо немає Rigidbody (якщо є Rigidbody, він сам оновлює колайдер)
+    if(GetActiveRigidbodyIndex() != ABSENT_RESOURCE) {
+        return;
+    }
+
+    if(colliderIndex == ABSENT_RESOURCE) {
+        return;
+    }
+
+    auto owner = GetGameObject();
+    if(!owner) return;
+
+    auto transform = owner->GetComponent<Transform>();
+    if(!transform) return;
+
+    // Оновлюємо origin та створюємо новий Transform для Bullet
+    LocateOrigin();
+    
+    auto collider = Physics::GetColliderByIndex(colliderIndex);
+    if(!collider) return;
+
+    // Створюємо Transform з світовою позицією та локальною rotation
+    btTransform btTransform = Utils::ToBulletTransform(Transform(origin, transform->rotation));
+    collider->setWorldTransform(btTransform);
+    collider->setInterpolationWorldTransform(btTransform);
+}
+
 void Collider::Dispose() {
     delete aabb;
 

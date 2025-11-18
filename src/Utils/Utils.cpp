@@ -5,6 +5,15 @@
 #include "../Game/Types/GLBuffer/FrameBuffer/FrameBuffer.h"
 #include <stb/stb_image_write.h>
 #include "../Game/ComponentScripts/Camera/Camera.h"
+#include <imgui/imgui.h>
+#include <filesystem>
+#include <algorithm>
+#include <vector>
+#include <windows.h>
+#include <shellapi.h>
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
 
 namespace Utils {
     constexpr GLsizeiptr MB_TO_B_MULTIPLIER = 1024 * 1024;
@@ -65,6 +74,35 @@ namespace Utils {
         }
 
         return lastSlashPos;
+    }
+
+    std::string NormalizePath(const std::string &path) {
+        std::string normalized = path;
+        if(!normalized.empty() && (normalized.back() == '\\' || normalized.back() == '/')) {
+            normalized.pop_back();
+        }
+        return normalized;
+    }
+
+    int FindOptimalTextLength(const std::string &text, float availableWidth) {
+        int left = 0;
+        int right = static_cast<int>(text.length());
+        int bestLength = 0;
+        
+        while(left <= right) {
+            const int mid = (left + right) / 2;
+            std::string testName = text.substr(0, mid);
+            const float testWidth = ImGui::CalcTextSize(testName.c_str()).x;
+            
+            if(testWidth <= availableWidth) {
+                bestLength = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        
+        return bestLength;
     }
 
     std::string GetExtendedNameFromPath(const std::string &path) {
@@ -153,5 +191,24 @@ namespace Utils {
         glm::mat4 viewProjInverse = glm::inverse(cam.GetViewMatrix() * cam.GetProjectionMatrix());
         glm::vec4 rawWorldCoord = viewProjInverse * ndcCoord;
         return {rawWorldCoord / rawWorldCoord.w};
+    }
+
+    void OpenInExplorer(const std::string &path) {
+        if(!std::filesystem::exists(path)) {
+            return;
+        }
+        
+        std::string pathStr = path;
+        std::ranges::replace(pathStr, '/', '\\');
+        
+        const int widePathSize = MultiByteToWideChar(CP_UTF8, 0, pathStr.c_str(), -1, nullptr, 0);
+        std::vector<wchar_t> widePath(widePathSize);
+        MultiByteToWideChar(CP_UTF8, 0, pathStr.c_str(), -1, widePath.data(), widePathSize);
+        
+        if(std::filesystem::is_directory(path)) {
+            ShellExecuteW(nullptr, L"open", L"explorer.exe", widePath.data(), nullptr, SW_SHOWDEFAULT);
+        } else {
+            ShellExecuteW(nullptr, L"open", widePath.data(), nullptr, nullptr, SW_SHOWDEFAULT);
+        }
     }
 }

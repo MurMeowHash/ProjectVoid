@@ -59,7 +59,12 @@ void Rigidbody::Update() {
     auto rb = Physics::GetRigidbodyByIndex(rigidbodyIndex);
     btTransform rbTransform;
     rb->getMotionState()->getWorldTransform(rbTransform);
+    
+    // Зберігаємо scale перед оновленням, оскільки ToEngineTransform встановлює дефолтний scale
+    glm::vec3 savedScale = transform->scale;
     *transform = Utils::ToEngineTransform(rbTransform);
+    // Відновлюємо збережений scale
+    transform->scale = savedScale;
 }
 
 void Rigidbody::Move(const glm::vec3 &movementVector, const glm::vec3 &rotationVector) const {

@@ -1,13 +1,14 @@
 #include "Core.h"
 #include "../Debug/Debug.h"
 #include "../Error/Error.h"
-#include "../Engine/Input/Input.h"
+#include <tuple>
 
 namespace Core {
     GLFWwindow *mainWindow;
     int screenWidth;
     int screenHeight;
     const char *windowTitle;
+    UsingMode currentUsingMode;
 
     void Initialize(int width, int height, const char *title, bool fullscreen) {
         windowTitle = title;
@@ -66,6 +67,18 @@ namespace Core {
 
     int GetScreenHeight() {
         return screenHeight;
+    }
+
+    void SetViewport(int x, int y, int width, int height) {
+        glViewport(x, y, width, height);
+    }
+
+    void SetUsingMode(UsingMode mode) {
+        currentUsingMode = mode;
+    }
+
+    UsingMode GetUsingMode() {
+        return currentUsingMode;
     }
 
     void FinishFrame() {
