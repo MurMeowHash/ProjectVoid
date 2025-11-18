@@ -5,18 +5,18 @@
       "components": [
         {
           "params": {
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
         },
         {
           "params": {
@@ -46,18 +46,18 @@
       "components": [
         {
           "params": {
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
         },
         {
           "params": {
@@ -87,18 +87,18 @@
       "components": [
         {
           "params": {
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
         },
         {
           "params": {
@@ -128,9 +128,9 @@
       "components": [
         {
           "params": {
-            "isTrigger": false
+            "speed": 10.0
           },
-          "type": "CapsuleCollider"
+          "type": "Movement"
         },
         {
           "params": {
@@ -152,9 +152,9 @@
         },
         {
           "params": {
-            "speed": 10.0
+            "isTrigger": false
           },
-          "type": "Movement"
+          "type": "CapsuleCollider"
         },
         {
           "params": {
@@ -165,7 +165,7 @@
             ],
             "rotation": [
               -179.99929809570313,
-              -47.17737579345703,
+              -47.17738342285156,
               179.9988250732422
             ],
             "scale": [
@@ -182,19 +182,6 @@
     },
     {
       "components": [
-        {
-          "params": {},
-          "type": "RayCastTest"
-        },
-        {
-          "params": {
-            "maxVerticalAngle": 89.0,
-            "minVerticalAngle": -89.0,
-            "sensitivityX": 0.10000000149011612,
-            "sensitivityY": 0.10000000149011612
-          },
-          "type": "MouseLook"
-        },
         {
           "params": {
             "cameraPriority": 0,
@@ -222,20 +209,33 @@
         },
         {
           "params": {
+            "maxVerticalAngle": 89.0,
+            "minVerticalAngle": -89.0,
+            "sensitivityX": 0.10000000149011612,
+            "sensitivityY": 0.10000000149011612
+          },
+          "type": "MouseLook"
+        },
+        {
+          "params": {},
+          "type": "RayCastTest"
+        },
+        {
+          "params": {
             "position": [
-              5.960464477539063e-08,
+              0.0,
               1.8300228118896484,
-              1.2576580047607422e-05
+              1.2516975402832031e-05
             ],
             "rotation": [
-              -26.61956214904785,
-              -346.00823974609375,
-              -87.80360412597656
+              -23.82618522644043,
+              20.72340202331543,
+              -87.78202056884766
             ],
             "scale": [
-              0.9999998807907104,
-              1.0000005960464478,
-              0.9999997615814209
+              0.9999997615814209,
+              1.0000004768371582,
+              0.9999998211860657
             ]
           },
           "type": "Transform"
@@ -264,26 +264,26 @@
         {
           "params": {
             "position": [
-              -9.5367431640625e-07,
-              -2.86102294921875e-06,
-              2.9206275939941406e-06
+              4.76837158203125e-07,
+              2.086162567138672e-06,
+              1.9073486328125e-06
             ],
             "rotation": [
               -90.0,
-              -5.333154057263201e-11,
-              5.9764697653008625e-06
+              2.5613205707486486e-06,
+              8.537798521501827e-07
             ],
             "scale": [
-              0.9999990463256836,
-              1.0000005960464478,
-              1.000000238418579
+              0.9999987483024597,
+              1.0000011920928955,
+              1.0000003576278687
             ]
           },
           "type": "Transform"
         }
       ],
       "name": "Light",
-      "parent": "Player"
+      "parent": "PlayerCamera"
     },
     {
       "components": [

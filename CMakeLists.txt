@@ -146,6 +146,8 @@ add_executable(ProjectVoid
         src/EditorUI/ConsolePanel/ConsolePanel.h
         src/EditorUI/EditorManager.cpp
         src/EditorUI/EditorManager.h
+        src/EditorUI/ScenePanel/SceneHierarchyValidator.cpp
+        src/EditorUI/ScenePanel/SceneHierarchyValidator.h
 )
 
 target_include_directories(ProjectVoid PRIVATE
