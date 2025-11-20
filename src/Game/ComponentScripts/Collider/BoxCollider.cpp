@@ -25,6 +25,9 @@ void BoxCollider::DetectSize() {
 
 void BoxCollider::Start() {
     Collider::Start();
+    if(!IsEnabled()) {
+        return;
+    }
 
     auto owner = GetGameObject();
     if(!owner) return;
@@ -37,12 +40,14 @@ void BoxCollider::Start() {
 BoxCollider* BoxCollider::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
     auto colliderParams = ColliderParameters();
     SetIfExists(params, "isTrigger", colliderParams.isTrigger);
+    SetIfExists(params, "enabled", colliderParams.enabled);
     return owner->AddComponent<BoxCollider>(colliderParams);
 }
 
 nlohmann::json BoxCollider::SerializeToJson() const {
     nlohmann::json params;
     params["isTrigger"] = isTrigger;
+    params["enabled"] = IsEnabled();
     return params;
 }
 

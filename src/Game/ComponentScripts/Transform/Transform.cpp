@@ -39,16 +39,22 @@ glm::vec3 Transform::ToForwardVector() const {
     return forwardVector;
 }
 
-//TODO: suspicious approximation
 glm::vec3 Transform::ToRightVector() const {
-    glm::vec3 rightVector;
-    float radiansYaw = glm::radians(90.0f - rotation.y);
-    float radiansRoll = glm::radians(rotation.z);
-    rightVector.x = -glm::sin(radiansYaw) * glm::cos(radiansRoll);
-    rightVector.y = glm::sin(radiansRoll);
-    rightVector.z = glm::cos(radiansYaw) * glm::cos(radiansRoll);
-
-    return rightVector;
+    glm::vec3 forward = ToForwardVector();
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    
+    // Обчислюємо правий вектор як перпендикулярний до forward та up
+    glm::vec3 rightVector = glm::cross(forward, up);
+    
+    // Якщо forward паралельний up (вертикально вгору/вниз), використовуємо альтернативний метод
+    if(glm::length(rightVector) < 0.001f) {
+        float radiansYaw = glm::radians(rotation.y);
+        rightVector.x = glm::cos(radiansYaw);
+        rightVector.y = 0.0f;
+        rightVector.z = -glm::sin(radiansYaw);
+    }
+    
+    return glm::normalize(rightVector);
 }
 
 glm::vec3 Transform::GetWorldPosition() const {

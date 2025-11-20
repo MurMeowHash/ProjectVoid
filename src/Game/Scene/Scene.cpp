@@ -210,7 +210,12 @@ namespace Scene {
     uint CreateCamera(const GameObjectParameters &objParams, const CameraParameters &camParams) {
         auto camObjectIndex = CreateGameObject(objParams);
         auto camObject = GetGameObjectByIndex(static_cast<int>(camObjectIndex));
-        camObject->AddComponent<Camera>(camParams);
+        if(camObject) {
+            if(!objParams.parentName.empty() && objParams.parentName != UNDEFINED_NAME) {
+                camObject->SetParentName(objParams.parentName);
+            }
+            camObject->AddComponent<Camera>(camParams);
+        }
 
         return camObjectIndex;
     }
@@ -218,7 +223,12 @@ namespace Scene {
     uint CreateLight(const GameObjectParameters &objParams, const LightParameters &lightParams) {
         auto lightObjIndex = CreateGameObject(objParams);
         auto lightObject = GetGameObjectByIndex(static_cast<int>(lightObjIndex));
-        lightObject->AddComponent<Light>(lightParams);
+        if(lightObject) {
+            if(!objParams.parentName.empty() && objParams.parentName != UNDEFINED_NAME) {
+                lightObject->SetParentName(objParams.parentName);
+            }
+            lightObject->AddComponent<Light>(lightParams);
+        }
 
         return lightObjIndex;
     }
@@ -234,7 +244,23 @@ namespace Scene {
         object->SetName(uniqueNewName);
         gameObjectIndexMap.erase(oldName);
         gameObjectIndexMap[uniqueNewName] = objectIndex;
-        //TODO: components must know about new name
+        object->UpdateComponentsOwnerName(uniqueNewName);
+        
+        if(!gameObjects.empty()) {
+            for(int i = 0; i <= static_cast<int>(GetLastGameObjectIndex()); ++i) {
+                auto* obj = GetGameObjectByIndex(i);
+                if(obj && obj->GetParentName() == oldName) {
+                    obj->SetParentName(uniqueNewName);
+                }
+            }
+        }
+        
+        if(!object->GetParentName().empty() && object->GetParentName() != UNDEFINED_NAME) {
+            auto* transform = object->GetComponent<Transform>();
+            if(transform) {
+                transform->AdjustToParent();
+            }
+        }
     }
 
     void RemoveGameObject(uint objectIndex) {

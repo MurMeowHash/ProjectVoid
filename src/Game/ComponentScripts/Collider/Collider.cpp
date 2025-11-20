@@ -4,12 +4,12 @@
 #include "../../../Engine/Physics/Physics.h"
 
 Collider::Collider(bool isTrigger)
-: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(isTrigger) {
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(isTrigger), isEnabled(true) {
 
 }
 
 Collider::Collider(const ColliderParameters &params)
-: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(params.isTrigger) {
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(params.isTrigger), isEnabled(params.enabled) {
 
 }
 
@@ -48,6 +48,10 @@ void Collider::UpdateGroup(int groupCode) const {
 }
 
 void Collider::Start() {
+    if(!isEnabled) {
+        return;
+    }
+
     auto owner = GetGameObject();
     if(!owner) return;
 
@@ -57,6 +61,10 @@ void Collider::Start() {
 }
 
 void Collider::Update() {
+    if(!isEnabled || colliderIndex == ABSENT_RESOURCE) {
+        return;
+    }
+
     // Оновлюємо колайдер тільки якщо немає Rigidbody (якщо є Rigidbody, він сам оновлює колайдер)
     if(GetActiveRigidbodyIndex() != ABSENT_RESOURCE) {
         return;
@@ -88,4 +96,22 @@ void Collider::Dispose() {
     delete aabb;
 
     Physics::RemoveCollider(colliderIndex, GetActiveRigidbodyIndex());
+    colliderIndex = ABSENT_RESOURCE;
+}
+
+void Collider::SetEnabled(bool enabled) {
+    if(isEnabled == enabled) {
+        return;
+    }
+
+    isEnabled = enabled;
+
+    if(!isEnabled) {
+        if(colliderIndex != ABSENT_RESOURCE) {
+            Physics::RemoveCollider(colliderIndex, GetActiveRigidbodyIndex());
+            colliderIndex = ABSENT_RESOURCE;
+        }
+    } else {
+        Start();
+    }
 }

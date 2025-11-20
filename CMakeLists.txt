@@ -136,6 +136,12 @@ add_executable(ProjectVoid
         src/EditorUI/EditorPanel.h
         src/EditorUI/ScenePanel/ScenePanel.cpp
         src/EditorUI/ScenePanel/ScenePanel.h
+        src/EditorUI/ScenePanel/SelectionManager.cpp
+        src/EditorUI/ScenePanel/SelectionManager.h
+        src/EditorUI/ScenePanel/SceneHierarchyBuilder.cpp
+        src/EditorUI/ScenePanel/SceneHierarchyBuilder.h
+        src/EditorUI/ScenePanel/SceneHierarchyRenderer.cpp
+        src/EditorUI/ScenePanel/SceneHierarchyRenderer.h
         src/EditorUI/InspectorPanel/InspectorPanel.cpp
         src/EditorUI/InspectorPanel/InspectorPanel.h
         src/EditorUI/ProjectPanel/ProjectPanel.cpp

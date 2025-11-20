@@ -4,7 +4,8 @@
 #include <functional>
 
 struct ColliderParameters {
-    bool isTrigger;
+    bool isTrigger = false;
+    bool enabled = true;
 };
 
 class Rigidbody;
@@ -18,6 +19,7 @@ private:
 protected:
     glm::vec3 origin = DEFAULT_ORIGIN;
     bool isTrigger;
+    bool isEnabled = true;
     int colliderIndex = ABSENT_RESOURCE;
     AABB *aabb = nullptr;
     NODISCARD int GetActiveRigidbodyIndex() const;
@@ -33,4 +35,7 @@ public:
     void Start() override;
     void Update() override;
     void Dispose() override;
+
+    void SetEnabled(bool enabled);
+    NODISCARD bool IsEnabled() const { return isEnabled; }
 };

@@ -65,6 +65,7 @@ public:
     void SetParentName(std::string targetName);
     void SetGroup(const std::string &group);
     void SetTag(std::string tagValue);
+    void UpdateComponentsOwnerName(const std::string& newName);
     void Start();
     void Update();
     void Dispose() override;

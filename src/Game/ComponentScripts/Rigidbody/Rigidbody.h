@@ -15,6 +15,7 @@ private:
     int rigidbodyIndex = ABSENT_RESOURCE;
     float mass;
     bool isKinematic;
+    bool isEnabled;
     float friction;
     glm::bvec3 translationConstraints;
     glm::bvec3 rotationConstraints;
@@ -23,6 +24,7 @@ private:
 
     void SetMass(float massValue);
     NODISCARD int GetActiveColliderIndex() const;
+    void CreatePhysicsBody();
 public:
     explicit Rigidbody(const RigidbodyParameters &rbParams = DEFAULT_RB_PARAMS);
     NODISCARD int GetRigidbodyIndex() const;
@@ -40,6 +42,9 @@ public:
     void Update() override;
     void Dispose() override;
     
+    void SetEnabled(bool enabled);
+    NODISCARD bool IsEnabled() const { return isEnabled; }
+
     NODISCARD nlohmann::json SerializeToJson() const override;
     static Rigidbody* CreateFromJson(GameObject* owner, const nlohmann::json& params);
     GET_COMPONENT_TYPE_NAME(Rigidbody)

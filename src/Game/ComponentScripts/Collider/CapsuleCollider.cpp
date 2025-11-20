@@ -31,6 +31,9 @@ void CapsuleCollider::DetectSize() {
 
 void CapsuleCollider::Start() {
     Collider::Start();
+    if(!IsEnabled()) {
+        return;
+    }
 
     auto owner = GetGameObject();
     if(!owner) return;
@@ -43,12 +46,14 @@ void CapsuleCollider::Start() {
 CapsuleCollider* CapsuleCollider::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
     auto colliderParams = ColliderParameters();
     SetIfExists(params, "isTrigger", colliderParams.isTrigger);
+    SetIfExists(params, "enabled", colliderParams.enabled);
     return owner->AddComponent<CapsuleCollider>(colliderParams);
 }
 
 nlohmann::json CapsuleCollider::SerializeToJson() const {
     nlohmann::json params;
     params["isTrigger"] = isTrigger;
+    params["enabled"] = IsEnabled();
     return params;
 }
 

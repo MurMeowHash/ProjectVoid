@@ -59,6 +59,12 @@ void GameObject::SetName(std::string targetName) {
     name = std::move(targetName);
 }
 
+void GameObject::UpdateComponentsOwnerName(const std::string& newName) {
+    for(auto& component : components | std::views::values) {
+        component->ownerName = newName;
+    }
+}
+
 void GameObject::SetParentName(std::string targetName) {
     parentName = std::move(targetName);
     

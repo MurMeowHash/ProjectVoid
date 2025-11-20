@@ -106,6 +106,7 @@ struct LightParameters {
 struct RigidbodyParameters {
     float mass = 1.0f;
     bool isKinematic = false;
+    bool enabled = true;
     float friction = 0.5f;
     glm::bvec3 translationConstraints = glm::bvec3(false);
     glm::bvec3 rotationConstraints = glm::bvec3(false);

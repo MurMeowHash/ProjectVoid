@@ -9,7 +9,8 @@
 const RigidbodyParameters Rigidbody::DEFAULT_RB_PARAMS = RigidbodyParameters();
 
 Rigidbody::Rigidbody(const RigidbodyParameters &rbParams)
-: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 1), isKinematic(rbParams.isKinematic), friction(rbParams.friction),
+: ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 1), isKinematic(rbParams.isKinematic), isEnabled(rbParams.enabled),
+friction(rbParams.friction),
 translationConstraints(rbParams.translationConstraints), rotationConstraints(rbParams.rotationConstraints) {
     SetMass(rbParams.mass);
 }
@@ -40,30 +41,24 @@ void Rigidbody::Start() {
 
     transform = owner->GetComponent<Transform>();
 
-    auto colliderIndex = GetActiveColliderIndex();
-    if(colliderIndex == ABSENT_RESOURCE) {
-        Physics::RigidbodyObjectConstructionInfo info(transform->position, transform->rotation, mass,
-                                             isKinematic, friction, translationConstraints, rotationConstraints);
-        rigidbodyIndex = static_cast<int>(Physics::CreateRigidbody(info, owner->GetGroupCode()));
+    if(!isEnabled) {
+        return;
     }
-    else {
-        Physics::RigidbodyConstructionInfo info(mass, isKinematic, friction, translationConstraints, rotationConstraints);
-        rigidbodyIndex = Physics::CreateRigidbodyFromCollider(info, colliderIndex, owner->GetGroupCode());
-        if(rigidbodyIndex == ABSENT_RESOURCE) {
-            Debug::LogError("GameObject", owner->GetName(), "Failed to add rigidbody", "Absent collider");
-        }
-    }
+
+    CreatePhysicsBody();
 }
 
 void Rigidbody::Update() {
+    if(!isEnabled || rigidbodyIndex == ABSENT_RESOURCE || !transform) {
+        return;
+    }
+
     auto rb = Physics::GetRigidbodyByIndex(rigidbodyIndex);
     btTransform rbTransform;
     rb->getMotionState()->getWorldTransform(rbTransform);
-    
-    // Зберігаємо scale перед оновленням, оскільки ToEngineTransform встановлює дефолтний scale
+
     glm::vec3 savedScale = transform->scale;
     *transform = Utils::ToEngineTransform(rbTransform);
-    // Відновлюємо збережений scale
     transform->scale = savedScale;
 }
 
@@ -108,6 +103,7 @@ glm::vec3 Rigidbody::GetLinearVelocity() const {
 
 void Rigidbody::Dispose() {
     Physics::RemoveRigidbody(rigidbodyIndex, GetActiveColliderIndex());
+    rigidbodyIndex = ABSENT_RESOURCE;
 }
 
 Rigidbody* Rigidbody::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
@@ -117,6 +113,7 @@ Rigidbody* Rigidbody::CreateFromJson(GameObject* owner, const nlohmann::json& pa
     SetIfExists(params, "friction", rbParams.friction);
     SetIfExists(params, "translationConstraints", rbParams.translationConstraints);
     SetIfExists(params, "rotationConstraints", rbParams.rotationConstraints);
+    SetIfExists(params, "enabled", rbParams.enabled);
     return owner->AddComponent<Rigidbody>(rbParams);
 }
 
@@ -127,7 +124,61 @@ nlohmann::json Rigidbody::SerializeToJson() const {
     params["friction"] = friction;
     params["translationConstraints"] = nlohmann::json::array({translationConstraints.x, translationConstraints.y, translationConstraints.z});
     params["rotationConstraints"] = nlohmann::json::array({rotationConstraints.x, rotationConstraints.y, rotationConstraints.z});
+    params["enabled"] = isEnabled;
     return params;
+}
+
+void Rigidbody::CreatePhysicsBody() {
+    auto owner = GetGameObject();
+    if(!owner || !transform) {
+        return;
+    }
+
+    if(rigidbodyIndex != ABSENT_RESOURCE) {
+        Physics::RemoveRigidbody(rigidbodyIndex, GetActiveColliderIndex());
+        rigidbodyIndex = ABSENT_RESOURCE;
+    }
+
+    auto colliderIndex = GetActiveColliderIndex();
+    if(colliderIndex == ABSENT_RESOURCE) {
+        Physics::RigidbodyObjectConstructionInfo info(transform->position, transform->rotation, mass,
+                                             isKinematic, friction, translationConstraints, rotationConstraints);
+        rigidbodyIndex = static_cast<int>(Physics::CreateRigidbody(info, owner->GetGroupCode()));
+    }
+    else {
+        Physics::RigidbodyConstructionInfo info(mass, isKinematic, friction, translationConstraints, rotationConstraints);
+        rigidbodyIndex = Physics::CreateRigidbodyFromCollider(info, colliderIndex, owner->GetGroupCode());
+        if(rigidbodyIndex == ABSENT_RESOURCE) {
+            Debug::LogError("GameObject", owner->GetName(), "Failed to add rigidbody", "Absent collider");
+        }
+    }
+
+    if(rigidbodyIndex != ABSENT_RESOURCE) {
+        Move(transform->position, transform->rotation);
+    }
+}
+
+void Rigidbody::SetEnabled(bool enabled) {
+    if(isEnabled == enabled) {
+        return;
+    }
+
+    isEnabled = enabled;
+
+    if(!isEnabled) {
+        if(rigidbodyIndex != ABSENT_RESOURCE) {
+            Physics::RemoveRigidbody(rigidbodyIndex, GetActiveColliderIndex());
+            rigidbodyIndex = ABSENT_RESOURCE;
+        }
+    } else {
+        if(!transform) {
+            auto owner = GetGameObject();
+            if(owner) {
+                transform = owner->GetComponent<Transform>();
+            }
+        }
+        CreatePhysicsBody();
+    }
 }
 
 REGISTER_COMPONENT_FROM_JSON(Rigidbody)

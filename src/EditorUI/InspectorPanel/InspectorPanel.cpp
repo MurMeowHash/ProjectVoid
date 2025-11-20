@@ -3,6 +3,7 @@
 #include "../../Game/Types/GameObject/GameObject.h"
 #include "../../Game/ComponentScripts/Transform/Transform.h"
 #include "../../Game/ComponentScripts/Rigidbody/Rigidbody.h"
+#include "../../Game/ComponentScripts/Collider/Collider.h"
 #include "../../Game/ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../../Game/ComponentScripts/Light/Light.h"
 #include "../../Game/ComponentScripts/Camera/Camera.h"
@@ -204,11 +205,11 @@ void InspectorPanel::Render() {
                     ImGui::InputFloat3("##Position", &cachedPosition.x);
                     positionActive = ImGui::IsItemActive();
                     if(ImGui::IsItemDeactivatedAfterEdit()) {
-                        if(rb) {
-                            // Для об'єктів з Rigidbody використовуємо Move()
+                        if(rb && rb->IsEnabled()) {
+                            // Для об'єктів з увімкненим Rigidbody використовуємо Move()
                             rb->Move(cachedPosition, cachedRotation);
                         } else {
-                            // Для звичайних об'єктів оновлюємо напряму
+                            // Для звичайних об'єктів або вимкненого Rigidbody оновлюємо напряму
                             transform->position = cachedPosition;
                         }
                     }
@@ -219,11 +220,11 @@ void InspectorPanel::Render() {
                     ImGui::InputFloat3("##Rotation", &cachedRotation.x);
                     rotationActive = ImGui::IsItemActive();
                     if(ImGui::IsItemDeactivatedAfterEdit()) {
-                        if(rb) {
-                            // Для об'єктів з Rigidbody використовуємо Move()
+                        if(rb && rb->IsEnabled()) {
+                            // Для об'єктів з увімкненим Rigidbody використовуємо Move()
                             rb->Move(cachedPosition, cachedRotation);
                         } else {
-                            // Для звичайних об'єктів оновлюємо напряму
+                            // Для звичайних об'єктів або вимкненого Rigidbody оновлюємо напряму
                             transform->rotation = cachedRotation;
                         }
                     }
@@ -367,7 +368,21 @@ void InspectorPanel::Render() {
                             }
                         }
                     }
-                } else {
+                }
+                else if(std::type_index(typeid(*component)) == std::type_index(typeid(Rigidbody))) {
+                    auto* rigidbody = static_cast<Rigidbody*>(component);
+                    bool enabled = rigidbody->IsEnabled();
+                    if(ImGui::Checkbox("Enabled##Rigidbody", &enabled)) {
+                        rigidbody->SetEnabled(enabled);
+                    }
+                }
+                else if(auto* collider = dynamic_cast<Collider*>(component)) {
+                    bool enabled = collider->IsEnabled();
+                    if(ImGui::Checkbox("Enabled##Collider", &enabled)) {
+                        collider->SetEnabled(enabled);
+                    }
+                }
+                else {
                     // Для інших компонентів
                     ImGui::Text("Component details coming soon...");
                 }
