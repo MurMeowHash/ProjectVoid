@@ -211,4 +211,12 @@ namespace Utils {
             ShellExecuteW(nullptr, L"open", widePath.data(), nullptr, nullptr, SW_SHOWDEFAULT);
         }
     }
+
+    bool IsImageFile(const std::filesystem::path& path) {
+        std::string extension = path.extension().string();
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+        return extension == ".png" || extension == ".jpg" || extension == ".jpeg" ||
+               extension == ".bmp" || extension == ".gif" || extension == ".tga" ||
+               extension == ".tiff" || extension == ".webp";
+    }
 }

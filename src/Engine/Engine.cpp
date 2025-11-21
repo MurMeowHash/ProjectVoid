@@ -49,10 +49,6 @@ namespace Engine {
             EditorManager::Update();
             EditorManager::Render();
 
-            if(Input::GetKeyDown(Input::Key::KeyEscape)) {
-                glfwSetWindowShouldClose(Core::GetActiveWindow(), true);
-            }
-
             Input::Update();
             Core::FinishFrame();
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
@@ -17,7 +18,6 @@ constexpr std::string UNDEFINED_NAME = "Undefined";
 constexpr int ABSENT_RESOURCE{-1};
 constexpr int DEFAULT_RENDER_TARGET{-1};
 constexpr int ALL_GROUPS_CODE{-1};
-//TODO: move all constants from resource manager
 
 enum class BufferFormat;
 enum class TextureDataType;
@@ -49,4 +49,5 @@ namespace Utils {
     NODISCARD glm::bvec3 InvertVector3(const glm::bvec3 &vec);
     NODISCARD glm::vec3 NDCToWorld(const glm::vec4 &ndcCoord, const Camera &cam);
     void OpenInExplorer(const std::string &path);
+    NODISCARD bool IsImageFile(const std::filesystem::path& path);
 }

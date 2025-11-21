@@ -23,8 +23,5 @@ private:
 public:
     ConsolePanel(const ImVec2& pos, const ImVec2& size);
     void Render() override;
-    
     static void AddLog(const std::string& message, LogType type = LogType::Info);
-    static void Clear();
 };
-

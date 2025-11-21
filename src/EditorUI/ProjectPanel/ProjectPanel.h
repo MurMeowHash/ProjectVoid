@@ -16,7 +16,6 @@ private:
     void NavigateBack();
     NODISCARD bool CanNavigateBack() const;
     NODISCARD bool IsParentPathValid(const std::filesystem::path& currentPath, const std::filesystem::path& projectPath) const;
-    void OpenDirectoryInExplorer(const std::filesystem::path& path) const;
 public:
     ProjectPanel(const ImVec2& pos, const ImVec2& size);
     void Render() override;

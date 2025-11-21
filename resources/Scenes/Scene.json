@@ -5,19 +5,19 @@
       "components": [
         {
           "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
         },
         {
           "params": {
@@ -47,19 +47,19 @@
       "components": [
         {
           "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
         },
         {
           "params": {
@@ -90,6 +90,22 @@
         {
           "params": {
             "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "enabled": true,
             "friction": 0.5,
             "isKinematic": false,
             "mass": 1.0,
@@ -108,31 +124,15 @@
         },
         {
           "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "position": [
-              5.405752182006836,
+              2.3392837047576904,
               -18.90000343322754,
-              5.427005767822266
+              -3.4397237300872803
             ],
             "rotation": [
-              2.9683185857720673e-05,
-              -49.83720779418945,
-              -6.41826591163408e-06
+              -4.1936196794267744e-05,
+              -78.6198959350586,
+              1.1783177797042299e-05
             ],
             "scale": [
               0.9999992251396179,
@@ -150,47 +150,30 @@
       "components": [
         {
           "params": {
-            "speed": 10.0
-          },
-          "type": "Movement"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "friction": 0.5,
-            "isKinematic": false,
-            "mass": 1.0,
-            "rotationConstraints": [
-              true,
-              false,
-              true
+            "color": [
+              0.5,
+              0.5,
+              0.5
             ],
-            "translationConstraints": [
-              false,
-              false,
-              false
-            ]
+            "innerCutOff": 10.0,
+            "intensity": 0.5,
+            "outerCutOff": 12.0,
+            "radius": 5.0,
+            "type": 0
           },
-          "type": "Rigidbody"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
+          "type": "Light"
         },
         {
           "params": {
             "position": [
-              -0.12099822610616684,
-              -9.56200122833252,
-              -4.341047763824463
+              0.0,
+              0.0,
+              0.0
             ],
             "rotation": [
-              9.276734544982901e-07,
-              41.85110855102539,
-              1.6082841511888546e-06
+              -45.0,
+              0.0,
+              0.0
             ],
             "scale": [
               1.0,
@@ -201,11 +184,74 @@
           "type": "Transform"
         }
       ],
-      "group": "Player",
-      "name": "Player"
+      "name": "Sun"
     },
     {
       "components": [
+        {
+          "params": {
+            "color": [
+              0.08628890663385391,
+              0.3959139883518219,
+              0.8382352590560913
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 1.0,
+            "outerCutOff": 12.0,
+            "radius": 100.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -10.0,
+              -15.0,
+              -10.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10000000149011612
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Cube",
+      "name": "PointLight"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "fastMoveSpeed": 20.0,
+            "maxZoomSpeed": 50.0,
+            "minZoomSpeed": 1.0,
+            "moveSpeed": 10.0,
+            "sensitivityX": 0.15000000596046448,
+            "sensitivityY": 0.15000000596046448,
+            "slowMoveSpeed": 2.0,
+            "smoothing": 10.0,
+            "zoomSpeed": 5.0
+          },
+          "type": "EditorMovement"
+        },
         {
           "params": {
             "cameraPriority": 0,
@@ -219,7 +265,7 @@
             },
             "perspectiveParameters": {
               "aspectRatio": 1.600000023841858,
-              "fov": 80.0
+              "fov": 45.0
             },
             "projectionMode": 0,
             "renderTarget": -1,
@@ -233,81 +279,26 @@
         },
         {
           "params": {
-            "maxVerticalAngle": 89.0,
-            "minVerticalAngle": -89.0,
-            "sensitivityX": 0.10000000149011612,
-            "sensitivityY": 0.10000000149011612
-          },
-          "type": "MouseLook"
-        },
-        {
-          "params": {},
-          "type": "RayCastTest"
-        },
-        {
-          "params": {
             "position": [
-              -4.76837158203125e-07,
-              1.830002784729004,
-              2.384185791015625e-07
+              -40.39693069458008,
+              -8.5957670211792,
+              -6.1576313972473145
             ],
             "rotation": [
-              -18.9412841796875,
-              10.095616340637207,
-              -115.23200988769531
+              -12.950003623962402,
+              441.14825439453125,
+              0.0
             ],
             "scale": [
-              0.9999983310699463,
-              0.9999990463256836,
-              0.9999986290931702
+              1.0,
+              1.0,
+              1.0
             ]
           },
           "type": "Transform"
         }
       ],
-      "name": "PlayerCamera",
-      "parent": "Player"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "color": [
-              0.8382352590560913,
-              0.1273788958787918,
-              0.1273788958787918
-            ],
-            "innerCutOff": 5.0,
-            "intensity": 10.0,
-            "outerCutOff": 11.0,
-            "radius": 11.0,
-            "type": 1
-          },
-          "type": "Light"
-        },
-        {
-          "params": {
-            "position": [
-              1.9073486328125e-06,
-              0.0,
-              -2.384185791015625e-07
-            ],
-            "rotation": [
-              -2.1344330889405683e-06,
-              -1.7075466303140274e-06,
-              -3.4150934880017303e-06
-            ],
-            "scale": [
-              1.0000004768371582,
-              1.000000238418579,
-              1.0000005960464478
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "name": "Light",
-      "parent": "PlayerCamera"
+      "name": "Editor"
     }
   ]
 }

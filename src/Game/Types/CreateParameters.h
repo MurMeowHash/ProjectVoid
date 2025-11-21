@@ -125,3 +125,15 @@ struct MovementParameters {
 
 struct RayCastTestParameters {
 };
+
+struct EditorMovementParameters {
+    float sensitivityX = 0.15f;
+    float sensitivityY = 0.15f;
+    float moveSpeed = 10.0f;
+    float fastMoveSpeed = 20.0f;
+    float slowMoveSpeed = 2.0f;
+    float smoothing = 10.0f;
+    float zoomSpeed = 5.0f;
+    float minZoomSpeed = 1.0f;
+    float maxZoomSpeed = 50.0f;
+};

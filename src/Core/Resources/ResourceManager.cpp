@@ -420,8 +420,14 @@ namespace ResourceManager {
         iconParams.wrapT = TextureWrap::ClampToEdge;
         iconParams.desiredFormat = BufferFormat::RGBA;
 
+        LoadTexture("Textures/Collider.png", iconParams);
+        LoadTexture("Textures/Component.png", iconParams);
+        LoadTexture("Textures/File.png", iconParams);
         LoadTexture("Textures/Folder.png", iconParams);
-        LoadTexture("Textures/File.jpg", iconParams);
+        LoadTexture("Textures/Light.png", iconParams);
+        LoadTexture("Textures/Menu.png", iconParams);
+        LoadTexture("Textures/Picture.png", iconParams);
+        LoadTexture("Textures/Rigidbody.png", iconParams);
     }
 
     void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {

@@ -112,9 +112,7 @@ namespace Scene {
 
         auto transform = obj.GetComponent<Transform>();
         GPULight gpuLight;
-        
-        // Для Directional світла використовуємо локальну позицію (не важливо)
-        // Для Point та Spot світла використовуємо світову позицію
+
         glm::vec3 lightPosition = (light->type == LightType::Directional) 
             ? transform->position 
             : transform->GetWorldPosition();
@@ -194,7 +192,6 @@ namespace Scene {
         if(!allMeshes.empty()) {
             auto existingMeshData = obj->GetComponent<MeshRenderData>();
             if(existingMeshData) {
-                // Замінюємо меші замість додавання, щоб зберегти відповідність моделі
                 existingMeshData->meshes = allMeshes;
                 existingMeshData->modelName = model->GetName();
             } else {
@@ -344,9 +341,9 @@ namespace Scene {
     void LoadScene() {
         SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
 
-        const auto movement = GetGameObjectByIndex(GetGameObjectIndexByName("Player"))->GetComponent<Movement>();
-        const auto cameraTransform = GetGameObjectByIndex(GetGameObjectIndexByName("PlayerCamera"))->GetComponent<Transform>();
-        movement->SetCameraTransform(cameraTransform);
+        // const auto movement = GetGameObjectByIndex(GetGameObjectIndexByName("Player"))->GetComponent<Movement>();
+        // const auto cameraTransform = GetGameObjectByIndex(GetGameObjectIndexByName("PlayerCamera"))->GetComponent<Transform>();
+        // movement->SetCameraTransform(cameraTransform);
     }
 
     void Start() {

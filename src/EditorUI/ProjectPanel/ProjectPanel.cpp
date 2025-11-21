@@ -1,6 +1,7 @@
 #include "ProjectPanel.h"
 #include <algorithm>
 #include <vector>
+#include <string>
 #include "../../Core/Resources/ResourceManager.h"
 #include "../../Utils/Utils.h"
 
@@ -114,15 +115,25 @@ void ProjectPanel::Render() {
 
             ImTextureID folderIcon = ResourceManager::GetTextureByIndex(ResourceManager::GetTextureIndexByName("Folder"))->GetHandle();
             ImTextureID fileIcon = ResourceManager::GetTextureByIndex(ResourceManager::GetTextureIndexByName("File"))->GetHandle();
+            ImTextureID pictureIcon = ResourceManager::GetTextureByIndex(ResourceManager::GetTextureIndexByName("Picture"))->GetHandle();
 
             if(CanNavigateBack()) {
-                fileItems.push_back(std::make_unique<FileItem>(std::string(".."), FileItemType::ParentDirectory, folderIcon, ImVec2(70.0f, 58.0f)));
+                fileItems.push_back(std::make_unique<FileItem>(std::string(".."), FileItemType::ParentDirectory, folderIcon, ImVec2(70.0f, 70.0f)));
             }
 
             for(const auto& entry : entries) {
                 FileItemType itemType = entry.is_directory() ? FileItemType::Directory : FileItemType::File;
-                ImTextureID iconToUse = itemType == FileItemType::File ? fileIcon : folderIcon;
-                fileItems.push_back(std::make_unique<FileItem>(entry.path(), itemType, iconToUse, ImVec2(70.0f, 58.0f)));
+                ImTextureID iconToUse;
+                
+                if(itemType == FileItemType::Directory) {
+                    iconToUse = folderIcon;
+                } else if(Utils::IsImageFile(entry.path())) {
+                    iconToUse = pictureIcon;
+                } else {
+                    iconToUse = fileIcon;
+                }
+                
+                fileItems.push_back(std::make_unique<FileItem>(entry.path(), itemType, iconToUse, ImVec2(70.0f, 70.0f)));
             }
             
             int columnsCount = static_cast<int>(ImGui::GetContentRegionAvail().x / 80);

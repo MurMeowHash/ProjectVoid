@@ -124,6 +124,8 @@ add_executable(ProjectVoid
         src/Engine/Physics/Ray.h
         src/Game/ComponentScripts/Test/RayCastTest.cpp
         src/Game/ComponentScripts/Test/RayCastTest.h
+        src/Game/ComponentScripts/EditorCamera/EditorMovement.cpp
+        src/Game/ComponentScripts/EditorCamera/EditorMovement.h
         src/Game/ObjectGroup/ObjectGroupManager.cpp
         src/Game/ObjectGroup/ObjectGroupManager.h
         src/Game/Scene/SceneDeserializer/SceneDeserializer.cpp
@@ -154,6 +156,8 @@ add_executable(ProjectVoid
         src/EditorUI/EditorManager.h
         src/EditorUI/ScenePanel/SceneHierarchyValidator.cpp
         src/EditorUI/ScenePanel/SceneHierarchyValidator.h
+        src/EditorUI/TitleBarPanel/TitleBarPanel.cpp
+        src/EditorUI/TitleBarPanel/TitleBarPanel.h
 )
 
 target_include_directories(ProjectVoid PRIVATE

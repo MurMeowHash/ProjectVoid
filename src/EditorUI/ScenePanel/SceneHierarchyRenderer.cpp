@@ -4,6 +4,9 @@
 #include "../../Game/Scene/Scene.h"
 #include "../../Game/Types/GameObject/GameObject.h"
 #include "../../Game/ComponentScripts/ComponentRegistry.h"
+#include "../../Game/ComponentScripts/MeshRenderData/MeshRenderData.h"
+#include "../../Game/ComponentScripts/Camera/Camera.h"
+#include "../../Game/ComponentScripts/Light/Light.h"
 #include "../../Utils/Utils.h"
 
 SceneHierarchyRenderer::SceneHierarchyRenderer(SelectionManager& manager)
@@ -217,4 +220,3 @@ void SceneHierarchyRenderer::Render(const std::vector<GameObjectNode>& hierarchy
         ImGui::EndChild();
     }
 }
-

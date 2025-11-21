@@ -1,5 +1,4 @@
 #include "ConsolePanel.h"
-#include <sstream>
 
 std::vector<LogEntry> ConsolePanel::logs;
 
@@ -51,4 +50,3 @@ void ConsolePanel::Render() {
     ImGui::EndChild();
     ImGui::End();
 }
-

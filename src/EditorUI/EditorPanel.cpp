@@ -20,7 +20,9 @@ void EditorPanel::DrawRectangle(const ImVec2& pos, float endX, float endY, const
 void EditorPanel::RenderDefaultPanel() {
     ImGui::SetNextWindowPos(position);
     ImGui::SetNextWindowSize(size);
-    ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    ImGui::Begin(name.c_str(), nullptr, 
+                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
     
     position = ImGui::GetWindowPos();
     size = ImGui::GetWindowSize();
