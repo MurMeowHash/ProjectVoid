@@ -1,6 +1,8 @@
 #include "SceneHierarchyRenderer.h"
+#include "../EditorStyles.h"
 
 #include "SceneHierarchyValidator.h"
+#include "../../Core/Resources/ResourceManager.h"
 #include "../../Game/Scene/Scene.h"
 #include "../../Game/Types/GameObject/GameObject.h"
 #include "../../Game/ComponentScripts/ComponentRegistry.h"
@@ -109,18 +111,22 @@ void SceneHierarchyRenderer::HandleDragDrop(const GameObjectNode& node) {
     }
 }
 
+
 void SceneHierarchyRenderer::RenderNode(const GameObjectNode& node) {
     auto* obj = Scene::GetGameObjectByIndex(node.index);
     if(!obj) return;
 
     ImGui::PushID(node.index);
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, StyleColors::HOVER);
-
     bool isSelected = selectionManager.IsSelected(node.name);
+    
     if(isSelected) {
-        ImGui::PushStyleColor(ImGuiCol_Header, StyleColors::SELECTED);
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, StyleColors::SELECTED_HOVER);
-        ImGui::PushStyleColor(ImGuiCol_HeaderActive, StyleColors::SELECTED_ACTIVE);
+        ImGui::PushStyleColor(ImGuiCol_Header, EditorStyles::Header::SELECTED);
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EditorStyles::Header::SELECTED_HOVER);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, EditorStyles::Header::SELECTED_ACTIVE);
+    } else {
+        ImGui::PushStyleColor(ImGuiCol_Header, EditorStyles::Header::DEFAULT);
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EditorStyles::Header::HOVER);
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, EditorStyles::Header::ACTIVE);
     }
 
     bool hasChildren = !node.children.empty();
@@ -130,12 +136,7 @@ void SceneHierarchyRenderer::RenderNode(const GameObjectNode& node) {
     }
 
     bool nodeOpen = ImGui::TreeNodeEx(node.name.c_str(), flags);
-
-    if(isSelected) {
-        ImGui::PopStyleColor(4);
-    } else {
-        ImGui::PopStyleColor(1);
-    }
+    ImGui::PopStyleColor(3); // Header, HeaderHovered, HeaderActive
 
     if(ImGui::IsItemClicked()) {
         selectionManager.Select(node.name);

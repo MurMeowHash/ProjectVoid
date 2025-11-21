@@ -4,6 +4,7 @@
 #include "../Collider/Collider.h"
 #include "../ComponentMacros.h"
 #include "../../../Utils/JsonUtils.h"
+#include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
 
 const RigidbodyParameters Rigidbody::DEFAULT_RB_PARAMS = RigidbodyParameters();
@@ -179,6 +180,15 @@ void Rigidbody::SetEnabled(bool enabled) {
         }
         CreatePhysicsBody();
     }
+}
+
+void Rigidbody::RenderUI(GameObject* obj) {
+    bool enabled = IsEnabled();
+    if(ImGui::Checkbox("Enabled##Rigidbody", &enabled)) {
+        SetEnabled(enabled);
+    }
+    
+    ImGui::Spacing();
 }
 
 REGISTER_COMPONENT_FROM_JSON(Rigidbody)

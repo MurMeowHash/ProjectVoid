@@ -2,6 +2,7 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../Rigidbody/Rigidbody.h"
 #include "../../../Engine/Physics/Physics.h"
+#include <imgui/imgui.h>
 
 Collider::Collider(bool isTrigger)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(isTrigger), isEnabled(true) {
@@ -114,4 +115,13 @@ void Collider::SetEnabled(bool enabled) {
     } else {
         Start();
     }
+}
+
+void Collider::RenderUI(GameObject* obj) {
+    bool enabled = IsEnabled();
+    if(ImGui::Checkbox("Enabled##Collider", &enabled)) {
+        SetEnabled(enabled);
+    }
+    
+    ImGui::Spacing();
 }

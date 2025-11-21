@@ -20,6 +20,7 @@ DEFINE_BASE(void)
     NODISCARD AABB GetCommonAABB() const;
 
     void Update() override;
+    void RenderUI(GameObject* obj) override;
     GET_COMPONENT_TYPE_NAME(MeshRenderData)
     
     NODISCARD nlohmann::json SerializeToJson() const override;

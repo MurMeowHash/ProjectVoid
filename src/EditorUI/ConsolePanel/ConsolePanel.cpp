@@ -1,4 +1,5 @@
 #include "ConsolePanel.h"
+#include "../EditorStyles.h"
 
 std::vector<LogEntry> ConsolePanel::logs;
 
@@ -27,14 +28,14 @@ void ConsolePanel::Render() {
         ImVec4 color;
         switch(log.type) {
             case LogType::Error:
-                color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                color = EditorStyles::Console::ERROR;
                 break;
             case LogType::Warning:
-                color = ImVec4(1.0f, 0.8f, 0.4f, 1.0f);
+                color = EditorStyles::Console::WARNING;
                 break;
             case LogType::Info:
             default:
-                color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+                color = EditorStyles::Console::INFO;
                 break;
         }
         

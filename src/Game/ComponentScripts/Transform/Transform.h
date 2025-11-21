@@ -33,6 +33,7 @@ DEFINE_BASE(void)
 
     void Update() override;
     void AdjustToParent();
+    void RenderUI(GameObject* obj) override;
 
     static Transform* CreateFromJson(GameObject* owner, const nlohmann::json& params);
     NODISCARD nlohmann::json SerializeToJson() const override;
@@ -40,4 +41,14 @@ DEFINE_BASE(void)
 private:
     NODISCARD glm::mat4 GetWorldModelMatrix() const;
     void ApplyRotation(glm::mat4 &matrix) const;
+    
+    // Кеш для UI редагування
+    glm::vec3 cachedPosition;
+    glm::vec3 cachedRotation;
+    glm::vec3 cachedScale;
+    bool positionActive = false;
+    bool rotationActive = false;
+    bool scaleActive = false;
+    
+    void UpdateCache();
 };

@@ -1,4 +1,5 @@
 #include "FileItem.h"
+#include "../EditorStyles.h"
 #include "../../Utils/Utils.h"
 #include <functional>
 #include <vector>
@@ -93,18 +94,18 @@ bool FileItem::RenderButton(const std::string& buttonId) const {
 }
 
 void FileItem::RenderButtonWithTexture(const std::string& buttonId) const {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_Button, EditorStyles::Button::CLEAR);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorStyles::Button::CLEAR);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorStyles::Button::CLEAR);
     const ImTextureRef texRef(iconTexture);
-    ImGui::ImageButton(buttonId.c_str(), texRef, buttonSize, ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0));
+    ImGui::ImageButton(buttonId.c_str(), texRef, buttonSize, ImVec2(0, 0), ImVec2(1, 1), EditorStyles::Button::CLEAR);
     ImGui::PopStyleColor(3);
 }
 
 void FileItem::RenderButtonWithoutTexture(const std::string& buttonId) const {
-    ImGui::PushStyleColor(ImGuiCol_Button, {0.5f, 0.5f, 0.5f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.6f, 0.6f, 0.6f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.4f, 0.4f, 0.4f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_Button, EditorStyles::Button::PROJECT_DEFAULT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorStyles::Button::PROJECT_HOVERED);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorStyles::Button::ACTIVE);
     ImGui::Button(buttonId.c_str(), buttonSize);
     ImGui::PopStyleColor(3);
 }

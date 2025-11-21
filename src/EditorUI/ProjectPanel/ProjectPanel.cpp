@@ -1,4 +1,5 @@
 #include "ProjectPanel.h"
+#include "../EditorStyles.h"
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -84,9 +85,9 @@ void ProjectPanel::Render() {
     const ImVec2 buttonSize = {120.0f, 24.0f};
     const float windowWidth = ImGui::GetWindowWidth();
     ImGui::SameLine(windowWidth - buttonSize.x - ImGui::GetStyle().WindowPadding.x);
-    ImGui::PushStyleColor(ImGuiCol_Button, {0.5f, 0.5f, 0.5f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.6f, 0.6f, 0.6f, 1.0f});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.4f, 0.4f, 0.4f, 1.0f});
+    ImGui::PushStyleColor(ImGuiCol_Button, EditorStyles::Button::PROJECT_DEFAULT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorStyles::Button::PROJECT_HOVERED);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorStyles::Button::ACTIVE);
     if(ImGui::Button("Open Folder", ImVec2(buttonSize.x, buttonSize.y))) {
         Utils::OpenInExplorer(currentPath.string());
     }

@@ -38,6 +38,7 @@ public:
     void SetCameraPriority(uint priorityValue);
 
     void Update() override;
+    void RenderUI(GameObject* obj) override;
     
     NODISCARD nlohmann::json SerializeToJson() const override;
     static Camera* CreateFromJson(GameObject* owner, const nlohmann::json& params);

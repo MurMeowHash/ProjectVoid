@@ -11,8 +11,6 @@ public:
     
 private:
     void DrawMenuButton();
-    void DrawWindowControls();
-    void DrawSquareButton(const ImVec2& pos, const ImVec2& size, bool hovered, bool active);
     void ShowContextMenu();
 };
 

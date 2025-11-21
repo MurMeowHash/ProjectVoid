@@ -5,6 +5,7 @@
 #include "../../../Core/Core.h"
 #include "../ComponentMacros.h"
 #include "../../../Utils/JsonUtils.h"
+#include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
 
 Camera::Camera(const CameraParameters &params)
@@ -132,6 +133,20 @@ nlohmann::json Camera::SerializeToJson() const {
     orthographicParams["bottom"] = orthographicParameters.bottom;
     params["orthographicParameters"] = orthographicParams;
     return params;
+}
+
+void Camera::RenderUI(GameObject* obj) {
+    if(projectionMode == ProjectionMode::Perspective) {
+        ImGui::Text("FOV:");
+        ImGui::SetNextItemWidth(-1);
+        if(ImGui::InputFloat("##CameraFOV", &perspectiveParameters.fov)) {
+            if(perspectiveParameters.fov < 1.0f) perspectiveParameters.fov = 1.0f;
+            if(perspectiveParameters.fov > 179.0f) perspectiveParameters.fov = 179.0f;
+            UpdateProjection();
+        }
+    }
+    
+    ImGui::Spacing();
 }
 
 REGISTER_COMPONENT_FROM_JSON(Camera)

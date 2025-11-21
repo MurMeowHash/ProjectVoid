@@ -4,6 +4,9 @@
 #include "../../Scene/Scene.h"
 #include "../ComponentMacros.h"
 #include "../../../Utils/JsonUtils.h"
+#include "../../../Utils/Utils.h"
+#include <imgui/imgui.h>
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 MeshRenderData::MeshRenderData(const std::vector<uint> &meshes)
@@ -79,6 +82,58 @@ MeshRenderData* MeshRenderData::CreateFromJson(GameObject* owner, const nlohmann
         meshRenderData->modelName = params["modelName"].get<std::string>();
     }
     return meshRenderData;
+}
+
+void MeshRenderData::RenderUI(GameObject* obj) {
+    std::string currentModelName = modelName;
+    if(currentModelName.empty() && !meshes.empty()) {
+        currentModelName = ResourceManager::GetModelNameByMeshes(meshes);
+    }
+
+    ImGui::Text("Select Model:");
+    ImGui::SetNextItemWidth(-1);
+
+    auto modelNames = ResourceManager::GetAllModelNames();
+    if(modelNames.empty()) {
+        ImGui::Text("No models loaded");
+        return;
+    }
+
+    std::vector<const char*> modelNamesCStr;
+    modelNamesCStr.reserve(modelNames.size() + 1);
+    modelNamesCStr.push_back("None");
+    for(const auto& name : modelNames) {
+        modelNamesCStr.push_back(name.c_str());
+    }
+
+    int currentIndex = 0;
+    if(!currentModelName.empty()) {
+        auto it = std::find(modelNames.begin(), modelNames.end(), currentModelName);
+        if(it != modelNames.end()) {
+            currentIndex = static_cast<int>(std::distance(modelNames.begin(), it) + 1);
+        }
+    }
+
+    if(ImGui::Combo("##ModelSelect", &currentIndex, modelNamesCStr.data(),
+        static_cast<int>(modelNamesCStr.size()))) {
+        if(currentIndex == 0) {
+            meshes.clear();
+            modelName.clear();
+        } else {
+            std::string selectedModelName = modelNames[currentIndex - 1];
+            int modelIndex = ResourceManager::GetModelIndexByName(selectedModelName);
+            if(modelIndex != ABSENT_RESOURCE) {
+                auto* model = ResourceManager::GetModelByIndex(modelIndex);
+                if(model) {
+                    meshes.clear();
+                    Scene::AddModelMeshesToGameObject(obj, model);
+                    modelName = selectedModelName;
+                }
+            }
+        }
+    }
+    
+    ImGui::Spacing();
 }
 
 REGISTER_COMPONENT_FROM_JSON_WITH_UI(MeshRenderData, "Mesh Render Data")

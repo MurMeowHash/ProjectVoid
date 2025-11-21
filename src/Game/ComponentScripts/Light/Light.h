@@ -19,6 +19,7 @@ DEFINE_BASE(void)
 
     explicit Light(const LightParameters &params = DEFAULT_LIGHT_PARAMS);
     void Update() override;
+    void RenderUI(GameObject* obj) override;
     
     NODISCARD nlohmann::json SerializeToJson() const override;
     static Light* CreateFromJson(GameObject* owner, const nlohmann::json& params);

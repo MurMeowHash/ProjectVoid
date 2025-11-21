@@ -9,7 +9,7 @@ protected:
     ImVec2 position;
     ImVec2 size;
 
-    void DrawRectangle(const ImVec2& pos, float x, float y, const ImVec4& leftColor, const ImVec4& rightColor);
+    void DrawRectangle(const ImVec2& pos, float x, float y, const ImVec4& cul, const ImVec4& cbl, const ImVec4& cur, const ImVec4& cbr);
     void RenderDefaultPanel();
 
 public:

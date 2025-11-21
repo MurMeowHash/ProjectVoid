@@ -1,4 +1,5 @@
 #include "EditorPanel.h"
+#include "EditorStyles.h"
 
 #include <utility>
 
@@ -6,14 +7,14 @@ EditorPanel::EditorPanel(std::string  panelName, const ImVec2& pos, const ImVec2
     : name(std::move(panelName)), position(pos), size(panelSize) {
 }
 
-void EditorPanel::DrawRectangle(const ImVec2& pos, float endX, float endY, const ImVec4& leftColor, const ImVec4& rightColor) {
+void EditorPanel::DrawRectangle(const ImVec2& pos, float endX, float endY, const ImVec4& cul, const ImVec4& cbl, const ImVec4& cur, const ImVec4& cbr) {
     ImGui::GetWindowDrawList()->AddRectFilledMultiColor(
         pos,
         ImVec2(endX, endY),
-        ImGui::GetColorU32(leftColor),
-        ImGui::GetColorU32(rightColor),
-        ImGui::GetColorU32(rightColor),
-        ImGui::GetColorU32(leftColor)
+        ImGui::GetColorU32(cul),
+        ImGui::GetColorU32(cur),
+        ImGui::GetColorU32(cbr),
+        ImGui::GetColorU32(cbl)
     );
 }
 
@@ -28,12 +29,16 @@ void EditorPanel::RenderDefaultPanel() {
     size = ImGui::GetWindowSize();
 
     DrawRectangle(position, position.x + size.x, position.y + size.y, 
-                 ImVec4(0.158f, 0.158f, 0.158f, 1.0f), 
-                 ImVec4(0.1765f, 0.1765f, 0.1765f, 1.0f));
-    
+                 EditorStyles::Panel::BG_TOP_LEFT,
+                 EditorStyles::Panel::BG_BOTTOM_LEFT,
+                 EditorStyles::Panel::BG_TOP_RIGHT,
+                 EditorStyles::Panel::BG_BOTTOM_RIGHT);
+
     DrawRectangle(position, position.x + size.x, position.y + 30.0f, 
-                 ImVec4(0.090f, 0.082f, 0.078f, 1.0f), 
-                 ImVec4(0.129f, 0.129f, 0.129f, 1.0f));
+                 EditorStyles::Panel::HEADER_TOP_LEFT,
+                 EditorStyles::Panel::HEADER_BOTTOM_LEFT,
+                 EditorStyles::Panel::HEADER_TOP_RIGHT,
+                 EditorStyles::Panel::HEADER_BOTTOM_RIGHT);
 
     ImGui::Text(name.c_str());
 }

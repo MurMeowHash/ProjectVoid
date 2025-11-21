@@ -9,7 +9,6 @@
 #define REGISTER_COMPONENT_FROM_JSON(ComponentClass) \
     REGISTER_COMPONENT_FROM_JSON_WITH_UI(ComponentClass, #ComponentClass)
 
-// Макрос для реєстрації з можливістю видалення (для звичайних компонентів)
 #define REGISTER_COMPONENT_FROM_JSON_WITH_UI(ComponentClass, DisplayName) \
     namespace { \
         struct ComponentClass##Registrar { \
@@ -30,7 +29,6 @@
         static ComponentClass##Registrar g_##ComponentClass##Registrar; \
     }
 
-// Макрос для реєстрації без можливості видалення (для Transform)
 #define REGISTER_COMPONENT_FROM_JSON_WITH_UI_NO_REMOVE(ComponentClass, DisplayName) \
     namespace { \
         struct ComponentClass##Registrar { \
@@ -44,7 +42,7 @@
                     DisplayName, \
                     [](GameObject* obj) { obj->AddComponent<ComponentClass>(); }, \
                     [](GameObject* obj) { return obj->GetComponent<ComponentClass>() != nullptr; }, \
-                    [](GameObject* obj) { /* Transform cannot be removed */ } \
+                    [](GameObject* obj) {} \
                 ); \
             } \
         }; \

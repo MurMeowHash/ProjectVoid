@@ -41,6 +41,7 @@ public:
     void Start() override;
     void Update() override;
     void Dispose() override;
+    void RenderUI(GameObject* obj) override;
     
     void SetEnabled(bool enabled);
     NODISCARD bool IsEnabled() const { return isEnabled; }
