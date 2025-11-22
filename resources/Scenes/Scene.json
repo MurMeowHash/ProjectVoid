@@ -5,19 +5,19 @@
       "components": [
         {
           "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
         },
         {
           "params": {
@@ -47,19 +47,19 @@
       "components": [
         {
           "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
         },
         {
           "params": {
@@ -90,22 +90,6 @@
         {
           "params": {
             "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
             "friction": 0.5,
             "isKinematic": false,
             "mass": 1.0,
@@ -124,15 +108,31 @@
         },
         {
           "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
             "position": [
-              2.3324265480041504,
+              2.3325812816619873,
               -18.90000343322754,
               -3.4404258728027344
             ],
             "rotation": [
-              -4.103525134269148e-05,
+              -5.321439675753936e-05,
               -78.6196060180664,
-              8.176724804798141e-06
+              1.8788588931784034e-05
             ],
             "scale": [
               0.9999992251396179,
@@ -190,6 +190,15 @@
       "components": [
         {
           "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
             "color": [
               0.08628890663385391,
               0.3959139883518219,
@@ -202,15 +211,6 @@
             "type": 1
           },
           "type": "Light"
-        },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
         },
         {
           "params": {
@@ -240,20 +240,6 @@
       "components": [
         {
           "params": {
-            "fastMoveSpeed": 20.0,
-            "maxZoomSpeed": 50.0,
-            "minZoomSpeed": 1.0,
-            "moveSpeed": 10.0,
-            "sensitivityX": 0.15000000596046448,
-            "sensitivityY": 0.15000000596046448,
-            "slowMoveSpeed": 2.0,
-            "smoothing": 10.0,
-            "zoomSpeed": 5.0
-          },
-          "type": "EditorMovement"
-        },
-        {
-          "params": {
             "cameraPriority": 0,
             "farPlane": 1000.0,
             "nearPlane": 0.10000000149011612,
@@ -279,14 +265,28 @@
         },
         {
           "params": {
+            "fastMoveSpeed": 20.0,
+            "maxZoomSpeed": 50.0,
+            "minZoomSpeed": 1.0,
+            "moveSpeed": 10.0,
+            "sensitivityX": 0.15000000596046448,
+            "sensitivityY": 0.15000000596046448,
+            "slowMoveSpeed": 2.0,
+            "smoothing": 10.0,
+            "zoomSpeed": 5.0
+          },
+          "type": "EditorMovement"
+        },
+        {
+          "params": {
             "position": [
-              -26.476299285888672,
-              -0.6411325335502625,
-              -26.855207443237305
+              -6.925095558166504,
+              -12.619202613830566,
+              -6.04622220993042
             ],
             "rotation": [
-              -22.35036849975586,
-              403.64813232421875,
+              -29.100378036499023,
+              431.69793701171875,
               0.0
             ],
             "scale": [
