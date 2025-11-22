@@ -22,11 +22,15 @@ private:
     float maxZoomSpeed;
     float currentYaw;
     float currentPitch;
-    bool isLeftMouseDown;
+    bool isRightMouseDown;
 
     void HandleMovement() const;
     void HandleCameraRotation();
     void HandleZoom();
+
+    NODISCARD glm::vec3 GetMouseWheelMovementDirection() const;
+    NODISCARD glm::vec3 GetKeysMovementDirection() const;
+    NODISCARD glm::vec3 GetMovementDirection() const;
 public:
     explicit EditorMovement(const EditorMovementParameters& params = EditorMovementParameters());
 

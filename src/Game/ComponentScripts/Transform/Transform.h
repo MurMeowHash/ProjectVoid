@@ -27,6 +27,7 @@ DEFINE_BASE(void)
     NODISCARD glm::mat4 ToModelMatrix() const;
     NODISCARD glm::vec3 ToForwardVector() const;
     NODISCARD glm::vec3 ToRightVector() const;
+    NODISCARD glm::vec3 ToUpVector() const;
     NODISCARD glm::vec3 GetWorldPosition() const;
     NODISCARD glm::vec3 GetWorldRotation() const;
     NODISCARD glm::vec3 GetWorldScale() const;

@@ -20,7 +20,7 @@ EditorMovement::EditorMovement(const EditorMovementParameters& params)
       maxZoomSpeed(params.maxZoomSpeed),
       currentYaw(0.0f),
       currentPitch(0.0f),
-      isLeftMouseDown(false) {
+      isRightMouseDown(false) {
 }
 
 void EditorMovement::Start() {
@@ -42,83 +42,31 @@ void EditorMovement::HandleCameraRotation() {
     auto* transform = GetGameObject()->GetComponent<Transform>();
     if(!transform) return;
 
-    if(Input::GetMouseButton(Input::MouseButton::MouseLeft)) {
-        if(!isLeftMouseDown) {
-            isLeftMouseDown = true;
+    if(Input::GetMouseButton(Input::MouseButton::MouseRight)) {
+        if(!isRightMouseDown) {
+            isRightMouseDown = true;
         }
 
         float mouseX = Input::GetMouseOffsetX() * sensitivityX;
         float mouseY = Input::GetMouseOffsetY() * sensitivityY;
-        currentYaw += mouseX;
-        currentPitch -= mouseY;
+        currentYaw -= mouseX;
+        currentPitch += mouseY;
 
         currentPitch = glm::clamp(currentPitch, -89.0f, 89.0f);
 
         transform->rotation.x = currentPitch;
         transform->rotation.y = currentYaw;
     } else {
-        if(isLeftMouseDown) {
-            isLeftMouseDown = false;
+        if(isRightMouseDown) {
+            isRightMouseDown = false;
         }
     }
 }
 
 void EditorMovement::HandleMovement() const {
-    auto* transform = GetGameObject()->GetComponent<Transform>();
-    if(!transform) return;
-
-    glm::vec3 targetVelocity = glm::vec3(0.0f);
-    bool hasKeyboardInput = false;
-
-    glm::vec3 forward = glm::normalize(transform->ToForwardVector());
-    glm::vec3 right = glm::normalize(transform->ToRightVector());
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    if(Input::GetKey(Input::Key::KeyW)) {
-        targetVelocity += forward;
-        hasKeyboardInput = true;
-    }
-    if(Input::GetKey(Input::Key::KeyS)) {
-        targetVelocity -= forward;
-        hasKeyboardInput = true;
-    }
-    if(Input::GetKey(Input::Key::KeyD)) {
-        targetVelocity += right;
-        hasKeyboardInput = true;
-    }
-    if(Input::GetKey(Input::Key::KeyA)) {
-        targetVelocity -= right;
-        hasKeyboardInput = true;
-    }
-
-    if(Input::GetKey(Input::Key::KeyE)) {
-        targetVelocity += up;
-        hasKeyboardInput = true;
-    }
-    if(Input::GetKey(Input::Key::KeyQ)) {
-        targetVelocity -= up;
-        hasKeyboardInput = true;
-    }
-
-    if(!hasKeyboardInput) {
-        return;
-    }
-
-    if(glm::length(targetVelocity) > 0.0f) {
-        targetVelocity = glm::normalize(targetVelocity);
-    }
-
-    float currentSpeed = moveSpeed;
-    if(Input::GetKey(Input::Key::KeyLeftShift)) {
-        currentSpeed = fastMoveSpeed;
-    } else if(Input::GetKey(Input::Key::KeyLeftControl)) {
-        currentSpeed = slowMoveSpeed;
-    }
-
-    targetVelocity *= currentSpeed;
-
-    float deltaTime = Time::GetDeltaTime();
-    transform->position += targetVelocity * deltaTime;
+    Transform* transform = GetGameObject()->GetComponent<Transform>();
+    glm::vec3 movementDirection = GetMovementDirection();
+    transform->position += movementDirection * moveSpeed * Time::GetDeltaTime();
 }
 
 void EditorMovement::HandleZoom() {
@@ -224,6 +172,43 @@ nlohmann::json EditorMovement::SerializeToJson() const {
     params["maxZoomSpeed"] = maxZoomSpeed;
 
     return params;
+}
+
+glm::vec3 EditorMovement::GetMovementDirection() const {
+    glm::vec3 movementDirection = glm::vec3(0.0f);
+    movementDirection += GetKeysMovementDirection();
+    movementDirection += GetMouseWheelMovementDirection();
+    return glm::length(movementDirection) == 0.0f ? movementDirection : glm::normalize(movementDirection);
+}
+
+glm::vec3 EditorMovement::GetMouseWheelMovementDirection() const {
+    if(!Input::GetMouseButton(Input::MouseButton::MouseWheel))
+        return glm::vec3(0.0f);
+
+    float mouseOffsetX = Input::GetMouseOffsetX();
+    float mouseOffsetY = Input::GetMouseOffsetY();
+    glm::vec3 movementDirection = glm::vec3(0.0f);
+    movementDirection -= GetGameObject()->GetComponent<Transform>()->ToRightVector() * mouseOffsetX;
+    movementDirection += GetGameObject()->GetComponent<Transform>()->ToUpVector() * -mouseOffsetY;
+    return movementDirection;
+}
+
+glm::vec3 EditorMovement::GetKeysMovementDirection() const {
+    if(!Input::GetMouseButton(Input::MouseButton::MouseRight))
+        return glm::vec3(0.0f);
+
+    Transform* transform = GetGameObject()->GetComponent<Transform>();
+    glm::vec3 movementDirection = glm::vec3(0.0f);
+    if(Input::GetKey(Input::Key::KeyW))
+        movementDirection += transform->ToForwardVector();
+    if(Input::GetKey(Input::Key::KeyS))
+        movementDirection -= transform->ToForwardVector();
+    if(Input::GetKey(Input::Key::KeyD))
+        movementDirection += transform->ToRightVector();
+    if(Input::GetKey(Input::Key::KeyA))
+        movementDirection -= transform->ToRightVector();
+
+    return movementDirection;
 }
 
 REGISTER_COMPONENT_FROM_JSON_WITH_UI(EditorMovement, "Editor Movement")
