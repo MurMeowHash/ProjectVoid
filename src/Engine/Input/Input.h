@@ -10,6 +10,7 @@ namespace Input {
         KeyD = GLFW_KEY_D,
         KeyS = GLFW_KEY_S,
         KeyW = GLFW_KEY_W,
+        KeyF = GLFW_KEY_F,
         KeySpace = GLFW_KEY_SPACE
     };
 

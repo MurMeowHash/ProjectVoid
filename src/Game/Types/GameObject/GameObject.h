@@ -20,6 +20,7 @@ private:
     std::string parentName;
     std::string tag;
     int groupCode;
+    bool activeState;
 
     std::unordered_map<int, ObjectComponent*> components;
     std::unordered_map<std::type_index, int> componentsIndexMap;
@@ -59,10 +60,12 @@ public:
     NODISCARD std::string GetName() const;
     NODISCARD int GetGroupCode() const;
     NODISCARD std::string GetTag() const;
+    NODISCARD bool GetActiveState() const;
     void SetName(std::string targetName);
     void SetParentName(std::string targetName);
     void SetGroup(const std::string &group);
     void SetTag(std::string tagValue);
+    void SetActiveState(bool active);
     void Start();
     void Update();
     void Dispose() override;

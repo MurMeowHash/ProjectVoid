@@ -7,6 +7,7 @@
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
 #include "Physics/Physics.h"
+#include "../Game/ObjectGroup/ObjectGroupManager.h"
 
 namespace Engine {
     ExecutionMode executionMode;
@@ -23,6 +24,7 @@ namespace Engine {
         Input::SetCursorLock(true);
 
         ResourceManager::LoadAssets();
+        ObjectGroupManager::Initialize();
         Physics::Initialize();
         Scene::LoadScene();
         Scene::Start();
@@ -43,7 +45,7 @@ namespace Engine {
             Input::Update();
             Core::FinishFrame();
 
-            DebugFps();
+//            DebugFps();
         }
 
         Dispose();

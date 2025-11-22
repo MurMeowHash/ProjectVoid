@@ -13,6 +13,10 @@ namespace ObjectGroupManager {
         return currentGroupCode >= MAX_GROUP_INDEX;
     }
 
+    void Initialize() {
+        RegisterGroup(DEFAULT_GROUP_NAME);
+    }
+
     void RegisterGroup(std::string group) {
         if(GetGroupCode(group) != ALL_GROUPS_CODE) {
             Debug::LogError("ObjectGroupManager", "Such group already exists", group);

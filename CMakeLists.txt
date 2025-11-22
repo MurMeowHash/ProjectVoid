@@ -103,10 +103,10 @@ add_executable(ProjectVoid
         src/Game/ComponentScripts/Collider/CapsuleCollider.cpp
         src/Game/ComponentScripts/Collider/CapsuleCollider.h
         src/Engine/Physics/Ray.h
-        src/Game/ComponentScripts/Test/RayCastTest.cpp
-        src/Game/ComponentScripts/Test/RayCastTest.h
         src/Game/ObjectGroup/ObjectGroupManager.cpp
         src/Game/ObjectGroup/ObjectGroupManager.h
+        src/Game/ComponentScripts/ObjectInteraction/ObjectInteraction.cpp
+        src/Game/ComponentScripts/ObjectInteraction/ObjectInteraction.h
 )
 
 target_link_libraries(ProjectVoid
