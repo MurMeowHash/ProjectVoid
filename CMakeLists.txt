@@ -128,6 +128,8 @@ add_executable(ProjectVoid
         src/Game/ComponentScripts/EditorCamera/EditorMovement.h
         src/Game/ObjectGroup/ObjectGroupManager.cpp
         src/Game/ObjectGroup/ObjectGroupManager.h
+        src/Game/ComponentScripts/ObjectInteraction/ObjectInteraction.cpp
+        src/Game/ComponentScripts/ObjectInteraction/ObjectInteraction.h
         src/Game/Scene/SceneDeserializer/SceneDeserializer.cpp
         src/Game/Scene/SceneDeserializer/SceneDeserializer.h
         src/Game/Scene/SceneSerializer/SceneSerializer.cpp

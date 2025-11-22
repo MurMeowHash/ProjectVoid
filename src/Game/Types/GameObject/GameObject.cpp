@@ -13,7 +13,8 @@
 #include <ranges>
 
 GameObject::GameObject(const GameObjectParameters &params)
-: name(params.name), parentName{params.parentName}, tag(params.tag), groupCode(params.groupCode) {
+: name(params.name), parentName{params.parentName}, tag(params.tag),
+groupCode(ObjectGroupManager::GetGroupCode(params.groupName)), activeState(true) {
     AddComponent<Transform>(params.transform);
 }
 
@@ -51,6 +52,10 @@ std::string GameObject::GetTag() const {
     return tag;
 }
 
+bool GameObject::GetActiveState() const {
+    return activeState;
+}
+
 std::string GameObject::GetParentName() const {
     return parentName;
 }
@@ -83,6 +88,10 @@ void GameObject::SetGroup(const std::string &group) {
 
 void GameObject::SetTag(std::string tagValue) {
     tag = std::move(tagValue);
+}
+
+void GameObject::SetActiveState(bool active) {
+    activeState = active;
 }
 
 void GameObject::Start() {
