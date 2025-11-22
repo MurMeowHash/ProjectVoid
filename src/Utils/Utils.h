@@ -15,6 +15,7 @@ using uint = unsigned int;
 
 constexpr std::string DEFAULT_OBJECT_NAME = "GameObject";
 constexpr std::string UNDEFINED_NAME = "Undefined";
+constexpr std::string DEFAULT_GROUP_NAME = "Default";
 constexpr int ABSENT_RESOURCE{-1};
 constexpr int DEFAULT_RENDER_TARGET{-1};
 constexpr int ALL_GROUPS_CODE{-1};

@@ -5,19 +5,19 @@
       "components": [
         {
           "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
             "meshes": [
               5
             ],
             "modelName": "Cube"
           },
           "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
         },
         {
           "params": {
@@ -65,135 +65,6 @@
           "params": {
             "position": [
               0.0,
-              0.0,
-              2.3283064365386963e-10
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001",
-      "parent": "Plane"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              9.313225746154785e-10
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <1>",
-      "parent": "Plane"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <2>",
-      "parent": "Cube.001 <1>"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
               -20.0,
               0.0
             ],
@@ -234,129 +105,7 @@
         },
         {
           "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <3>",
-      "parent": "LoverPlane"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
             "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <4>",
-      "parent": "LoverPlane"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <5>",
-      "parent": "Cube.001 <4>"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              15
-            ],
-            "modelName": "axe"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": false,
             "friction": 0.5,
             "isKinematic": false,
             "mass": 1.0,
@@ -376,155 +125,26 @@
         {
           "params": {
             "position": [
-              2.9126389026641846,
-              -15.642999649047852,
-              -0.020449524745345116
+              2.3324265480041504,
+              -18.90000343322754,
+              -3.4404258728027344
             ],
             "rotation": [
-              81.16473388671875,
-              -0.0,
-              -90.0
+              -4.103525134269148e-05,
+              -78.6196060180664,
+              8.176724804798141e-06
             ],
             "scale": [
-              10.0,
-              10.0,
-              10.0
+              0.9999992251396179,
+              1.0,
+              0.9999992251396179
             ]
           },
           "type": "Transform"
         }
       ],
-      "model": "axe",
+      "model": "Cube",
       "name": "CubeSimple"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              15
-            ],
-            "modelName": "axe"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              -1.4901161193847656e-08,
-              0.0,
-              1.1920928955078125e-07
-            ],
-            "rotation": [
-              0.0,
-              0.0,
-              -2.0355550198972866e-13
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "axe",
-      "name": "Axe_Cube",
-      "parent": "CubeSimple"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              15
-            ],
-            "modelName": "axe"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "position": [
-              -4.470348358154297e-08,
-              0.0,
-              3.5762786865234375e-07
-            ],
-            "rotation": [
-              1.2722218874358041e-14,
-              5.649800353148131e-29,
-              -5.088887753031124e-13
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "axe",
-      "name": "Axe_Cube <1>",
-      "parent": "CubeSimple"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              15
-            ],
-            "modelName": "axe"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              1.2722218874358041e-14,
-              1.1299600254906431e-29,
-              -1.0177775099486433e-13
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "axe",
-      "name": "Axe_Cube <2>",
-      "parent": "Axe_Cube <1>"
     },
     {
       "components": [
@@ -570,19 +190,10 @@
       "components": [
         {
           "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
             "color": [
-              0.4345444142818451,
-              0.6666666269302368,
-              0.14052286744117737
+              0.08628890663385391,
+              0.3959139883518219,
+              0.8382352590560913
             ],
             "innerCutOff": 10.0,
             "intensity": 1.0,
@@ -591,6 +202,15 @@
             "type": 1
           },
           "type": "Light"
+        },
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
         },
         {
           "params": {
@@ -620,133 +240,18 @@
       "components": [
         {
           "params": {
-            "enabled": true,
-            "isTrigger": false
+            "fastMoveSpeed": 20.0,
+            "maxZoomSpeed": 50.0,
+            "minZoomSpeed": 1.0,
+            "moveSpeed": 10.0,
+            "sensitivityX": 0.15000000596046448,
+            "sensitivityY": 0.15000000596046448,
+            "slowMoveSpeed": 2.0,
+            "smoothing": 10.0,
+            "zoomSpeed": 5.0
           },
-          "type": "BoxCollider"
+          "type": "EditorMovement"
         },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              -7.62939453125e-06,
-              0.0,
-              -7.62939453125e-06
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <6>",
-      "parent": "PointLight"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "position": [
-              -2.288818359375e-05,
-              0.0,
-              -2.288818359375e-05
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <7>",
-      "parent": "PointLight"
-    },
-    {
-      "components": [
-        {
-          "params": {
-            "enabled": true,
-            "isTrigger": false
-          },
-          "type": "BoxCollider"
-        },
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
-        {
-          "params": {
-            "position": [
-              0.0,
-              0.0,
-              0.0
-            ],
-            "rotation": [
-              0.0,
-              -0.0,
-              0.0
-            ],
-            "scale": [
-              1.0,
-              1.0,
-              1.0
-            ]
-          },
-          "type": "Transform"
-        }
-      ],
-      "model": "Cube",
-      "name": "Cube.001 <8>",
-      "parent": "Cube.001 <7>"
-    },
-    {
-      "components": [
         {
           "params": {
             "cameraPriority": 0,
@@ -774,28 +279,14 @@
         },
         {
           "params": {
-            "fastMoveSpeed": 20.0,
-            "maxZoomSpeed": 50.0,
-            "minZoomSpeed": 1.0,
-            "moveSpeed": 10.0,
-            "sensitivityX": 0.15000000596046448,
-            "sensitivityY": 0.15000000596046448,
-            "slowMoveSpeed": 2.0,
-            "smoothing": 10.0,
-            "zoomSpeed": 5.0
-          },
-          "type": "EditorMovement"
-        },
-        {
-          "params": {
             "position": [
-              -14.12488842010498,
-              -13.723990440368652,
-              -18.952701568603516
+              -26.476299285888672,
+              -0.6411325335502625,
+              -26.855207443237305
             ],
             "rotation": [
-              -1.99989914894104,
-              53.84840393066406,
+              -22.35036849975586,
+              403.64813232421875,
               0.0
             ],
             "scale": [

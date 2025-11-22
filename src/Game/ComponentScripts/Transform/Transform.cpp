@@ -56,7 +56,7 @@ glm::vec3 Transform::ToRightVector() const {
         rightVector.z = -glm::sin(radiansYaw);
     }
     
-    return glm::normalize(rightVector);
+    return rightVector;
 }
 
 glm::vec3 Transform::GetWorldPosition() const {
@@ -228,6 +228,12 @@ void Transform::RenderUI(GameObject* obj) {
     }
     
     ImGui::Spacing();
+}
+
+glm::vec3 Transform::ToUpVector() const {
+    glm::vec3 rightVector = ToRightVector();
+    glm::vec3 forwardVector = ToForwardVector();
+    return glm::cross(rightVector, forwardVector);
 }
 
 REGISTER_COMPONENT_FROM_JSON_WITH_UI_NO_REMOVE(Transform, "Transform")

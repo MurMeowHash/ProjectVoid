@@ -13,35 +13,59 @@ void SetIfExists(const nlohmann::json& j, const std::string& key, T& outVar) {
 template<>
 inline void SetIfExists(const nlohmann::json& j, const std::string& key, glm::vec2& outVar) {
     if (j.contains(key) && j[key].is_array() && j[key].size() == 2) {
-        outVar.x = j[key][0].get<float>();
-        outVar.y = j[key][1].get<float>();
+        if (!j[key][0].is_null() && j[key][0].is_number()) {
+            outVar.x = j[key][0].get<float>();
+        }
+        if (!j[key][1].is_null() && j[key][1].is_number()) {
+            outVar.y = j[key][1].get<float>();
+        }
     }
 }
 
 template<>
 inline void SetIfExists(const nlohmann::json& j, const std::string& key, glm::vec3& outVar) {
     if (j.contains(key) && j[key].is_array() && j[key].size() == 3) {
-        outVar.x = j[key][0].get<float>();
-        outVar.y = j[key][1].get<float>();
-        outVar.z = j[key][2].get<float>();
+        if (!j[key][0].is_null() && j[key][0].is_number()) {
+            outVar.x = j[key][0].get<float>();
+        }
+        if (!j[key][1].is_null() && j[key][1].is_number()) {
+            outVar.y = j[key][1].get<float>();
+        }
+        if (!j[key][2].is_null() && j[key][2].is_number()) {
+            outVar.z = j[key][2].get<float>();
+        }
     }
 }
 
 template<>
 inline void SetIfExists(const nlohmann::json& j, const std::string& key, glm::vec4& outVar) {
     if (j.contains(key) && j[key].is_array() && j[key].size() == 4) {
-        outVar.x = j[key][0].get<float>();
-        outVar.y = j[key][1].get<float>();
-        outVar.z = j[key][2].get<float>();
-        outVar.w = j[key][3].get<float>();
+        if (!j[key][0].is_null() && j[key][0].is_number()) {
+            outVar.x = j[key][0].get<float>();
+        }
+        if (!j[key][1].is_null() && j[key][1].is_number()) {
+            outVar.y = j[key][1].get<float>();
+        }
+        if (!j[key][2].is_null() && j[key][2].is_number()) {
+            outVar.z = j[key][2].get<float>();
+        }
+        if (!j[key][3].is_null() && j[key][3].is_number()) {
+            outVar.w = j[key][3].get<float>();
+        }
     }
 }
 
 template<>
 inline void SetIfExists(const nlohmann::json& j, const std::string& key, glm::bvec3& outVar) {
     if (j.contains(key) && j[key].is_array() && j[key].size() == 3) {
-        outVar.x = j[key][0].get<bool>();
-        outVar.y = j[key][1].get<bool>();
-        outVar.z = j[key][2].get<bool>();
+        if (!j[key][0].is_null() && j[key][0].is_boolean()) {
+            outVar.x = j[key][0].get<bool>();
+        }
+        if (!j[key][1].is_null() && j[key][1].is_boolean()) {
+            outVar.y = j[key][1].get<bool>();
+        }
+        if (!j[key][2].is_null() && j[key][2].is_boolean()) {
+            outVar.z = j[key][2].get<bool>();
+        }
     }
 }

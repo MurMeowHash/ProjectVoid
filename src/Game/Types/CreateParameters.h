@@ -1,10 +1,8 @@
 #pragma once
-
 #include <glad/glad.h>
 #include "../ComponentScripts/Transform/Transform.h"
 #include "../../Core/Core.h"
 #include "../../Utils/Utils.h"
-#include <functional>
 
 struct ModelLoadParameters {
     float scaleFactor = 1.0f;
@@ -16,7 +14,7 @@ struct GameObjectParameters {
     Transform transform;
     std::string parentName = UNDEFINED_NAME;
     std::string tag = "Default";
-    int groupCode = ALL_GROUPS_CODE;
+    std::string groupName = DEFAULT_GROUP_NAME;
 };
 
 enum class ProjectionMode {

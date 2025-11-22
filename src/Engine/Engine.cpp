@@ -9,6 +9,7 @@
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
 #include "Physics/Physics.h"
+#include "../Game/ObjectGroup/ObjectGroupManager.h"
 #include "../UI/EditorManager.h"
 #include <imgui/imgui.h>
 
@@ -26,6 +27,7 @@ namespace Engine {
         Input::Initialize();
 
         ResourceManager::LoadAssets();
+        ObjectGroupManager::Initialize();
         Physics::Initialize();
 
         Scene::LoadScene();
@@ -52,7 +54,7 @@ namespace Engine {
             Input::Update();
             Core::FinishFrame();
 
-            DebugFps();
+//            DebugFps();
         }
 
         Dispose();

@@ -87,16 +87,8 @@ namespace Input {
     void CalcCursorOffset() {
         double xPos, yPos;
         glfwGetCursorPos(activeWindow, &xPos, &yPos);
-        if(Core::GetUsingMode() == Core::UsingMode::Game) {
         cursorOffsetX = static_cast<float>(xPos - cursorPosX);
         cursorOffsetY = static_cast<float>(cursorPosY - yPos);
-        }
-        else if(Core::GetUsingMode() == Core::UsingMode::UI && GetMouseButton(MouseButton::MouseLeft)) {
-            if(xPos >= 0 && xPos <= Core::GetScreenWidth() - 400 && yPos >= 0 && yPos <= Core::GetScreenHeight() - 400) {
-                cursorOffsetX = static_cast<float>(cursorPosX - xPos);
-                cursorOffsetY = static_cast<float>(yPos - cursorPosY);
-            }
-        }
         cursorPosX = xPos;
         cursorPosY = yPos;
     }
