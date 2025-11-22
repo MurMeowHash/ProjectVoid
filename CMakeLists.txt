@@ -134,30 +134,32 @@ add_executable(ProjectVoid
         src/Game/Scene/SceneSerializer/SceneSerializer.h
         src/Game/ComponentScripts/ComponentMacros.h
         src/Game/ComponentScripts/ComponentRegistry.h
-        src/EditorUI/EditorPanel.cpp
-        src/EditorUI/EditorPanel.h
-        src/EditorUI/ScenePanel/ScenePanel.cpp
-        src/EditorUI/ScenePanel/ScenePanel.h
-        src/EditorUI/ScenePanel/SelectionManager.cpp
-        src/EditorUI/ScenePanel/SelectionManager.h
-        src/EditorUI/ScenePanel/SceneHierarchyBuilder.cpp
-        src/EditorUI/ScenePanel/SceneHierarchyBuilder.h
-        src/EditorUI/ScenePanel/SceneHierarchyRenderer.cpp
-        src/EditorUI/ScenePanel/SceneHierarchyRenderer.h
-        src/EditorUI/InspectorPanel/InspectorPanel.cpp
-        src/EditorUI/InspectorPanel/InspectorPanel.h
-        src/EditorUI/ProjectPanel/ProjectPanel.cpp
-        src/EditorUI/ProjectPanel/ProjectPanel.h
-        src/EditorUI/ProjectPanel/FileItem.cpp
-        src/EditorUI/ProjectPanel/FileItem.h
-        src/EditorUI/ConsolePanel/ConsolePanel.cpp
-        src/EditorUI/ConsolePanel/ConsolePanel.h
-        src/EditorUI/EditorManager.cpp
-        src/EditorUI/EditorManager.h
-        src/EditorUI/ScenePanel/SceneHierarchyValidator.cpp
-        src/EditorUI/ScenePanel/SceneHierarchyValidator.h
-        src/EditorUI/TitleBarPanel/TitleBarPanel.cpp
-        src/EditorUI/TitleBarPanel/TitleBarPanel.h
+        src/UI/EditorPanel.cpp
+        src/UI/EditorPanel.h
+        src/UI/ScenePanel/ScenePanel.cpp
+        src/UI/ScenePanel/ScenePanel.h
+        src/UI/ScenePanel/SelectionManager.cpp
+        src/UI/ScenePanel/SelectionManager.h
+        src/UI/ScenePanel/SceneHierarchyBuilder.cpp
+        src/UI/ScenePanel/SceneHierarchyBuilder.h
+        src/UI/ScenePanel/SceneHierarchyRenderer.cpp
+        src/UI/ScenePanel/SceneHierarchyRenderer.h
+        src/UI/InspectorPanel/InspectorPanel.cpp
+        src/UI/InspectorPanel/InspectorPanel.h
+        src/UI/ProjectPanel/ProjectPanel.cpp
+        src/UI/ProjectPanel/ProjectPanel.h
+        src/UI/ProjectPanel/FileItem.cpp
+        src/UI/ProjectPanel/FileItem.h
+        src/UI/ConsolePanel/ConsolePanel.cpp
+        src/UI/ConsolePanel/ConsolePanel.h
+        src/UI/EditorManager.cpp
+        src/UI/EditorManager.h
+        src/UI/ScenePanel/SceneHierarchyValidator.cpp
+        src/UI/ScenePanel/SceneHierarchyValidator.h
+        src/UI/TitleBarPanel/TitleBarPanel.cpp
+        src/UI/TitleBarPanel/TitleBarPanel.h
+        src/Engine/Project/Project.cpp
+        src/Engine/Project/Project.h
 )
 
 target_include_directories(ProjectVoid PRIVATE

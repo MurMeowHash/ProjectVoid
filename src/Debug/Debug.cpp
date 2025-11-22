@@ -1,5 +1,5 @@
 #include "Debug.h"
-#include "../EditorUI/ConsolePanel/ConsolePanel.h"
+#include "../UI/ConsolePanel/ConsolePanel.h"
 
 namespace Debug {
     std::ostream *debugStream;

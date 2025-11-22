@@ -68,10 +68,52 @@ bool ProjectPanel::CanNavigateBack() const {
 }
 
 void ProjectPanel::Render() {
-    RenderDefaultPanel();
+    ImGui::SetNextWindowPos(position);
+    ImGui::SetNextWindowSize(size);
+    ImGui::Begin(name.c_str(), nullptr, 
+                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
+    
+    position = ImGui::GetWindowPos();
+    size = ImGui::GetWindowSize();
+
+    DrawRectangle(position, position.x + size.x, position.y + size.y, 
+                 EditorStyles::Panel::BG_TOP_LEFT,
+                 EditorStyles::Panel::BG_BOTTOM_LEFT,
+                 EditorStyles::Panel::BG_TOP_RIGHT,
+                 EditorStyles::Panel::BG_BOTTOM_RIGHT);
+
+    constexpr float HEADER_HEIGHT = 30.0f;
+    DrawRectangle(position, position.x + size.x, position.y + HEADER_HEIGHT, 
+                 EditorStyles::Panel::HEADER_TOP_LEFT,
+                 EditorStyles::Panel::HEADER_BOTTOM_LEFT,
+                 EditorStyles::Panel::HEADER_TOP_RIGHT,
+                 EditorStyles::Panel::HEADER_BOTTOM_RIGHT);
+
+    // Назва панелі
+    ImGui::SetCursorPosY((HEADER_HEIGHT - ImGui::GetTextLineHeight()) * 0.5f);
+    ImGui::Text(name.c_str());
+
+    // Кнопка "Open Folder" в правій частині заголовку
+    const float buttonWidth = 120.0f;
+    const float buttonHeight = HEADER_HEIGHT;
+    float buttonX = size.x - buttonWidth;
+    
+    ImGui::SetCursorPos(ImVec2(buttonX, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_Button, EditorStyles::Button::TITLEBAR_DEFAULT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorStyles::Button::TITLEBAR_HOVERED);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorStyles::Button::TITLEBAR_ACTIVE);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+    
+    std::filesystem::path currentPath(currentDirectory);
+    if(ImGui::Button("Open Folder", ImVec2(buttonWidth, buttonHeight))) {
+        Utils::OpenInExplorer(currentPath.string());
+    }
+    
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(3);
     
     ImGui::SetCursorPosY(38.0f);
-    std::filesystem::path currentPath(currentDirectory);
     std::filesystem::path projectPath(projectDirectory);
 
     std::string projectName = projectPath.filename().string();
@@ -81,17 +123,6 @@ void ProjectPanel::Render() {
     relativePath = relativePath == "." ? "" : relativePath;
 
     ImGui::Text("%s %s", projectName.c_str(), relativePath.c_str());
-
-    const ImVec2 buttonSize = {120.0f, 24.0f};
-    const float windowWidth = ImGui::GetWindowWidth();
-    ImGui::SameLine(windowWidth - buttonSize.x - ImGui::GetStyle().WindowPadding.x);
-    ImGui::PushStyleColor(ImGuiCol_Button, EditorStyles::Button::PROJECT_DEFAULT);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, EditorStyles::Button::PROJECT_HOVERED);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, EditorStyles::Button::ACTIVE);
-    if(ImGui::Button("Open Folder", ImVec2(buttonSize.x, buttonSize.y))) {
-        Utils::OpenInExplorer(currentPath.string());
-    }
-    ImGui::PopStyleColor(3);
 
     ImGui::Spacing();
     ImGui::Spacing();

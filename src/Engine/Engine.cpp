@@ -9,7 +9,7 @@
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
 #include "Physics/Physics.h"
-#include "../EditorUI/EditorManager.h"
+#include "../UI/EditorManager.h"
 #include <imgui/imgui.h>
 
 namespace Engine {

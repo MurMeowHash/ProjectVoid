@@ -19,9 +19,9 @@ namespace EditorStyles {
 
         static constexpr ImVec4 CLEAR = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-        static constexpr ImVec4 TITLEBAR_DEFAULT = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-        static constexpr ImVec4 TITLEBAR_HOVERED = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
-        static constexpr ImVec4 TITLEBAR_ACTIVE = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+        static constexpr ImVec4 TITLEBAR_DEFAULT = ImVec4(0.0f, 0.0f, 0.0f, 0.0f); // Прозорий
+        static constexpr ImVec4 TITLEBAR_HOVERED = ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
+        static constexpr ImVec4 TITLEBAR_ACTIVE = ImVec4(0.45f, 0.45f, 0.45f, 1.0f);
     }
 
     namespace Header {

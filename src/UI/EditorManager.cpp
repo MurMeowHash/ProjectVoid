@@ -22,20 +22,21 @@ namespace EditorManager {
 
     void CreatePanels() {
         const ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        const float titleBarWidth = displaySize.x - PANEL_SIZE * 2;
 
         titleBarPanel = std::make_unique<TitleBarPanel>(
             ImVec2(0, 0),
-            ImVec2(displaySize.x, TITLE_BAR_HEIGHT)
+            ImVec2(titleBarWidth, TITLE_BAR_HEIGHT)
         );
 
         scenePanel = std::make_unique<ScenePanel>(
-            ImVec2(displaySize.x - PANEL_SIZE * 2, TITLE_BAR_HEIGHT),
-            ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE - TITLE_BAR_HEIGHT)
+            ImVec2(displaySize.x - PANEL_SIZE * 2, 0),
+            ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE)
         );
 
         inspectorPanel = std::make_unique<InspectorPanel>(
-            ImVec2(displaySize.x - PANEL_SIZE, TITLE_BAR_HEIGHT),
-            ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE - TITLE_BAR_HEIGHT)
+            ImVec2(displaySize.x - PANEL_SIZE, 0),
+            ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE)
         );
 
         projectPanel = std::make_unique<ProjectPanel>(
@@ -64,19 +65,20 @@ namespace EditorManager {
 
     void Update() {
         const ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        const float titleBarWidth = displaySize.x - PANEL_SIZE * 2;
 
-        Core::SetViewport(0, static_cast<int>(PANEL_SIZE + TITLE_BAR_HEIGHT),
+        Core::SetViewport(0, static_cast<int>(TITLE_BAR_HEIGHT),
                          static_cast<int>(displaySize.x - PANEL_SIZE * 2),
                          static_cast<int>(displaySize.y - PANEL_SIZE - TITLE_BAR_HEIGHT));
 
         titleBarPanel->SetPosition(ImVec2(0, 0));
-        titleBarPanel->SetSize(ImVec2(displaySize.x, TITLE_BAR_HEIGHT));
+        titleBarPanel->SetSize(ImVec2(titleBarWidth, TITLE_BAR_HEIGHT));
 
-        scenePanel->SetPosition(ImVec2(displaySize.x - PANEL_SIZE * 2, TITLE_BAR_HEIGHT));
-        scenePanel->SetSize(ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE - TITLE_BAR_HEIGHT));
+        scenePanel->SetPosition(ImVec2(displaySize.x - PANEL_SIZE * 2, 0));
+        scenePanel->SetSize(ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE));
 
-        inspectorPanel->SetPosition(ImVec2(displaySize.x - PANEL_SIZE, TITLE_BAR_HEIGHT));
-        inspectorPanel->SetSize(ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE - TITLE_BAR_HEIGHT));
+        inspectorPanel->SetPosition(ImVec2(displaySize.x - PANEL_SIZE, 0));
+        inspectorPanel->SetSize(ImVec2(PANEL_SIZE, displaySize.y - PANEL_SIZE));
 
         projectPanel->SetPosition(ImVec2(0, displaySize.y - PANEL_SIZE));
         projectPanel->SetSize(ImVec2(displaySize.x - PANEL_SIZE * 2, PANEL_SIZE));

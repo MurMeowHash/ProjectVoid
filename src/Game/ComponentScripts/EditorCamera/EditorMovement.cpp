@@ -5,6 +5,7 @@
 #include "../../../Utils/JsonUtils.h"
 #include "../../../Engine/Time/Time.h"
 #include "../Transform/Transform.h"
+#include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
 
 EditorMovement::EditorMovement(const EditorMovementParameters& params)
@@ -33,6 +34,12 @@ void EditorMovement::Start() {
 }
 
 void EditorMovement::Update() {
+    // Перевіряємо, чи курсор не на UI елементах
+    ImGuiIO& io = ImGui::GetIO();
+    if(io.WantCaptureMouse || io.WantCaptureKeyboard) {
+        return;
+    }
+    
     HandleCameraRotation();
     HandleMovement();
     HandleZoom();

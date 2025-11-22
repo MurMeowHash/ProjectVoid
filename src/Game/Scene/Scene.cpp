@@ -189,17 +189,28 @@ namespace Scene {
         std::vector<uint> allMeshes;
         CollectMeshesFromNode(model->GetRoot(), allMeshes);
 
-        if(!allMeshes.empty()) {
-            auto existingMeshData = obj->GetComponent<MeshRenderData>();
-            if(existingMeshData) {
-                existingMeshData->meshes = allMeshes;
-                existingMeshData->modelName = model->GetName();
-            } else {
-                auto* meshRenderData = obj->AddComponent<MeshRenderData>(allMeshes);
-                meshRenderData->modelName = model->GetName();
-                if(!obj->GetComponent<BoxCollider>()) {
-                    obj->AddComponent<BoxCollider>();
+        // Створюємо окремий GameObject для кожного меша як дочірній об'єкт
+        for(uint meshIndex : allMeshes) {
+            auto* mesh = ResourceManager::GetMeshByIndex(static_cast<int>(meshIndex));
+            if(!mesh) continue;
+
+            std::string meshName = mesh->GetName();
+            if(meshName.empty()) {
+                meshName = obj->GetName() + "_Mesh_" + std::to_string(meshIndex);
+            }
+
+            GameObjectParameters meshParams = {meshName, Transform(), obj->GetName()};
+            CreateGameObject(meshParams);
+            uint meshObjectIndex = GetLastGameObjectIndex();
+            auto* meshObj = GetGameObjectByIndex(static_cast<int>(meshObjectIndex));
+            
+            if(meshObj) {
+                meshObj->AddComponent<MeshRenderData>(std::vector<uint>{meshIndex});
+                auto* meshRenderData = meshObj->GetComponent<MeshRenderData>();
+                if(meshRenderData) {
+                    meshRenderData->modelName = model->GetName();
                 }
+                meshObj->AddComponent<BoxCollider>();
             }
         }
     }
@@ -340,10 +351,6 @@ namespace Scene {
 
     void LoadScene() {
         SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
-
-        // const auto movement = GetGameObjectByIndex(GetGameObjectIndexByName("Player"))->GetComponent<Movement>();
-        // const auto cameraTransform = GetGameObjectByIndex(GetGameObjectIndexByName("PlayerCamera"))->GetComponent<Transform>();
-        // movement->SetCameraTransform(cameraTransform);
     }
 
     void Start() {

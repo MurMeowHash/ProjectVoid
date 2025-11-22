@@ -412,6 +412,10 @@ namespace ResourceManager {
         ModelLoadParameters loadParam {0.01f};
         LoadModel("Models/Plane/Plane.fbx", loadParam);
         LoadModel("Models/Cube/Cube.fbx", loadParam);
+        LoadModel("Models/Sonic/Sonic.obj", loadParam);
+        LoadModel("Models/Axe/axe.obj", loadParam);
+        LoadModel("Models/Crates/crates.fbx", loadParam);
+        LoadModel("Models/Soldier/Soldier.fbx", loadParam);
 
         TextureParameters iconParams;
         iconParams.minFilter = TextureFiltering::Linear;
@@ -421,14 +425,10 @@ namespace ResourceManager {
         iconParams.desiredFormat = BufferFormat::RGBA;
 
         LoadTexture("Textures/Play.png", iconParams);
-        LoadTexture("Textures/Component.png", iconParams);
         LoadTexture("Textures/File.png", iconParams);
         LoadTexture("Textures/Folder.png", iconParams);
-        LoadTexture("Textures/Light.png", iconParams);
         LoadTexture("Textures/Menu.png", iconParams);
         LoadTexture("Textures/Picture.png", iconParams);
-        LoadTexture("Textures/Rigidbody.png", iconParams);
-        LoadTexture("Textures/GameObject.png", iconParams);
     }
 
     void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
