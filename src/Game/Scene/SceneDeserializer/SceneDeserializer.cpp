@@ -32,7 +32,7 @@ namespace SceneDeserializer {
         if(objJson.contains("group") && objJson["group"].is_string()) {
             std::string group = objJson["group"].get<std::string>();
             ObjectGroupManager::RegisterGroup(group);
-            params.groupCode = ObjectGroupManager::GetGroupCode(group);
+            params.groupName = group;
         }
 
         return params;
