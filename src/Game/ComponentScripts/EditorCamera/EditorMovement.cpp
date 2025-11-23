@@ -34,7 +34,6 @@ void EditorMovement::Start() {
 }
 
 void EditorMovement::Update() {
-    // Перевіряємо, чи курсор не на UI елементах
     ImGuiIO& io = ImGui::GetIO();
     if(io.WantCaptureMouse || io.WantCaptureKeyboard) {
         return;
