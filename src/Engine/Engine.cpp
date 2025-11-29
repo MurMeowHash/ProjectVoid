@@ -71,8 +71,6 @@ namespace Engine {
     }
 
     void Dispose() {
-        SceneSerializer::SerializeSceneToFile("../resources/Scenes/Scene.json");
-
         EditorManager::Dispose();
         Renderer::Dispose();
         Scene::Dispose();

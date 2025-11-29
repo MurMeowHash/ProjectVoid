@@ -5,6 +5,7 @@
 #include "../../../Utils/JsonUtils.h"
 #include "../ComponentMacros.h"
 #include "../Rigidbody/Rigidbody.h"
+#include "../Collider/Collider.h"
 #include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
 
@@ -64,11 +65,8 @@ glm::vec3 Transform::GetWorldPosition() const {
 }
 
 glm::vec3 Transform::GetWorldRotation() const {
-    // Витягуємо rotation зі світової матриці
     glm::mat4 worldMatrix = GetWorldModelMatrix();
     glm::vec3 worldScale = GetWorldScale();
-    
-    // Видаляємо scale зі світової матриці для отримання чистої rotation матриці
     glm::mat3 rotationMatrix;
     if(worldScale.x > 0.0f && worldScale.y > 0.0f && worldScale.z > 0.0f) {
         rotationMatrix[0] = glm::vec3(worldMatrix[0]) / worldScale.x;
@@ -77,8 +75,7 @@ glm::vec3 Transform::GetWorldRotation() const {
     } else {
         rotationMatrix = glm::mat3(worldMatrix);
     }
-    
-    // Конвертуємо rotation матрицю в кватерніон, а потім в Euler angles
+
     glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
     glm::vec3 eulerAngles = glm::eulerAngles(rotationQuat);
     return glm::degrees(eulerAngles);
@@ -127,20 +124,11 @@ void Transform::AdjustToParent() {
         return;
     }
 
-    // Зберігаємо поточну світову матрицю
     glm::mat4 worldMatrix = GetWorldModelMatrix();
-    
-    // Отримуємо батьківську світову матрицю
     glm::mat4 parentWorldMatrix = parentTransform->GetWorldModelMatrix();
-    
-    // Обчислюємо локальну матрицю: LocalMatrix = inverse(ParentWorldMatrix) * WorldMatrix
     glm::mat4 localMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
-    
-    // Витягуємо position, rotation, scale з локальної матриці
     position = Utils::GetTranslationFromMatrix(localMatrix);
     scale = Utils::GetScaleFromMatrix(localMatrix);
-    
-    // Витягуємо rotation з матриці (видаляємо scale для отримання чистої rotation матриці)
     glm::mat3 rotationMatrix;
     if(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f) {
         rotationMatrix[0] = glm::vec3(localMatrix[0]) / scale.x;
@@ -149,8 +137,6 @@ void Transform::AdjustToParent() {
     } else {
         rotationMatrix = glm::mat3(localMatrix);
     }
-    
-    // Конвертуємо rotation матрицю в кватерніон, а потім в Euler angles
     glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
     glm::vec3 eulerAngles = glm::eulerAngles(rotationQuat);
     rotation = glm::degrees(eulerAngles);
@@ -225,6 +211,11 @@ void Transform::RenderUI(GameObject* obj) {
     scaleActive = ImGui::IsItemActive();
     if(ImGui::IsItemDeactivatedAfterEdit()) {
         scale = cachedScale;
+        auto* collider = obj->GetComponent<Collider>();
+        if(collider && collider->IsEnabled()) {
+            collider->SetEnabled(false);
+            collider->SetEnabled(true);
+        }
     }
     
     ImGui::Spacing();

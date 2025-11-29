@@ -5,6 +5,25 @@
       "components": [
         {
           "params": {
+            "enabled": true,
+            "friction": 0.5,
+            "isKinematic": false,
+            "mass": 1.0,
+            "rotationConstraints": [
+              false,
+              false,
+              false
+            ],
+            "translationConstraints": [
+              false,
+              false,
+              false
+            ]
+          },
+          "type": "Rigidbody"
+        },
+        {
+          "params": {
             "meshes": [
               5
             ],
@@ -22,14 +41,14 @@
         {
           "params": {
             "position": [
-              -0.08300837874412537,
-              -10.161999702453613,
-              -0.02733813039958477
+              2.7862377166748047,
+              -19.800098419189453,
+              -3.9185221195220947
             ],
             "rotation": [
-              0.0,
-              0.0,
-              0.0
+              -0.0005304871592670679,
+              -7.334460258483887,
+              0.00012400360719766468
             ],
             "scale": [
               10.0,
@@ -41,7 +60,8 @@
         }
       ],
       "model": "Cube",
-      "name": "Plane"
+      "name": "Plane",
+      "parent": "Planes"
     },
     {
       "components": [
@@ -70,7 +90,7 @@
             ],
             "rotation": [
               0.0,
-              0.0,
+              -0.0,
               0.0
             ],
             "scale": [
@@ -83,7 +103,8 @@
         }
       ],
       "model": "Cube",
-      "name": "LoverPlane"
+      "name": "LoverPlane",
+      "parent": "Planes"
     },
     {
       "components": [
@@ -125,14 +146,14 @@
         {
           "params": {
             "position": [
-              2.3313188552856445,
-              -18.90000343322754,
-              -3.4404258728027344
+              5.001500606536865,
+              -18.700157165527344,
+              -11.338407516479492
             ],
             "rotation": [
-              -4.3506712245289236e-05,
-              -78.6196060180664,
-              1.1196263585588895e-05
+              -0.0017318641766905785,
+              -84.25007629394531,
+              0.0010366271017119288
             ],
             "scale": [
               0.9999992251396179,
@@ -144,7 +165,7 @@
         }
       ],
       "model": "Cube",
-      "name": "CubeSimple"
+      "name": "SmallSimple"
     },
     {
       "components": [
@@ -171,32 +192,24 @@
               0.0
             ],
             "rotation": [
-              -45.0,
+              -44.999996185302734,
               0.0,
               0.0
             ],
             "scale": [
               1.0,
-              1.0,
-              1.0
+              0.9999998807907104,
+              0.9999998807907104
             ]
           },
           "type": "Transform"
         }
       ],
-      "name": "Sun"
+      "name": "Sun",
+      "parent": "Lights"
     },
     {
       "components": [
-        {
-          "params": {
-            "meshes": [
-              5
-            ],
-            "modelName": "Cube"
-          },
-          "type": "MeshRenderData"
-        },
         {
           "params": {
             "color": [
@@ -221,7 +234,7 @@
             ],
             "rotation": [
               0.0,
-              0.0,
+              -0.0,
               0.0
             ],
             "scale": [
@@ -233,8 +246,8 @@
           "type": "Transform"
         }
       ],
-      "model": "Cube",
-      "name": "PointLight"
+      "name": "BluePointLight",
+      "parent": "Lights"
     },
     {
       "components": [
@@ -280,13 +293,13 @@
         {
           "params": {
             "position": [
-              16.2122859954834,
-              -16.671663284301758,
-              -25.365251541137695
+              38.887001037597656,
+              -0.8198519945144653,
+              -65.95392608642578
             ],
             "rotation": [
-              -3.3003463745117188,
-              318.29876708984375,
+              -9.150341987609863,
+              322.1971740722656,
               0.0
             ],
             "scale": [
@@ -299,6 +312,224 @@
         }
       ],
       "name": "Editor"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "enabled": true,
+            "isTrigger": false
+          },
+          "type": "BoxCollider"
+        },
+        {
+          "params": {
+            "meshes": [
+              5
+            ],
+            "modelName": "Cube"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "enabled": true,
+            "friction": 0.5,
+            "isKinematic": false,
+            "mass": 1.0,
+            "rotationConstraints": [
+              false,
+              false,
+              false
+            ],
+            "translationConstraints": [
+              false,
+              false,
+              false
+            ]
+          },
+          "type": "Rigidbody"
+        },
+        {
+          "params": {
+            "position": [
+              -0.3241890072822571,
+              -14.700177192687988,
+              0.20060664415359497
+            ],
+            "rotation": [
+              -0.0008950036717578769,
+              -50.71337127685547,
+              0.0011658176081255078
+            ],
+            "scale": [
+              5.0,
+              5.0,
+              5.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Cube",
+      "name": "Cube"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "GameObject"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.8578431606292725,
+              0.6508031487464905,
+              0.0756920650601387
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 0.20000000298023224,
+            "outerCutOff": 12.0,
+            "radius": 100.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              10.0,
+              -10.0,
+              -10.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "OrangePointLight",
+      "parent": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.8097584843635559,
+              0.30341699719429016,
+              0.8970588445663452
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 0.20000000298023224,
+            "outerCutOff": 12.0,
+            "radius": 100.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              5.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "PurplePointLight",
+      "parent": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Planes"
     }
   ]
 }

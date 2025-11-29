@@ -183,6 +183,12 @@ void Rigidbody::SetEnabled(bool enabled) {
 }
 
 void Rigidbody::RenderUI(GameObject* obj) {
+    ImGui::Text("Mass:");
+    ImGui::SetNextItemWidth(-1);
+    if(ImGui::InputFloat("Mass##Rigidbody", &mass)) {
+        if(mass < 0.0f) mass = 0.0f;
+    }
+
     bool enabled = IsEnabled();
     if(ImGui::Checkbox("Enabled##Rigidbody", &enabled)) {
         SetEnabled(enabled);
