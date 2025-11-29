@@ -9,8 +9,10 @@
 #include "../ComponentScripts/Collider/CapsuleCollider.h"
 #include "../ComponentScripts/Rigidbody/Rigidbody.h"
 #include "../ComponentScripts/Test/RayCastTest.h"
+#include "../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../Types/GameObject/GameObject.h"
 #include "../ObjectGroup/ObjectGroupManager.h"
+#include "SceneDeserializer/SceneDeserializer.h"
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
@@ -35,6 +37,7 @@ namespace Scene {
 
     std::string CreateUniqueObjectName(const std::string &name);
     uint ProcessGameObjectNode(MeshNode *node, const std::string &parentName = UNDEFINED_NAME);
+    void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes);
     void ExtractRenderItem(const GameObject &obj);
     void ExtractGPULight(const GameObject &obj);
     void ExtractGPUCamera(const GameObject &obj);
@@ -73,16 +76,26 @@ namespace Scene {
         GameObjectParameters params = {node->name, node->transform, parentName};
         CreateGameObject(params);
         uint currentObject = GetLastGameObjectIndex();
-        if(!node->meshes.empty()) {
-            gameObjects[currentObject].AddComponent<MeshRenderData>(node->meshes);
+
+        std::vector<uint> allMeshes = node->meshes;
+
+        for(auto child : node->children) {
+            CollectMeshesFromNode(child, allMeshes);
+        }
+
+        if(!allMeshes.empty()) {
+            gameObjects[currentObject].AddComponent<MeshRenderData>(allMeshes);
             gameObjects[currentObject].AddComponent<BoxCollider>();
         }
 
-        for(auto child : node->children) {
-            ProcessGameObjectNode(child, gameObjects[currentObject].GetName());
-        }
-
         return currentObject;
+    }
+    
+    void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
+        meshes.insert(meshes.end(), node->meshes.begin(), node->meshes.end());
+        for(auto child : node->children) {
+            CollectMeshesFromNode(child, meshes);
+        }
     }
 
     void ExtractRenderItem(const GameObject &obj) {
@@ -99,7 +112,12 @@ namespace Scene {
 
         auto transform = obj.GetComponent<Transform>();
         GPULight gpuLight;
-        gpuLight.positionType = glm::vec4(transform->position, static_cast<float>(light->type));
+
+        glm::vec3 lightPosition = (light->type == LightType::Directional) 
+            ? transform->position 
+            : transform->GetWorldPosition();
+        
+        gpuLight.positionType = glm::vec4(lightPosition, static_cast<float>(light->type));
         gpuLight.colorIntensity = glm::vec4(light->color, light->intensity);
         gpuLight.directionRadius = glm::vec4(transform->ToForwardVector(), light->radius);
 
@@ -113,18 +131,19 @@ namespace Scene {
                 gpuDirectionalLights.emplace_back(gpuLight);
                 break;
             case LightType::Point:
-                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
                 gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, glm::vec3(light->radius));
                 gpuPointLights.emplace_back(gpuLight);
                 break;
             case LightType::Spot:
-                gpuLight.volumeModelMatrix = glm::translate(gpuLight.volumeModelMatrix, transform->position);
+                gpuLight.volumeModelMatrix = glm::translate(glm::mat4(1.0f), lightPosition);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.x), Axis::xAxis);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.y), Axis::yAxis);
                 gpuLight.volumeModelMatrix = glm::rotate(gpuLight.volumeModelMatrix,
                                                          glm::radians(transform->rotation.z), Axis::zAxis);
+                gpuLight.volumeModelMatrix = glm::scale(gpuLight.volumeModelMatrix, glm::vec3(light->radius));
                 glm::vec3 volumeScale(1.0f);
                 volumeScale.y = volumeScale.x = glm::tan(glm::radians(light->outerCutOff)) * light->radius;
                 volumeScale.z = light->radius;
@@ -161,10 +180,39 @@ namespace Scene {
         return static_cast<int>(ProcessGameObjectNode(model->GetRoot()));
     }
 
+    void AddModelMeshesToGameObject(GameObject *obj, Model *model) {
+        if(obj == nullptr || model == nullptr) {
+            Debug::LogError("Scene", "AddModelMeshesToGameObject", "Object or model is null");
+            return;
+        }
+
+        std::vector<uint> allMeshes;
+        CollectMeshesFromNode(model->GetRoot(), allMeshes);
+
+        if(!allMeshes.empty()) {
+            auto existingMeshData = obj->GetComponent<MeshRenderData>();
+            if(existingMeshData) {
+                existingMeshData->meshes = allMeshes;
+                existingMeshData->modelName = model->GetName();
+            } else {
+                auto* meshRenderData = obj->AddComponent<MeshRenderData>(allMeshes);
+                meshRenderData->modelName = model->GetName();
+                if(!obj->GetComponent<BoxCollider>()) {
+                    obj->AddComponent<BoxCollider>();
+                }
+            }
+        }
+    }
+
     uint CreateCamera(const GameObjectParameters &objParams, const CameraParameters &camParams) {
         auto camObjectIndex = CreateGameObject(objParams);
         auto camObject = GetGameObjectByIndex(static_cast<int>(camObjectIndex));
-        camObject->AddComponent<Camera>(camParams);
+        if(camObject) {
+            if(!objParams.parentName.empty() && objParams.parentName != UNDEFINED_NAME) {
+                camObject->SetParentName(objParams.parentName);
+            }
+            camObject->AddComponent<Camera>(camParams);
+        }
 
         return camObjectIndex;
     }
@@ -172,7 +220,12 @@ namespace Scene {
     uint CreateLight(const GameObjectParameters &objParams, const LightParameters &lightParams) {
         auto lightObjIndex = CreateGameObject(objParams);
         auto lightObject = GetGameObjectByIndex(static_cast<int>(lightObjIndex));
-        lightObject->AddComponent<Light>(lightParams);
+        if(lightObject) {
+            if(!objParams.parentName.empty() && objParams.parentName != UNDEFINED_NAME) {
+                lightObject->SetParentName(objParams.parentName);
+            }
+            lightObject->AddComponent<Light>(lightParams);
+        }
 
         return lightObjIndex;
     }
@@ -188,7 +241,56 @@ namespace Scene {
         object->SetName(uniqueNewName);
         gameObjectIndexMap.erase(oldName);
         gameObjectIndexMap[uniqueNewName] = objectIndex;
-        //TODO: components must know about new name
+        object->UpdateComponentsOwnerName(uniqueNewName);
+        
+        if(!gameObjects.empty()) {
+            for(int i = 0; i <= static_cast<int>(GetLastGameObjectIndex()); ++i) {
+                auto* obj = GetGameObjectByIndex(i);
+                if(obj && obj->GetParentName() == oldName) {
+                    obj->SetParentName(uniqueNewName);
+                }
+            }
+        }
+        
+        if(!object->GetParentName().empty() && object->GetParentName() != UNDEFINED_NAME) {
+            auto* transform = object->GetComponent<Transform>();
+            if(transform) {
+                transform->AdjustToParent();
+            }
+        }
+    }
+
+    void RemoveGameObject(uint objectIndex) {
+        if(gameObjects.empty() || objectIndex >= gameObjects.size()) {
+            return;
+        }
+        
+        auto* object = GetGameObjectByIndex(static_cast<int>(objectIndex));
+        if(!object) {
+            return;
+        }
+
+        std::string objectName = object->GetName();
+
+        if(!gameObjects.empty()) {
+            for(int i = 0; i <= static_cast<int>(GetLastGameObjectIndex()); ++i) {
+                auto* obj = GetGameObjectByIndex(i);
+                if(obj && obj->GetParentName() == objectName) {
+                    obj->SetParentName(UNDEFINED_NAME);
+                }
+            }
+        }
+
+        object->Dispose();
+        gameObjectIndexMap.erase(objectName);
+        gameObjects.erase(gameObjects.begin() + objectIndex);
+
+        for(int i = static_cast<int>(objectIndex); i < static_cast<int>(gameObjects.size()); ++i) {
+            auto* obj = &gameObjects[i];
+            if(obj) {
+                gameObjectIndexMap[obj->GetName()] = static_cast<uint>(i);
+            }
+        }
     }
 
     GameObject *GetGameObjectByIndex(int index) {
@@ -237,46 +339,7 @@ namespace Scene {
     }
 
     void LoadScene() {
-        auto planeIndex = CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Plane")));
-        auto planeHolder = GetGameObjectByIndex(planeIndex);
-        planeHolder->GetComponent<Transform>()->position = glm::vec3(0.0f, -20.0f, 0.0f);
-        planeHolder->GetComponent<Transform>()->scale = glm::vec3(100.0f, 0.1f, 100.0f);
-
-//        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube")));
-//        auto cube = GetGameObjectByIndex(GetGameObjectIndexByName("Cube <1>"));
-//        cube->GetComponent<Transform>()->position = glm::vec3(0.0f, 10.0f, 0.0f);
-//        cube->GetComponent<Transform>()->rotation = glm::vec3(60.0f, 45.0f, 15.0f);
-//        cube->AddComponent<Rigidbody>();
-
-        GameObjectParameters params;
-        params.name = "Player";
-        ObjectGroupManager::RegisterGroup("Player");
-        params.groupCode = ObjectGroupManager::GetGroupCode("Player");
-        auto player = GetGameObjectByIndex(static_cast<int>(CreateGameObject(params)));
-        player->GetComponent<Transform>()->scale =  glm::vec3(0.5f, 1.8f, 0.5f);
-        player->AddComponent<CapsuleCollider>();
-        RigidbodyParameters rbParams;
-        rbParams.rotationConstraints = glm::bvec3(true, false, true);
-        player->AddComponent<Rigidbody>(rbParams);
-        player->AddComponent<Movement>();
-        params.name = "PlayerCamera";
-        auto playerCamera = GetGameObjectByIndex(static_cast<int>(CreateCamera(params)));
-        playerCamera->SetParentName("Player");
-        playerCamera->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.7f, 0.0f);
-        playerCamera->AddComponent<MouseLook>();
-        playerCamera->AddComponent<RayCastTest>();
-        player->GetComponent<Movement>()->SetCameraTransform(playerCamera->GetComponent<Transform>());
-
-        GameObjectParameters lightObjParams;
-        lightObjParams.name = "Light";
-        lightObjParams.transform.position = glm::vec3(0.5f, -10.0f, 0.5f);
-        lightObjParams.transform.rotation = glm::vec3(-20.0f, 0.0f, 0.0f);
-        LightParameters lightParams;
-        lightParams.type = LightType::Directional;
-        lightParams.color = glm::vec3(0.1f, 0.1f, 0.1f);
-        lightParams.intensity = 1000.0f;
-        lightParams.radius = 20.0f;
-        CreateLight(lightObjParams, lightParams);
+        SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
     }
 
     void Start() {

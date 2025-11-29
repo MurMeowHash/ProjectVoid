@@ -25,6 +25,8 @@ namespace ResourceManager {
     NODISCARD int GetModelIndexByName(const std::string &name);
     NODISCARD int GetMeshIndexByName(const std::string &name);
     NODISCARD int GetMaterialIndexByName(const std::string &name);
+    NODISCARD std::string GetModelNameByMeshes(const std::vector<uint>& meshes);
+    NODISCARD std::vector<std::string> GetAllModelNames();
 
     void LoadAssets();
     void Dispose();

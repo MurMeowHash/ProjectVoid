@@ -1,6 +1,10 @@
 #pragma once
 #include "../../Utils/Utils.h"
 #include "../../Dispose/IDisposable.h"
+#include <nlohmann/json.hpp>
+#include <string>
+
+class GameObject;
 
 #define DEFINE_BASE(base_class) \
 public:                         \
@@ -11,8 +15,6 @@ typename class_name::Base
 
 #define IS_COMPONENT(class_name) \
 !std::is_same_v<class_name, void>
-
-class GameObject;
 
 class ObjectComponent : public IDisposable {
     friend class GameObject;
@@ -30,6 +32,11 @@ public:
     virtual void Start() {}
     virtual void Update() {}
     void Dispose() override {}
+
+    virtual void RenderUI(GameObject* obj) {}
+    
+    NODISCARD virtual nlohmann::json SerializeToJson() const { return nlohmann::json::object(); }
+    NODISCARD virtual std::string GetComponentTypeName() const { return ""; }
 };
 
 struct ObjectComponentComparator {

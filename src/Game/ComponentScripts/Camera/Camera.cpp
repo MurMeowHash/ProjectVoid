@@ -3,6 +3,10 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../../../Renderer/Renderer.h"
 #include "../../../Core/Core.h"
+#include "../ComponentMacros.h"
+#include "../../../Utils/JsonUtils.h"
+#include <imgui/imgui.h>
+#include <nlohmann/json.hpp>
 
 Camera::Camera(const CameraParameters &params)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 3), worldUp{params.worldUp}, projectionMode{params.projectionMode},
@@ -85,3 +89,64 @@ void Camera::SetRenderTexture(int textureIndex) {
 void Camera::SetCameraPriority(uint priorityValue) {
     cameraPriority = priorityValue;
 }
+
+Camera* Camera::CreateFromJson(GameObject* owner, const nlohmann::json &params) {
+    auto camParams = CameraParameters();
+    SetIfExists(params, "worldUp", camParams.worldUp);
+    SetIfExists(params, "projectionMode", camParams.projectionMode);
+    SetIfExists(params, "nearPlane", camParams.nearPlane);
+    SetIfExists(params, "farPlane", camParams.farPlane);
+    SetIfExists(params, "cameraPriority", camParams.cameraPriority);
+    SetIfExists(params, "renderTarget", camParams.renderTarget);
+    if(params.contains("perspectiveParameters") && params["perspectiveParameters"].is_object()) {
+        const auto& perspectiveParams = params["perspectiveParameters"];
+        SetIfExists(perspectiveParams, "fov", camParams.perspectiveParameters.fov);
+        SetIfExists(perspectiveParams, "aspectRatio", camParams.perspectiveParameters.aspectRatio);
+    }
+    if(params.contains("orthographicParameters") && params["orthographicParameters"].is_object()) {
+        const auto& orthoParams = params["orthographicParameters"];
+        SetIfExists(orthoParams, "left", camParams.orthographicParameters.left);
+        SetIfExists(orthoParams, "right", camParams.orthographicParameters.right);
+        SetIfExists(orthoParams, "top", camParams.orthographicParameters.top);
+        SetIfExists(orthoParams, "bottom", camParams.orthographicParameters.bottom);
+    }
+
+    return owner->AddComponent<Camera>(camParams);
+}
+
+nlohmann::json Camera::SerializeToJson() const {
+    nlohmann::json params;
+    params["projectionMode"] = static_cast<int>(projectionMode);
+    params["nearPlane"] = nearPlane;
+    params["farPlane"] = farPlane;
+    params["cameraPriority"] = cameraPriority;
+    params["renderTarget"] = renderTarget;
+    params["worldUp"] = nlohmann::json::array({worldUp.x, worldUp.y, worldUp.z});
+    nlohmann::json perspectiveParams;
+    perspectiveParams["fov"] = perspectiveParameters.fov;
+    perspectiveParams["aspectRatio"] = perspectiveParameters.aspectRatio;
+    params["perspectiveParameters"] = perspectiveParams;
+    nlohmann::json orthographicParams;
+    orthographicParams["left"] = orthographicParameters.left;
+    orthographicParams["right"] = orthographicParameters.right;
+    orthographicParams["top"] = orthographicParameters.top;
+    orthographicParams["bottom"] = orthographicParameters.bottom;
+    params["orthographicParameters"] = orthographicParams;
+    return params;
+}
+
+void Camera::RenderUI(GameObject* obj) {
+    if(projectionMode == ProjectionMode::Perspective) {
+        ImGui::Text("FOV:");
+        ImGui::SetNextItemWidth(-1);
+        if(ImGui::InputFloat("##CameraFOV", &perspectiveParameters.fov)) {
+            if(perspectiveParameters.fov < 1.0f) perspectiveParameters.fov = 1.0f;
+            if(perspectiveParameters.fov > 179.0f) perspectiveParameters.fov = 179.0f;
+            UpdateProjection();
+        }
+    }
+    
+    ImGui::Spacing();
+}
+
+REGISTER_COMPONENT_FROM_JSON(Camera)

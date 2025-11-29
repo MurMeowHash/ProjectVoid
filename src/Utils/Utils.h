@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
@@ -18,7 +19,6 @@ constexpr std::string DEFAULT_GROUP_NAME = "Default";
 constexpr int ABSENT_RESOURCE{-1};
 constexpr int DEFAULT_RENDER_TARGET{-1};
 constexpr int ALL_GROUPS_CODE{-1};
-//TODO: move all constants from resource manager
 
 enum class BufferFormat;
 enum class TextureDataType;
@@ -35,6 +35,8 @@ namespace Utils {
     NODISCARD Transform ToEngineTransform(const btTransform &transform);
     NODISCARD btTransform ToBulletTransform(const Transform &transform);
     NODISCARD size_t FindLastSlash(const std::string &path);
+    NODISCARD std::string NormalizePath(const std::string &path);
+    NODISCARD int FindOptimalTextLength(const std::string &text, float availableWidth);
     NODISCARD std::string GetExtendedNameFromPath(const std::string &path);
     NODISCARD std::string GetNameFromPath(const std::string &path);
     NODISCARD std::string GetExtensionFromPath(const std::string &path);
@@ -47,4 +49,6 @@ namespace Utils {
     NODISCARD glm::vec3 GetScaleFromMatrix(const glm::mat4 &matrix);
     NODISCARD glm::bvec3 InvertVector3(const glm::bvec3 &vec);
     NODISCARD glm::vec3 NDCToWorld(const glm::vec4 &ndcCoord, const Camera &cam);
+    void OpenInExplorer(const std::string &path);
+    NODISCARD bool IsImageFile(const std::filesystem::path& path);
 }

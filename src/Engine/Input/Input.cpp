@@ -154,4 +154,13 @@ namespace Input {
     void SetCursorLock(bool lock) {
         glfwSetInputMode(activeWindow, GLFW_CURSOR, lock ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
     }
+
+
+    bool IsControlPressed() {
+        return GetKey(Key::KeyLeftControl) || GetKey(Key::KeyRightControl);
+    }
+
+    bool IsShiftPressed() {
+        return GetKey(Key::KeyLeftShift) || GetKey(Key::KeyRightShift);
+    }
 }

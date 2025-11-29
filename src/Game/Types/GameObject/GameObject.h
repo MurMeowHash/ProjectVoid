@@ -7,6 +7,7 @@
 #include "../../ComponentScripts/ObjectComponent.h"
 #include <unordered_map>
 #include <set>
+#include <vector>
 #include <typeindex>
 #include "../../../Debug/Debug.h"
 #include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
@@ -61,14 +62,18 @@ public:
     NODISCARD int GetGroupCode() const;
     NODISCARD std::string GetTag() const;
     NODISCARD bool GetActiveState() const;
+    NODISCARD std::string GetParentName() const;
     void SetName(std::string targetName);
     void SetParentName(std::string targetName);
     void SetGroup(const std::string &group);
     void SetTag(std::string tagValue);
     void SetActiveState(bool active);
+    void UpdateComponentsOwnerName(const std::string& newName);
     void Start();
     void Update();
     void Dispose() override;
+    
+    nlohmann::json SerializeToJson() const;
 
     template<typename T, typename... Args> requires std::is_base_of_v<ObjectComponent, T>
     T* AddComponent(Args&& ... args) {
@@ -113,4 +118,6 @@ public:
 
         return nullptr;
     }
+    
+    NODISCARD std::vector<ObjectComponent*> GetAllComponents() const;
 };

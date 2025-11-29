@@ -1,6 +1,10 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
+#include "../ComponentMacros.h"
+#include <nlohmann/json_fwd.hpp>
+
+class GameObject;
 
 class Rigidbody : public ObjectComponent {
 DEFINE_BASE(void)
@@ -11,6 +15,7 @@ private:
     int rigidbodyIndex = ABSENT_RESOURCE;
     float mass;
     bool isKinematic;
+    bool isEnabled;
     float friction;
     glm::bvec3 translationConstraints;
     glm::bvec3 rotationConstraints;
@@ -19,6 +24,7 @@ private:
 
     void SetMass(float massValue);
     NODISCARD int GetActiveColliderIndex() const;
+    void CreatePhysicsBody();
 public:
     explicit Rigidbody(const RigidbodyParameters &rbParams = DEFAULT_RB_PARAMS);
     NODISCARD int GetRigidbodyIndex() const;
@@ -35,4 +41,12 @@ public:
     void Start() override;
     void Update() override;
     void Dispose() override;
+    void RenderUI(GameObject* obj) override;
+    
+    void SetEnabled(bool enabled);
+    NODISCARD bool IsEnabled() const { return isEnabled; }
+
+    NODISCARD nlohmann::json SerializeToJson() const override;
+    static Rigidbody* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(Rigidbody)
 };

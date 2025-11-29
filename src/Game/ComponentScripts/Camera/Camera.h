@@ -1,8 +1,12 @@
 #pragma once
 #include "../../Types/CreateParameters.h"
 #include "../ObjectComponent.h"
+#include "../ComponentMacros.h"
 #include "../../Types/GLBuffer/FrameBuffer/FrameBuffer.h"
 #include "../../../Engine/Physics/Ray.h"
+#include <nlohmann/json_fwd.hpp>
+
+class GameObject;
 
 class Camera : public ObjectComponent {
 DEFINE_BASE(void)
@@ -34,4 +38,9 @@ public:
     void SetCameraPriority(uint priorityValue);
 
     void Update() override;
+    void RenderUI(GameObject* obj) override;
+    
+    NODISCARD nlohmann::json SerializeToJson() const override;
+    static Camera* CreateFromJson(GameObject* owner, const nlohmann::json& params);
+    GET_COMPONENT_TYPE_NAME(Camera)
 };

@@ -104,7 +104,34 @@ struct LightParameters {
 struct RigidbodyParameters {
     float mass = 1.0f;
     bool isKinematic = false;
+    bool enabled = true;
     float friction = 0.5f;
     glm::bvec3 translationConstraints = glm::bvec3(false);
     glm::bvec3 rotationConstraints = glm::bvec3(false);
+};
+
+struct MouseLookParameters {
+    float minVerticalAngle = -89.0f;
+    float maxVerticalAngle = 89.0f;
+    float sensitivityX = 0.1f;
+    float sensitivityY = 0.1f;
+};
+
+struct MovementParameters {
+    float speed = 10.0f;
+};
+
+struct RayCastTestParameters {
+};
+
+struct EditorMovementParameters {
+    float sensitivityX = 0.15f;
+    float sensitivityY = 0.15f;
+    float moveSpeed = 10.0f;
+    float fastMoveSpeed = 20.0f;
+    float slowMoveSpeed = 2.0f;
+    float smoothing = 10.0f;
+    float zoomSpeed = 5.0f;
+    float minZoomSpeed = 1.0f;
+    float maxZoomSpeed = 50.0f;
 };
