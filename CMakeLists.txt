@@ -177,3 +177,10 @@ target_link_libraries(ProjectVoid
         LinearMath
         imgui
 )
+
+# Copy assimp DLL to executable directory
+add_custom_command(TARGET ProjectVoid POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/vendor/assimp/lib/libassimp-5.dll"
+        $<TARGET_FILE_DIR:ProjectVoid>
+)
