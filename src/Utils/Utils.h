@@ -36,7 +36,6 @@ namespace Utils {
     NODISCARD btTransform ToBulletTransform(const Transform &transform);
     NODISCARD size_t FindLastSlash(const std::string &path);
     NODISCARD std::string NormalizePath(const std::string &path);
-    NODISCARD int FindOptimalTextLength(const std::string &text, float availableWidth);
     NODISCARD std::string GetExtendedNameFromPath(const std::string &path);
     NODISCARD std::string GetNameFromPath(const std::string &path);
     NODISCARD std::string GetExtensionFromPath(const std::string &path);

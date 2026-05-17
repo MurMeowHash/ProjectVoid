@@ -5,7 +5,6 @@
 #include "../Game/Types/GLBuffer/FrameBuffer/FrameBuffer.h"
 #include <stb/stb_image_write.h>
 #include "../Game/ComponentScripts/Camera/Camera.h"
-#include <imgui/imgui.h>
 #include <filesystem>
 #include <algorithm>
 #include <vector>
@@ -82,27 +81,6 @@ namespace Utils {
             normalized.pop_back();
         }
         return normalized;
-    }
-
-    int FindOptimalTextLength(const std::string &text, float availableWidth) {
-        int left = 0;
-        int right = static_cast<int>(text.length());
-        int bestLength = 0;
-        
-        while(left <= right) {
-            const int mid = (left + right) / 2;
-            std::string testName = text.substr(0, mid);
-            const float testWidth = ImGui::CalcTextSize(testName.c_str()).x;
-            
-            if(testWidth <= availableWidth) {
-                bestLength = mid;
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-        
-        return bestLength;
     }
 
     std::string GetExtendedNameFromPath(const std::string &path) {

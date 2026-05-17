@@ -14,13 +14,12 @@ struct MeshRenderData : public ObjectComponent {
 DEFINE_BASE(void)
     std::vector<uint> meshes;
     std::vector<RenderItem3D> renderItems;
-    std::string modelName; // Назва моделі для відображення в UI
+    std::string modelName;
 
     explicit MeshRenderData(const std::vector<uint> &meshes = DEFAULT_MESHES);
     NODISCARD AABB GetCommonAABB() const;
 
     void Update() override;
-    void RenderUI(GameObject* obj) override;
     GET_COMPONENT_TYPE_NAME(MeshRenderData)
     
     NODISCARD nlohmann::json SerializeToJson() const override;

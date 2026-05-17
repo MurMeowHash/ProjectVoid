@@ -8,8 +8,6 @@ namespace Core {
     int screenWidth;
     int screenHeight;
     const char *windowTitle;
-    UsingMode currentUsingMode;
-
     void Initialize(int width, int height, const char *title, bool fullscreen) {
         windowTitle = title;
 
@@ -67,18 +65,6 @@ namespace Core {
 
     int GetScreenHeight() {
         return screenHeight;
-    }
-
-    void SetViewport(int x, int y, int width, int height) {
-        glViewport(x, y, width, height);
-    }
-
-    void SetUsingMode(UsingMode mode) {
-        currentUsingMode = mode;
-    }
-
-    UsingMode GetUsingMode() {
-        return currentUsingMode;
     }
 
     void FinishFrame() {

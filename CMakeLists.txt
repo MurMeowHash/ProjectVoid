@@ -11,30 +11,11 @@ file(GLOB_RECURSE VENDOR_LIBS LIST_DIRECTORIES true ${VENDOR_DIR}/*/lib)
 include_directories(${VENDOR_INCLUDE})
 link_directories(${VENDOR_LIBS})
 
-set(IMGUI_DIR ${VENDOR_DIR}/imgui/include/imgui)
-
 set(VENDOR_SRC
         ${VENDOR_DIR}/glad/lib/glad.c
         ${VENDOR_DIR}/stb/lib/stb_image.cpp
         ${VENDOR_DIR}/stb/lib/stb_image_write.cpp
 )
-
-add_library(imgui STATIC
-        ${IMGUI_DIR}/imgui.cpp
-        ${IMGUI_DIR}/imgui_draw.cpp
-        ${IMGUI_DIR}/imgui_tables.cpp
-        ${IMGUI_DIR}/imgui_widgets.cpp
-        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
-)
-
-target_include_directories(imgui PUBLIC
-        ${IMGUI_DIR}
-        ${IMGUI_DIR}/backends
-)
-
-target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
-target_link_libraries(imgui PUBLIC glfw3 opengl32)
 
 add_executable(ProjectVoid
         ${VENDOR_SRC}
@@ -134,38 +115,12 @@ add_executable(ProjectVoid
         src/Game/Scene/SceneSerializer/SceneSerializer.h
         src/Game/ComponentScripts/ComponentMacros.h
         src/Game/ComponentScripts/ComponentRegistry.h
-        src/UI/EditorPanel.cpp
-        src/UI/EditorPanel.h
-        src/UI/ScenePanel/ScenePanel.cpp
-        src/UI/ScenePanel/ScenePanel.h
-        src/UI/ScenePanel/SelectionManager.cpp
-        src/UI/ScenePanel/SelectionManager.h
-        src/UI/ScenePanel/SceneHierarchyBuilder.cpp
-        src/UI/ScenePanel/SceneHierarchyBuilder.h
-        src/UI/ScenePanel/SceneHierarchyRenderer.cpp
-        src/UI/ScenePanel/SceneHierarchyRenderer.h
-        src/UI/InspectorPanel/InspectorPanel.cpp
-        src/UI/InspectorPanel/InspectorPanel.h
-        src/UI/ProjectPanel/ProjectPanel.cpp
-        src/UI/ProjectPanel/ProjectPanel.h
-        src/UI/ProjectPanel/FileItem.cpp
-        src/UI/ProjectPanel/FileItem.h
-        src/UI/ConsolePanel/ConsolePanel.cpp
-        src/UI/ConsolePanel/ConsolePanel.h
-        src/UI/EditorManager.cpp
-        src/UI/EditorManager.h
-        src/UI/ScenePanel/SceneHierarchyValidator.cpp
-        src/UI/ScenePanel/SceneHierarchyValidator.h
-        src/UI/TitleBarPanel/TitleBarPanel.cpp
-        src/UI/TitleBarPanel/TitleBarPanel.h
         src/Engine/Project/Project.cpp
         src/Engine/Project/Project.h
 )
 
 target_include_directories(ProjectVoid PRIVATE
         ${VENDOR_DIR}/nlohmann
-        ${IMGUI_DIR}
-        ${IMGUI_DIR}/backends
 )
 
 target_link_libraries(ProjectVoid
@@ -175,7 +130,6 @@ target_link_libraries(ProjectVoid
         BulletCollision
         Bullet3Common
         LinearMath
-        imgui
 )
 
 # Copy assimp DLL to executable directory

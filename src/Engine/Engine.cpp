@@ -4,14 +4,10 @@
 #include "Time/Time.h"
 #include "Input/Input.h"
 #include "../Game/Scene/Scene.h"
-#include "../Game/Scene/SceneDeserializer/SceneDeserializer.h"
-#include "../Game/Scene/SceneSerializer/SceneSerializer.h"
 #include "../Renderer/Renderer.h"
 #include "../Core/Resources/ResourceManager.h"
 #include "Physics/Physics.h"
 #include "../Game/ObjectGroup/ObjectGroupManager.h"
-#include "../UI/EditorManager.h"
-#include <imgui/imgui.h>
 
 namespace Engine {
     ExecutionMode executionMode;
@@ -25,20 +21,14 @@ namespace Engine {
         Debug::Initialize(&std::cout);
         Core::Initialize(1920, 1200, "Project Void", false);
         Input::Initialize();
+        Input::SetCursorLock(true);
 
         ResourceManager::LoadAssets();
         ObjectGroupManager::Initialize();
         Physics::Initialize();
-
         Scene::LoadScene();
-        
         Scene::Start();
         Renderer::Initialize();
-
-        Core::SetUsingMode(Core::UsingMode::UI);
-        Input::SetCursorLock(false);
-
-        EditorManager::Initialize();
     }
 
     void Run() {
@@ -48,8 +38,9 @@ namespace Engine {
             Scene::Update();
             Renderer::RenderFrame();
 
-            EditorManager::Update();
-            EditorManager::Render();
+            if(Input::GetKeyDown(Input::Key::KeyEscape)) {
+                glfwSetWindowShouldClose(Core::GetActiveWindow(), true);
+            }
 
             Input::Update();
             Core::FinishFrame();
@@ -71,7 +62,6 @@ namespace Engine {
     }
 
     void Dispose() {
-        EditorManager::Dispose();
         Renderer::Dispose();
         Scene::Dispose();
         Physics::Dispose();

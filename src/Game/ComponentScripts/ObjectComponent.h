@@ -33,8 +33,6 @@ public:
     virtual void Update() {}
     void Dispose() override {}
 
-    virtual void RenderUI(GameObject* obj) {}
-    
     NODISCARD virtual nlohmann::json SerializeToJson() const { return nlohmann::json::object(); }
     NODISCARD virtual std::string GetComponentTypeName() const { return ""; }
 };

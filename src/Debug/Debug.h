@@ -8,7 +8,6 @@ namespace Debug {
     extern std::ostream *debugStream;
 
     void Initialize(std::ostream *targetStream);
-    void AddLogToConsole(const std::string& message, int logType);
     
     template<typename ... Args>
     void Log(const Args& ... args) {
@@ -16,10 +15,7 @@ namespace Debug {
 
         std::ostringstream oss;
         ((oss << args), ...);
-        std::string logMessage = oss.str();
-        
-        (*debugStream) << logMessage;
-        AddLogToConsole(logMessage, 0); // 0 = Info
+        (*debugStream) << oss.str();
     }
 
     template<typename ... Args>
@@ -30,14 +26,7 @@ namespace Debug {
         oss << criticalType;
         ((oss << " > " << args), ...);
         oss << '\n';
-        std::string logMessage = oss.str();
-        
-        (*debugStream) << logMessage;
-        
-        int logType = 0; // Info
-        if(criticalType == "Error") logType = 2; // Error
-        else if(criticalType == "Warning") logType = 1; // Warning
-        AddLogToConsole(logMessage, logType);
+        (*debugStream) << oss.str();
     }
 
     template<typename ... Args>

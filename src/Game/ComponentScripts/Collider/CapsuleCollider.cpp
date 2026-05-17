@@ -57,4 +57,4 @@ nlohmann::json CapsuleCollider::SerializeToJson() const {
     return params;
 }
 
-REGISTER_COMPONENT_FROM_JSON_WITH_UI(CapsuleCollider, "Capsule Collider")
+REGISTER_COMPONENT_FROM_JSON(CapsuleCollider)

@@ -5,11 +5,6 @@
 
 
 namespace Core {
-    enum class UsingMode {
-        Game,
-        UI
-    };
-
     static constexpr int DEF_SCREEN_WIDTH = 800;
     static constexpr int DEF_SCREEN_HEIGHT = 600;
 
@@ -21,9 +16,6 @@ namespace Core {
     NODISCARD float GetAspectRatio();
     NODISCARD int GetScreenWidth();
     NODISCARD int GetScreenHeight();
-    void SetViewport(int x, int y, int width, int height);
-    void SetUsingMode(UsingMode mode);
-    NODISCARD UsingMode GetUsingMode();
     void FinishFrame();
     void Dispose();
 }

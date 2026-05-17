@@ -51,4 +51,4 @@ nlohmann::json BoxCollider::SerializeToJson() const {
     return params;
 }
 
-REGISTER_COMPONENT_FROM_JSON_WITH_UI(BoxCollider, "Box Collider")
+REGISTER_COMPONENT_FROM_JSON(BoxCollider)

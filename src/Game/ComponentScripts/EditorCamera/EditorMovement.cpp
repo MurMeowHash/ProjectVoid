@@ -5,7 +5,6 @@
 #include "../../../Utils/JsonUtils.h"
 #include "../../../Engine/Time/Time.h"
 #include "../Transform/Transform.h"
-#include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
 
 EditorMovement::EditorMovement(const EditorMovementParameters& params)
@@ -34,11 +33,6 @@ void EditorMovement::Start() {
 }
 
 void EditorMovement::Update() {
-    ImGuiIO& io = ImGui::GetIO();
-    if(io.WantCaptureMouse || io.WantCaptureKeyboard) {
-        return;
-    }
-    
     HandleCameraRotation();
     HandleMovement();
     HandleZoom();
@@ -217,4 +211,4 @@ glm::vec3 EditorMovement::GetKeysMovementDirection() const {
     return movementDirection;
 }
 
-REGISTER_COMPONENT_FROM_JSON_WITH_UI(EditorMovement, "Editor Movement")
+REGISTER_COMPONENT_FROM_JSON(EditorMovement)
