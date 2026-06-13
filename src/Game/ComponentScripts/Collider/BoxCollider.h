@@ -1,7 +1,5 @@
 #pragma once
 #include "Collider.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 
 class GameObject;
 
@@ -17,8 +15,4 @@ public:
     explicit BoxCollider(const ColliderParameters &params);
 
     void Start() override;
-    
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    static BoxCollider* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    GET_COMPONENT_TYPE_NAME(BoxCollider)
 };

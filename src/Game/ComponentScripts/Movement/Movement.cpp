@@ -1,10 +1,7 @@
 #include "Movement.h"
 #include "../../../Engine/Input/Input.h"
+#include "../../../Engine/Time/Time.h"
 #include "../../Types/GameObject/GameObject.h"
-#include "../../../Debug/Debug.h"
-#include "../ComponentMacros.h"
-#include "../../../Utils/JsonUtils.h"
-#include <nlohmann/json.hpp>
 
 Movement::Movement()
 : ObjectComponent(0) {
@@ -16,10 +13,7 @@ Movement::Movement(const MovementParameters& params)
 
 }
 
-
-void Movement::Start() {
-    rb = GetGameObject()->GetComponent<Rigidbody>();
-}
+void Movement::Start() { }
 
 void Movement::Update() {
     if(!cameraTransform || !rb) return;
@@ -46,25 +40,10 @@ void Movement::Update() {
         movementDirection = glm::normalize(movementDirection);
     }
 
-    glm::vec3 linearVelocity = movementDirection * speed;
-    linearVelocity.y = rb->GetLinearVelocity().y;
-    rb->SetLinearVelocity(linearVelocity);
+    glm::vec3 linearVelocity = movementDirection * speed * Time::GetDeltaTime();
+    GetGameObject()->GetComponent<Transform>()->position += linearVelocity;
 }
 
 void Movement::SetCameraTransform(Transform *transform) {
     cameraTransform = transform;
 }
-
-Movement* Movement::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
-    auto movementParams = MovementParameters();
-    SetIfExists(params, "speed", movementParams.speed);
-    return owner->AddComponent<Movement>(movementParams);
-}
-
-nlohmann::json Movement::SerializeToJson() const {
-    nlohmann::json params;
-    params["speed"] = speed;
-    return params;
-}
-
-REGISTER_COMPONENT_FROM_JSON(Movement)

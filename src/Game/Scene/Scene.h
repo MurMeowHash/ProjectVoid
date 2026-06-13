@@ -32,7 +32,6 @@ namespace Scene {
     NODISCARD glm::vec3 GetEnvironmentAmbient();
     NODISCARD bool IsInitialized();
 
-    //scene management
     void LoadScene();
     void Start();
     void Update();

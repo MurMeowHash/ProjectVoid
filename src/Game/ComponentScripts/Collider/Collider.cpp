@@ -2,6 +2,7 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../Rigidbody/Rigidbody.h"
 #include "../../../Engine/Physics/Physics.h"
+#include "../MeshRenderData/MeshRenderData.h"
 
 Collider::Collider(bool isTrigger)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 0), isTrigger(isTrigger), isEnabled(true) {
@@ -65,7 +66,6 @@ void Collider::Update() {
         return;
     }
 
-    // Оновлюємо колайдер тільки якщо немає Rigidbody (якщо є Rigidbody, він сам оновлює колайдер)
     if(GetActiveRigidbodyIndex() != ABSENT_RESOURCE) {
         return;
     }
@@ -80,13 +80,11 @@ void Collider::Update() {
     auto transform = owner->GetComponent<Transform>();
     if(!transform) return;
 
-    // Оновлюємо origin та створюємо новий Transform для Bullet
     LocateOrigin();
     
     auto collider = Physics::GetColliderByIndex(colliderIndex);
     if(!collider) return;
 
-    // Створюємо Transform з світовою позицією та локальною rotation
     btTransform btTransform = Utils::ToBulletTransform(Transform(origin, transform->rotation));
     collider->setWorldTransform(btTransform);
     collider->setInterpolationWorldTransform(btTransform);

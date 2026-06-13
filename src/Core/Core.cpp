@@ -1,7 +1,6 @@
 #include "Core.h"
 #include "../Debug/Debug.h"
 #include "../Error/Error.h"
-#include <tuple>
 
 namespace Core {
     GLFWwindow *mainWindow;

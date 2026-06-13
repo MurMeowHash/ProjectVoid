@@ -109,18 +109,7 @@ add_executable(ProjectVoid
         src/Game/ComponentScripts/EditorCamera/EditorMovement.h
         src/Game/ObjectGroup/ObjectGroupManager.cpp
         src/Game/ObjectGroup/ObjectGroupManager.h
-        src/Game/Scene/SceneDeserializer/SceneDeserializer.cpp
-        src/Game/Scene/SceneDeserializer/SceneDeserializer.h
-        src/Game/Scene/SceneSerializer/SceneSerializer.cpp
-        src/Game/Scene/SceneSerializer/SceneSerializer.h
-        src/Game/ComponentScripts/ComponentMacros.h
         src/Game/ComponentScripts/ComponentRegistry.h
-        src/Engine/Project/Project.cpp
-        src/Engine/Project/Project.h
-)
-
-target_include_directories(ProjectVoid PRIVATE
-        ${VENDOR_DIR}/nlohmann
 )
 
 target_link_libraries(ProjectVoid
@@ -132,7 +121,6 @@ target_link_libraries(ProjectVoid
         LinearMath
 )
 
-# Copy assimp DLL to executable directory
 add_custom_command(TARGET ProjectVoid POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/vendor/assimp/lib/libassimp-5.dll"

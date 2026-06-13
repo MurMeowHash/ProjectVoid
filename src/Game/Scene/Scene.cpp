@@ -12,7 +12,9 @@
 #include "../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../Types/GameObject/GameObject.h"
 #include "../ObjectGroup/ObjectGroupManager.h"
-#include "SceneDeserializer/SceneDeserializer.h"
+#include "../../Game/Types/Axis.h"
+#include "../ComponentScripts/EditorCamera/EditorMovement.h"
+#include "../../Game/ComponentScripts/Camera/Camera.h"
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
@@ -339,7 +341,35 @@ namespace Scene {
     }
 
     void LoadScene() {
-        SceneDeserializer::DeserializeScene(SceneDeserializer::ReadJsonFile("../resources/Scenes/Scene.json"));
+        auto planeIndex = CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Plane")));
+        auto planeHolder = GetGameObjectByIndex(planeIndex);
+        planeHolder->GetComponent<Transform>()->position = glm::vec3(0.0f, -10.0f, 0.0f);
+        planeHolder->GetComponent<Transform>()->rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
+        planeHolder->GetComponent<Transform>()->scale = glm::vec3(10.0f, 10.0f, 10.0f);
+
+        CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube")));
+        auto cube = GetGameObjectByIndex(GetGameObjectIndexByName("Cube"));
+        cube->GetComponent<Transform>()->position = glm::vec3(0.0f, 10.0f, 0.0f);
+        cube->GetComponent<Transform>()->rotation = glm::vec3(60.0f, 45.0f, 15.0f);
+        cube->AddComponent<Rigidbody>();
+
+        GameObjectParameters params;
+        params.name = "Player";
+        ObjectGroupManager::RegisterGroup("Player");
+        params.groupName = ObjectGroupManager::GetGroupCode("Player");
+        auto playerIndex = static_cast<int>(CreateGameObject(params));
+        auto player = GetGameObjectByIndex(playerIndex);
+        player->GetComponent<Transform>()->scale =  glm::vec3(0.5f, 1.8f, 0.5f);
+        RigidbodyParameters rbParams;
+        rbParams.rotationConstraints = glm::bvec3(true, false, true);
+        player->AddComponent<Movement>();
+        params.name = "PlayerCamera";
+        auto playerCamera = GetGameObjectByIndex(static_cast<int>(CreateCamera(params)));
+        playerCamera->SetParentName("Player");
+        playerCamera->GetComponent<Transform>()->position = glm::vec3(0.0f, 1.7f, 0.0f);
+        playerCamera->AddComponent<MouseLook>();
+        playerCamera->AddComponent<RayCastTest>();
+        GetGameObjectByIndex(playerIndex)->GetComponent<Movement>()->SetCameraTransform(playerCamera->GetComponent<Transform>());
     }
 
     void Start() {

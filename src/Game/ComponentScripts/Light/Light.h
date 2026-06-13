@@ -1,8 +1,6 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 
 class GameObject;
 
@@ -19,8 +17,4 @@ DEFINE_BASE(void)
 
     explicit Light(const LightParameters &params = DEFAULT_LIGHT_PARAMS);
     void Update() override;
-
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    static Light* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    GET_COMPONENT_TYPE_NAME(Light)
 };

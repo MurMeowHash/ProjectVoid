@@ -10,6 +10,6 @@ uniform sampler2D gAlbedoSpec;
 uniform vec3 ambientColor;
 
 void main() {
-    vec3 pixelColor = texture(gAlbedoSpec, vertexData.TexCoords).rgb;
+    vec3 pixelColor = texture(gAlbedoSpec, vertexData.TexCoords).rgb * 10.0f;
     FragColor = vec4(pixelColor * ambientColor, 1.0);
 }

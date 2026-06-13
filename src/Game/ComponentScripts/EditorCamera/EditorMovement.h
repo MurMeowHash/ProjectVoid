@@ -2,8 +2,6 @@
 
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 #include <glm/glm.hpp>
 
 class GameObject;
@@ -52,8 +50,4 @@ public:
     NODISCARD float GetSlowMoveSpeed() const;
     NODISCARD float GetSmoothing() const;
     NODISCARD float GetZoomSpeed() const;
-
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    static EditorMovement* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    GET_COMPONENT_TYPE_NAME(EditorMovement)
 };

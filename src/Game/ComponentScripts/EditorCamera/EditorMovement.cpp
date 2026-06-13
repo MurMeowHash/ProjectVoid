@@ -1,11 +1,8 @@
 #include "EditorMovement.h"
 #include "../../../Engine/Input/Input.h"
 #include "../../Types/GameObject/GameObject.h"
-#include "../ComponentMacros.h"
-#include "../../../Utils/JsonUtils.h"
 #include "../../../Engine/Time/Time.h"
 #include "../Transform/Transform.h"
-#include <nlohmann/json.hpp>
 
 EditorMovement::EditorMovement(const EditorMovementParameters& params)
     : ObjectComponent(0),
@@ -142,38 +139,6 @@ float EditorMovement::GetZoomSpeed() const {
     return zoomSpeed;
 }
 
-EditorMovement* EditorMovement::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
-    auto editorCamParams = EditorMovementParameters();
-
-    SetIfExists(params, "sensitivityX", editorCamParams.sensitivityX);
-    SetIfExists(params, "sensitivityY", editorCamParams.sensitivityY);
-    SetIfExists(params, "moveSpeed", editorCamParams.moveSpeed);
-    SetIfExists(params, "fastMoveSpeed", editorCamParams.fastMoveSpeed);
-    SetIfExists(params, "slowMoveSpeed", editorCamParams.slowMoveSpeed);
-    SetIfExists(params, "smoothing", editorCamParams.smoothing);
-    SetIfExists(params, "zoomSpeed", editorCamParams.zoomSpeed);
-    SetIfExists(params, "minZoomSpeed", editorCamParams.minZoomSpeed);
-    SetIfExists(params, "maxZoomSpeed", editorCamParams.maxZoomSpeed);
-
-    return owner->AddComponent<EditorMovement>(editorCamParams);
-}
-
-nlohmann::json EditorMovement::SerializeToJson() const {
-    nlohmann::json params;
-
-    params["sensitivityX"] = sensitivityX;
-    params["sensitivityY"] = sensitivityY;
-    params["moveSpeed"] = moveSpeed;
-    params["fastMoveSpeed"] = fastMoveSpeed;
-    params["slowMoveSpeed"] = slowMoveSpeed;
-    params["smoothing"] = smoothing;
-    params["zoomSpeed"] = zoomSpeed;
-    params["minZoomSpeed"] = minZoomSpeed;
-    params["maxZoomSpeed"] = maxZoomSpeed;
-
-    return params;
-}
-
 glm::vec3 EditorMovement::GetMovementDirection() const {
     glm::vec3 movementDirection = glm::vec3(0.0f);
     movementDirection += GetKeysMovementDirection();
@@ -210,5 +175,3 @@ glm::vec3 EditorMovement::GetKeysMovementDirection() const {
 
     return movementDirection;
 }
-
-REGISTER_COMPONENT_FROM_JSON(EditorMovement)

@@ -1,11 +1,7 @@
 #include "MeshRenderData.h"
 #include "../../../Core/Resources/ResourceManager.h"
 #include "../../Types/GameObject/GameObject.h"
-#include "../../Scene/Scene.h"
-#include "../ComponentMacros.h"
-#include "../../../Utils/JsonUtils.h"
 #include "../../../Utils/Utils.h"
-#include <nlohmann/json.hpp>
 
 MeshRenderData::MeshRenderData(const std::vector<uint> &meshes)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 3), meshes(meshes) {
@@ -55,31 +51,3 @@ AABB MeshRenderData::GetCommonAABB() const {
 
     return {minCommonVert, maxCommonVert};
 }
-
-nlohmann::json MeshRenderData::SerializeToJson() const {
-    nlohmann::json params;
-    // Серіалізуємо меші як масив індексів
-    if(!meshes.empty()) {
-        params["meshes"] = meshes;
-    }
-    // Серіалізуємо назву моделі, якщо вона є
-    if(!modelName.empty()) {
-        params["modelName"] = modelName;
-    }
-    return params;
-}
-
-MeshRenderData* MeshRenderData::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
-    std::vector<uint> meshes;
-    if(params.contains("meshes") && params["meshes"].is_array()) {
-        meshes = params["meshes"].get<std::vector<uint>>();
-    }
-    auto* meshRenderData = owner->AddComponent<MeshRenderData>(meshes);
-    // Відновлюємо назву моделі, якщо вона є
-    if(params.contains("modelName") && params["modelName"].is_string()) {
-        meshRenderData->modelName = params["modelName"].get<std::string>();
-    }
-    return meshRenderData;
-}
-
-REGISTER_COMPONENT_FROM_JSON(MeshRenderData)
