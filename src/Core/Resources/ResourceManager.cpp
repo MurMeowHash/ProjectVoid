@@ -409,26 +409,37 @@ namespace ResourceManager {
         CreateScreenPlane("LightVolumePlane");
         CreateSphere(1.0f, 32, 32);
         CreateCone(1.0f, 1.0f, 32);
-        ModelLoadParameters loadParam {0.01f};
-        LoadModel("Models/Plane/Plane.fbx", loadParam);
-        LoadModel("Models/Cube/Cube.fbx", loadParam);
-        LoadModel("Models/Sonic/Sonic.obj", loadParam);
-        LoadModel("Models/Axe/axe.obj", loadParam);
-        LoadModel("Models/Crates/crates.fbx", loadParam);
-        LoadModel("Models/Soldier/Soldier.fbx", loadParam);
-
-        TextureParameters iconParams;
-        iconParams.minFilter = TextureFiltering::Linear;
-        iconParams.magFilter = TextureFiltering::Linear;
-        iconParams.wrapS = TextureWrap::ClampToEdge;
-        iconParams.wrapT = TextureWrap::ClampToEdge;
-        iconParams.desiredFormat = BufferFormat::RGBA;
-
-        LoadTexture("Textures/Play.png", iconParams);
-        LoadTexture("Textures/File.png", iconParams);
-        LoadTexture("Textures/Folder.png", iconParams);
-        LoadTexture("Textures/Menu.png", iconParams);
-        LoadTexture("Textures/Picture.png", iconParams);
+        ModelLoadParameters loadParam {0.3f};
+        LoadModel("Models/Xeno/XenoRaven.fbx", loadParam);
+        loadParam.scaleFactor = 0.03f;
+        LoadModel("Models/V1/Mirage_V1.fbx", loadParam);
+        loadParam.scaleFactor = 2.0f;
+        LoadModel("Models/Freddy/freddy-fazbear-special-delivery.fbx", loadParam);
+        loadParam.scaleFactor = 100.0f;
+        LoadModel("Models/Desert/RockyDesertMesh.obj", loadParam);
+        TextureParameters texParams;
+        texParams.minFilter = TextureFiltering::LinearMipMap;
+        texParams.magFilter = TextureFiltering::Linear;
+        texParams.genMipMaps = true;
+        texParams.desiredFormat = BufferFormat::SRGBA;
+        auto xenoBodyAlbedo = LoadTexture("Models/Xeno/textures/XenoRaven_Body_D.tga.png", texParams);
+        auto xenoHeadAlbedo = LoadTexture("Models/Xeno/textures/XenoRaven_Head_D.tga.png", texParams);
+        auto freddyAlbedo = LoadTexture("Models/Freddy/textures/freddy_body_color.jpg", texParams);
+        auto desertAlbedo = LoadTexture("Models/Desert/textures/RockyDesert_Bitmap_Output_4096.png", texParams);
+        texParams.desiredFormat = BufferFormat::RGBA;
+        auto xenoBodyNormal = LoadTexture("Models/Xeno/textures/XenoRaven_body_N.tga.png", texParams);
+        auto xenoBodySpecular = LoadTexture("Models/Xeno/textures/XenoRaven_Body_S.tga.png", texParams);
+        auto xenoHeadNormal = LoadTexture("Models/Xeno/textures/XenoRaven_head_N.tga.png", texParams);
+        auto xenoHeadSpecular = LoadTexture("Models/Xeno/textures/XenoRaven_Head_S.tga.png", texParams);
+        auto freddyNormal = LoadTexture("Models/Freddy/textures/freddy_body_normal.jpg", texParams);
+        CreateMaterial("xenoBodyMaterial", xenoBodyAlbedo, xenoBodyNormal, xenoBodySpecular, 0.9f);
+        GetMeshByIndex(GetMeshIndexByName("body"))->SetMaterial(GetMaterialIndexByName("xenoBodyMaterial"));
+        CreateMaterial("xenoHeadMaterial", xenoHeadAlbedo, xenoHeadNormal, xenoHeadSpecular, 0.9f);
+        GetMeshByIndex(GetMeshIndexByName("head"))->SetMaterial(GetMaterialIndexByName("xenoHeadMaterial"));
+        CreateMaterial("freddyMaterial", freddyAlbedo, freddyNormal, ABSENT_RESOURCE, 0.6f);
+        GetModelByIndex(GetModelIndexByName("freddy-fazbear-special-delivery"))->SetMaterial(GetMaterialIndexByName("freddyMaterial"));
+        CreateMaterial("desertMaterial", desertAlbedo, ABSENT_RESOURCE, ABSENT_RESOURCE, 0.2f);
+        GetModelByIndex(GetModelIndexByName("RockyDesertMesh"))->SetMaterial(GetMaterialIndexByName("desertMaterial"));
     }
 
     void CollectMeshesFromNode(MeshNode *node, std::vector<uint> &meshes) {
