@@ -24,9 +24,8 @@ namespace SceneDeserializer {
     GameObjectParameters ParseGameObjectParameters(const nlohmann::json& objJson, const std::string& name) {
         GameObjectParameters params;
         params.name = name;
-        // Transform тепер створюється автоматично в конструкторі GameObject
-        // і може бути оновлений через масив components
-        params.transform = Transform(); // Дефолтний Transform
+
+        params.transform = Transform();
         params.parentName = UNDEFINED_NAME;
 
         if(objJson.contains("group") && objJson["group"].is_string()) {
@@ -91,9 +90,6 @@ namespace SceneDeserializer {
 
         ApplyGroupToGameObject(obj, objJson);
 
-        // Завантажуємо компоненти з масиву (включаючи Transform, якщо він там є)
-        // Transform створюється автоматично в конструкторі GameObject,
-        // але якщо він вказаний в масиві components, то Transform::CreateFromJson оновить його
         if(objJson.contains("components")) {
             CreateComponentsFromJson(obj, objJson["components"]);
         }
@@ -102,18 +98,14 @@ namespace SceneDeserializer {
             return Scene::ABSENT_OBJECT;
         }
 
-        // Якщо MeshRenderData існує, але modelName не встановлено, намагаємося знайти його
         auto* meshRenderData = obj->GetComponent<MeshRenderData>();
         if(meshRenderData && meshRenderData->modelName.empty() && !meshRenderData->meshes.empty()) {
-            // Спочатку перевіряємо, чи є поле "model" в JSON
             if(objJson.contains("model") && objJson["model"].is_string()) {
                 std::string modelName = objJson["model"].get<std::string>();
-                // Перевіряємо, чи модель існує
                 if(ResourceManager::GetModelIndexByName(modelName) != ABSENT_RESOURCE) {
                     meshRenderData->modelName = modelName;
                 }
             } else {
-                // Якщо поля "model" немає, намагаємося знайти за мешами
                 std::string foundModelName = ResourceManager::GetModelNameByMeshes(meshRenderData->meshes);
                 if(!foundModelName.empty()) {
                     meshRenderData->modelName = foundModelName;
@@ -173,9 +165,7 @@ namespace SceneDeserializer {
                 Debug::LogWarning("SceneDeserializer", "Parent not found", link.second);
             }
         }
-        
-        // Після встановлення всіх батьків, прив'язуємо Transform до батьків для всіх об'єктів
-        // Це потрібно для випадків, коли об'єкт створювався з батьком, але батько ще не існував
+
         for(int i = 0; i <= static_cast<int>(Scene::GetLastGameObjectIndex()); ++i) {
             auto obj = Scene::GetGameObjectByIndex(i);
             if(obj && !obj->GetParentName().empty() && obj->GetParentName() != UNDEFINED_NAME) {
