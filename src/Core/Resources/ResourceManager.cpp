@@ -405,6 +405,10 @@ namespace ResourceManager {
     }
 
     void LoadAssets() {
+        ModelLoadParameters a;
+        a.scaleFactor = 0.01f;
+        LoadModel("Models/Cube/Cube.fbx", a);
+
         CreateScreenPlane("ScreenPlane");
         CreateScreenPlane("LightVolumePlane");
         CreateSphere(1.0f, 32, 32);

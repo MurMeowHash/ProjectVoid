@@ -15,6 +15,8 @@
 #include "../../Game/Types/Axis.h"
 #include "../ComponentScripts/EditorCamera/EditorMovement.h"
 #include "../../Game/ComponentScripts/Camera/Camera.h"
+#include "../../Game/Types/Model/Vertex.h"
+#include "../../Core/Core.h"
 
 namespace Scene {
     static constexpr float LINEAR_ATT_MULTIPLIER{4.5f};
@@ -274,6 +276,11 @@ namespace Scene {
     }
 
     void LoadScene() {
+        auto cube = GetGameObjectByIndex(CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("Cube"))));
+        cube->GetComponent<Transform>()->position = glm::vec3(-1.0f, 200.0f, -2.0f);
+        cube->GetComponent<Transform>()->rotation = glm::vec3(60.0f, 45.0f, 15.0f);
+        cube->AddComponent<Rigidbody>();
+
         CreateGameObjectFromModel(ResourceManager::GetModelByIndex(ResourceManager::GetModelIndexByName("XenoRaven")));
         auto xeno = GetGameObjectByIndex(GetGameObjectIndexByName("XenoRaven"));
         xeno->GetComponent<Transform>()->position = glm::vec3(-1.0f, 3.8f, -2.0f);
@@ -332,7 +339,7 @@ namespace Scene {
         lightParams.intensity = 2.0f;
         lightParams.innerCutOff = 60.0f;
         lightParams.outerCutOff = 70.0f;
-        CreateLight(lightObjParams, lightParams);
+        // CreateLight(lightObjParams, lightParams);
         lightObjParams.transform.position = glm::vec3(10.0f, 5.0f, -20.0f);
         lightObjParams.transform.rotation = glm::vec3(0.0f, 0.0f, 0.0f);
         lightParams.type = LightType::Point;
@@ -356,11 +363,58 @@ namespace Scene {
         lightParams.intensity = 0.5f;
         lightObjParams.transform.rotation = glm::vec3(30.0f, 0.0f, 0.0f);
         CreateLight(lightObjParams, lightParams);
+
+        // Render-target demo: Camera A renders the scene to a texture; a world plane shows that feed.
+        TextureParameters rtTexParams;
+        rtTexParams.minFilter = TextureFiltering::Linear;
+        rtTexParams.magFilter = TextureFiltering::Linear;
+        rtTexParams.desiredFormat = BufferFormat::RGBA16F;
+        ResourceManager::CreateTexture("SecurityCameraRT", Core::GetScreenWidth(), Core::GetScreenHeight(), rtTexParams);
+        auto securityCamRT = ResourceManager::GetTextureIndexByName("SecurityCameraRT");
+
+        std::vector<Vertex> displayPlaneVerts(4);
+        const glm::vec3 planeNormal(0.0f, 0.0f, 1.0f);
+        displayPlaneVerts[0] = {{-2.0f, 1.5f, 0.0f}, planeNormal, {0.0f, 1.0f}, {}, {}};
+        displayPlaneVerts[1] = {{2.0f, 1.5f, 0.0f}, planeNormal, {1.0f, 1.0f}, {}, {}};
+        displayPlaneVerts[2] = {{-2.0f, -1.5f, 0.0f}, planeNormal, {0.0f, 0.0f}, {}, {}};
+        displayPlaneVerts[3] = {{2.0f, -1.5f, 0.0f}, planeNormal, {1.0f, 0.0f}, {}, {}};
+        std::vector<uint> displayPlaneIndices = {0, 2, 1, 1, 2, 3};
+        ResourceManager::CreateManualMesh("SecurityCameraDisplayPlane", displayPlaneVerts, displayPlaneIndices, true);
+        ResourceManager::CreateMaterial("SecurityCameraDisplayMaterial", securityCamRT, ABSENT_RESOURCE, ABSENT_RESOURCE, 0.1f);
+        ResourceManager::GetMeshByIndex(ResourceManager::GetMeshIndexByName("SecurityCameraDisplayPlane"))
+            ->SetMaterial(ResourceManager::GetMaterialIndexByName("SecurityCameraDisplayMaterial"));
+
+        GameObjectParameters displayParams;
+        displayParams.name = "SecurityCameraDisplay";
+        auto displayObjIndex = CreateGameObject(displayParams);
+        auto displayObj = GetGameObjectByIndex(static_cast<int>(displayObjIndex));
+        displayObj->AddComponent<MeshRenderData>(std::vector<uint>{static_cast<uint>(
+            ResourceManager::GetMeshIndexByName("SecurityCameraDisplayPlane"))});
+        displayObj->GetComponent<Transform>()->position = glm::vec3(6.0f, 1.5f, -5.0f);
+        displayObj->GetComponent<Transform>()->rotation = glm::vec3(0.0f, 45.0f, 0.0f);
+        displayObj->GetComponent<Transform>()->scale = glm::vec3(2.0f, 2.0f, 2.0f);
+
+        GameObjectParameters securityCamObjParams;
+        securityCamObjParams.name = "SecurityCamera";
+        CameraParameters securityCamParams;
+        securityCamParams.cameraPriority = 0;
+        auto securityCamObjIndex = CreateCamera(securityCamObjParams, securityCamParams);
+        auto securityCamObj = GetGameObjectByIndex(static_cast<int>(securityCamObjIndex));
+        securityCamObj->GetComponent<Transform>()->position = glm::vec3(0.0f, 8.0f, 18.0f);
+        securityCamObj->GetComponent<Transform>()->rotation = glm::vec3(-15.0f, 180.0f, 0.0f);
     }
 
     void Start() {
         for(auto &obj : gameObjects) {
             obj.Start();
+        }
+
+        auto securityCamRT = ResourceManager::GetTextureIndexByName("SecurityCameraRT");
+        if(securityCamRT != ABSENT_RESOURCE) {
+            auto securityCamObj = GetGameObjectByIndex(GetGameObjectIndexByName("SecurityCamera"));
+            if(securityCamObj) {
+                securityCamObj->GetComponent<Camera>()->SetRenderTexture(securityCamRT);
+            }
         }
 
         sceneInitialized = true;

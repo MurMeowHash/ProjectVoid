@@ -144,6 +144,8 @@ namespace Renderer {
         if(!buf) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, Core::GetScreenWidth(), Core::GetScreenHeight());
+            GLenum drawBuffer = GL_BACK;
+            glDrawBuffers(1, &drawBuffer);
             return;
         }
 
@@ -157,6 +159,14 @@ namespace Renderer {
         }
 
         glDrawBuffers(static_cast<GLsizei>(renderTargets.size()), renderTargets.data());
+    }
+
+    glm::vec2 GetActiveRenderSize() {
+        if(outputFrameBuffer) {
+            return glm::vec2(outputFrameBuffer->GetWidth(), outputFrameBuffer->GetHeight());
+        }
+
+        return glm::vec2(Core::GetScreenWidth(), Core::GetScreenHeight());
     }
 
     RenderData ConstructRenderData() {
@@ -213,7 +223,6 @@ namespace Renderer {
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(renderItem.countIndices), GL_UNSIGNED_INT, nullptr);
         }
         Shader::UnBind();
-        BindFrameBuffer(outputFrameBuffer);
     }
 
     void IndirectLightingPass(const RenderData &renderData, const GPUCamera &activeCam) {
@@ -221,7 +230,7 @@ namespace Renderer {
         ClearFramebuffer();
         shaders.indirectLightingShader.Bind();
         shaders.indirectLightingShader.SetVec3("viewPos", activeCam.position);
-        shaders.indirectLightingShader.SetVec2("viewportSize", glm::vec2(Core::GetScreenWidth(), Core::GetScreenHeight()));
+        shaders.indirectLightingShader.SetVec2("viewportSize", GetActiveRenderSize());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.gBuffer.GetColorAttachment("Position"));
@@ -246,10 +255,10 @@ namespace Renderer {
         glDisable(GL_BLEND);
 
         Shader::UnBind();
-        BindFrameBuffer(outputFrameBuffer);
     }
 
     void PostProcessingPass(const RenderData &renderData) {
+        BindFrameBuffer(outputFrameBuffer);
         ClearFramebuffer();
         shaders.postProcessingShader.Bind();
         shaders.postProcessingShader.SetFloat("exposure", renderData.ppInfo.exposure);
@@ -282,6 +291,8 @@ namespace Renderer {
             IndirectLightingPass(renderData, camera);
             PostProcessingPass(renderData);
         }
+
+        BindFrameBuffer(nullptr);
     }
 
     void Dispose() {
@@ -343,7 +354,9 @@ namespace Renderer {
         auto screenPlane = ResourceManager::GetMeshByIndex(ResourceManager::GetMeshIndexByName("ScreenPlane"));
         glBindVertexArray(screenPlane->GetHandle());
         glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(screenPlane->GetIndicesCount()), GL_UNSIGNED_INT, nullptr);
+        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glBindVertexArray(0);
     }
