@@ -280,7 +280,6 @@ namespace Renderer {
             ubos.transformMatricesBuffer.SetData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.viewMatrix));
             GeometryPass(renderData);
             IndirectLightingPass(renderData, camera);
-//            TODO: blit depth buffer to main output in case of forward rendering
             PostProcessingPass(renderData);
         }
     }
@@ -353,7 +352,6 @@ namespace Renderer {
         auto lightVolume = ResourceManager::GetMeshByIndex(ResourceManager::GetMeshIndexByName(volumeName));
         if(!lightVolume || lights.empty()) return;
 
-        //TODO: dirty flags optimization
         vbos.lightsBuffer.SetData(0, static_cast<GLsizeiptr>(sizeof(GPULight) * lights.size()), lights.data());
         glBindVertexArray(lightVolume->GetHandle());
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(lightVolume->GetIndicesCount()),

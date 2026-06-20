@@ -42,6 +42,8 @@ void Movement::Update() {
 
     glm::vec3 linearVelocity = movementDirection * speed * Time::GetDeltaTime();
     GetGameObject()->GetComponent<Transform>()->position += linearVelocity;
+
+    // Debug::Log("Position ", GetGameObject()->GetComponent<Transform>()->position.x, " ", GetGameObject()->GetComponent<Transform>()->position.y, " ", GetGameObject()->GetComponent<Transform>()->position.z, "\n");
 }
 
 void Movement::SetCameraTransform(Transform *transform) {

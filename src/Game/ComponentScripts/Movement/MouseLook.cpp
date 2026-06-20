@@ -20,4 +20,7 @@ void MouseLook::Update() {
     transform->rotation.y -= Input::GetMouseOffsetX() * sensitivityY;
 
     transform->rotation.x = glm::clamp(transform->rotation.x, minVerticalAngle, maxVerticalAngle);
+
+    // Debug::Log("Rotation ", GetGameObject()->GetComponent<Transform>()->rotation.x, " ", GetGameObject()->GetComponent<Transform>()->rotation.y, " ", GetGameObject()->GetComponent<Transform>()->rotation.z, "\n");
+
 }

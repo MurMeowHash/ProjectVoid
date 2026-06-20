@@ -44,8 +44,6 @@ namespace Engine {
 
             Input::Update();
             Core::FinishFrame();
-
-//            DebugFps();
         }
 
         Dispose();

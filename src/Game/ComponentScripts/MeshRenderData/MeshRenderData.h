@@ -12,7 +12,6 @@ struct MeshRenderData : public ObjectComponent {
 DEFINE_BASE(void)
     std::vector<uint> meshes;
     std::vector<RenderItem3D> renderItems;
-    std::string modelName;
 
     explicit MeshRenderData(const std::vector<uint> &meshes = DEFAULT_MESHES);
     NODISCARD AABB GetCommonAABB() const;
