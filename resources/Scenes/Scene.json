@@ -1,0 +1,1609 @@
+{
+  "name": "DefaultScene",
+  "objects": [
+    {
+      "components": [
+        {
+          "params": null,
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              -2.3871675125519687e-07
+            ],
+            "scale": [
+              12.0,
+              0.10000000149011612,
+              12.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Plane",
+      "parent": "Planes"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.2613898515701294,
+              0.6125414967536926,
+              0.720588207244873
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 0.10000000149011612,
+            "outerCutOff": 12.0,
+            "radius": 5.0,
+            "type": 0
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -60.000003814697266,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              0.9999998807907104,
+              0.9999998807907104
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Sun",
+      "parent": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "fastMoveSpeed": 20.0,
+            "maxZoomSpeed": 50.0,
+            "minZoomSpeed": 1.0,
+            "moveSpeed": 10.0,
+            "sensitivityX": 0.15000000596046448,
+            "sensitivityY": 0.15000000596046448,
+            "slowMoveSpeed": 2.0,
+            "smoothing": 10.0,
+            "zoomSpeed": 5.0
+          },
+          "type": "EditorMovement"
+        },
+        {
+          "params": {
+            "cameraPriority": 0,
+            "farPlane": 1000.0,
+            "nearPlane": 0.10000000149011612,
+            "orthographicParameters": {
+              "bottom": -9.375,
+              "left": -15.0,
+              "right": 15.0,
+              "top": 9.375
+            },
+            "perspectiveParameters": {
+              "aspectRatio": 1.600000023841858,
+              "fov": 45.0
+            },
+            "projectionMode": 0,
+            "renderTarget": -1,
+            "worldUp": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          "type": "Camera"
+        },
+        {
+          "params": {
+            "position": [
+              17.7130069732666,
+              5.258843421936035,
+              -0.3314587473869324
+            ],
+            "rotation": [
+              -24.751298904418945,
+              629.4041748046875,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Editor"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Planes"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              34
+            ],
+            "modelName": "medieval"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "medieval",
+      "name": "House"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 2.0,
+            "outerCutOff": 30.0,
+            "radius": 15.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              -2.0000038146972656,
+              2.999999523162842,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999997615814209,
+              0.9999997615814209,
+              0.9999997615814209
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Point",
+      "parent": "StreetLight"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              35
+            ],
+            "modelName": "StreetLight"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              11.0,
+              0.0,
+              2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              0.30000001192092896,
+              0.30000001192092896,
+              0.30000001192092896
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "StreetLight",
+      "name": "StreetLight"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.26274511218070984,
+              0.6117647290229797,
+              0.7215686440467834
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 9.0,
+            "outerCutOff": 15.0,
+            "radius": 15.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              1.0,
+              15.0,
+              -5.0
+            ],
+            "rotation": [
+              -20.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              0.9999999403953552,
+              0.9999999403953552
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "RoofLight",
+      "parent": "Lights"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              35
+            ],
+            "modelName": "StreetLight"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              11.0,
+              0.0,
+              -2.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              0.30000001192092896,
+              0.30000001192092896,
+              0.30000001192092896
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "StreetLight",
+      "name": "StreetLight<1>"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "color": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "innerCutOff": 10.0,
+            "intensity": 1.0,
+            "outerCutOff": 12.0,
+            "radius": 15.0,
+            "type": 1
+          },
+          "type": "Light"
+        },
+        {
+          "params": {
+            "position": [
+              -2.0,
+              2.999999523162842,
+              1.9073486328125e-06
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999997615814209,
+              0.9999997615814209,
+              0.9999997615814209
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Point <1>",
+      "parent": "StreetLight<1>"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -8.0,
+              0.0,
+              4.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999988675117493,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -8.0,
+              0.0,
+              -8.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.999998927116394,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <2>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              10.0,
+              0.0,
+              4.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.999998927116394,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <3>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              10.0,
+              0.0,
+              -8.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.999998927116394,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <4>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              32,
+              32
+            ],
+            "modelName": "SoldierFixed"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -0.009996652603149414,
+              0.7700001001358032,
+              0.05000019073486328
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999989867210388,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "SoldierFixed",
+      "name": "Head",
+      "parent": "Man"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              33
+            ],
+            "modelName": "Soldier"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              3.337860107421875e-06,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999989867210388,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Soldier",
+      "name": "Body",
+      "parent": "Man"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "position": [
+              8.0,
+              1.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              90.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "name": "Man"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -8.0,
+              0.0,
+              16.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999994039535522,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <5>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              10.0,
+              0.0,
+              16.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999994039535522,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <6>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -26.0,
+              0.0,
+              16.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999994039535522,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <7>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -26.0,
+              0.0,
+              4.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999994039535522,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <8>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -26.0,
+              0.0,
+              -8.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999994039535522,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <9>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              10.0,
+              0.0,
+              -20.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999997615814209,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <10>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -8.0,
+              0.0,
+              -20.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999997615814209,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <11>",
+      "parent": "Ground"
+    },
+    {
+      "components": [
+        {
+          "params": {
+            "meshes": [
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+              61,
+              62,
+              63,
+              64,
+              65,
+              66,
+              67,
+              68,
+              69,
+              70,
+              71,
+              72,
+              73,
+              74,
+              75,
+              76,
+              77,
+              78,
+              79,
+              80,
+              81,
+              82,
+              83,
+              84,
+              85,
+              86,
+              87,
+              88,
+              89
+            ],
+            "modelName": "Ground"
+          },
+          "type": "MeshRenderData"
+        },
+        {
+          "params": {
+            "position": [
+              -26.0,
+              0.0,
+              -20.0
+            ],
+            "rotation": [
+              -90.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              0.9999997615814209,
+              1.0,
+              1.0
+            ]
+          },
+          "type": "Transform"
+        }
+      ],
+      "model": "Ground",
+      "name": "GameObject <12>",
+      "parent": "Ground"
+    }
+  ]
+}

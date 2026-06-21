@@ -25,6 +25,7 @@ namespace Renderer {
         Shader indirectLightingShader;
         Shader environmentAmbientShader;
         Shader postProcessingShader;
+        Shader fogShader;
     } shaders;
 
     struct UBOs {
@@ -55,7 +56,7 @@ namespace Renderer {
     void ClearFramebuffer(const glm::vec3 &color = glm::vec3(0.0f));
     void GeometryPass(const RenderData &renderData);
     void IndirectLightingPass(const RenderData &renderData, const GPUCamera &activeCam);
-    void PostProcessingPass(const RenderData &renderData);
+    void PostProcessingPass(const RenderData &renderData, const GPUCamera &activeCam);
     void DrawScreenPlane();
     void DrawInstancedLightVolumes(const std::string &volumeName, const std::vector<GPULight> &lights);
     void SetAttributePointers(const std::string &volumeName);
@@ -73,6 +74,8 @@ namespace Renderer {
                                               ConstructFullShaderPath("IndirectShading/environmentAmbient.frag").c_str());
         shaders.postProcessingShader.Load(ConstructFullShaderPath("screenProcess.vert").c_str(),
                                           ConstructFullShaderPath("PostProcessing/postProcess.frag").c_str());
+        shaders.fogShader.Load(ConstructFullShaderPath("screenProcess.vert").c_str(),
+                                          ConstructFullShaderPath("PostProcessing/fog.frag").c_str());
     }
 
     void InitializeShaders() {
@@ -96,6 +99,11 @@ namespace Renderer {
         //post processing
         shaders.postProcessingShader.Bind();
         shaders.postProcessingShader.SetInt("screenTexture", 0);
+
+        //fog
+        shaders.fogShader.Bind();
+        shaders.fogShader.SetInt("gPosition", 0);
+        shaders.fogShader.SetInt("screenTexture", 1);
 
         Shader::UnBind();
     }
@@ -179,6 +187,10 @@ namespace Renderer {
         renderData.environmentAmbient = Scene::GetEnvironmentAmbient();
         renderData.ppInfo.gamma = PostProcessing::GetGamma();
         renderData.ppInfo.exposure = PostProcessing::GetExposure();
+        renderData.ppInfo.fogStart = PostProcessing::GetFogStart();
+        renderData.ppInfo.fogEnd = PostProcessing::GetFogEnd();
+        renderData.ppInfo.fogColor = PostProcessing::GetFogColor();
+        renderData.ppInfo.fogEnabled = PostProcessing::GetFogEnabled();
 
         return renderData;
     }
@@ -257,9 +269,25 @@ namespace Renderer {
         Shader::UnBind();
     }
 
-    void PostProcessingPass(const RenderData &renderData) {
+    void PostProcessingPass(const RenderData &renderData, const GPUCamera &activeCam) {
+        if (renderData.ppInfo.fogEnabled) {
+            shaders.fogShader.Bind();
+            shaders.fogShader.SetVec3("viewPos", activeCam.position);
+            shaders.fogShader.SetVec3("fogProperties", glm::vec3(renderData.ppInfo.fogStart, renderData.ppInfo.fogEnd, 1.0f));
+            shaders.fogShader.SetVec3("fogColor", renderData.ppInfo.fogColor);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.gBuffer.GetColorAttachment("Position"));
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.screenBuffer.GetColorAttachment("ScreenTexture"));
+
+            DrawScreenPlane();
+            Shader::UnBind();
+        }
+
         BindFrameBuffer(outputFrameBuffer);
         ClearFramebuffer();
+
         shaders.postProcessingShader.Bind();
         shaders.postProcessingShader.SetFloat("exposure", renderData.ppInfo.exposure);
         shaders.postProcessingShader.SetFloat("gamma", renderData.ppInfo.gamma);
@@ -289,7 +317,7 @@ namespace Renderer {
             ubos.transformMatricesBuffer.SetData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.viewMatrix));
             GeometryPass(renderData);
             IndirectLightingPass(renderData, camera);
-            PostProcessingPass(renderData);
+            PostProcessingPass(renderData, camera);
         }
 
         BindFrameBuffer(nullptr);
