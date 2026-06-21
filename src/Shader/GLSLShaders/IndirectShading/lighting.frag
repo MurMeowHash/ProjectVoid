@@ -27,7 +27,7 @@ uniform sampler2D gAlbedoSpec;
 uniform vec3 viewPos;
 uniform vec2 viewportSize;
 
-const float VOLUME_EDGES_THRESHOLD = 0.999;
+const float VOLUME_EDGES_THRESHOLD = 0.9;
 const int LIGHT_TYPE = int(round(lightData.PositionType.w));
 
 vec3 GetDiffuseColor(vec3 lightDir, vec3 normal, vec3 lightColor);
@@ -49,7 +49,7 @@ void main() {
             discard;
         }
 
-        float softEdgesIntensity = clamp((1.0 - distanceRatio) / (1.0 - VOLUME_EDGES_THRESHOLD), 0.0, 1.0);
+        softEdgesIntensity = clamp((1.0 - distanceRatio) / (1.0 - VOLUME_EDGES_THRESHOLD), 0.0, 1.0);
     }
 
     vec4 normalShininess = texture(gNormalShininess, texCoords);

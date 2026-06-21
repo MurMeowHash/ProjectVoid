@@ -1,8 +1,6 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../Rigidbody/Rigidbody.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 
 class GameObject;
 
@@ -21,8 +19,4 @@ public:
 
     void Update() override;
     void Start() override;
-    
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    static Movement* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    GET_COMPONENT_TYPE_NAME(Movement)
 };

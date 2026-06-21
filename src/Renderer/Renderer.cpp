@@ -25,6 +25,7 @@ namespace Renderer {
         Shader indirectLightingShader;
         Shader environmentAmbientShader;
         Shader postProcessingShader;
+        Shader fogShader;
     } shaders;
 
     struct UBOs {
@@ -55,7 +56,7 @@ namespace Renderer {
     void ClearFramebuffer(const glm::vec3 &color = glm::vec3(0.0f));
     void GeometryPass(const RenderData &renderData);
     void IndirectLightingPass(const RenderData &renderData, const GPUCamera &activeCam);
-    void PostProcessingPass(const RenderData &renderData);
+    void PostProcessingPass(const RenderData &renderData, const GPUCamera &activeCam);
     void DrawScreenPlane();
     void DrawInstancedLightVolumes(const std::string &volumeName, const std::vector<GPULight> &lights);
     void SetAttributePointers(const std::string &volumeName);
@@ -73,6 +74,8 @@ namespace Renderer {
                                               ConstructFullShaderPath("IndirectShading/environmentAmbient.frag").c_str());
         shaders.postProcessingShader.Load(ConstructFullShaderPath("screenProcess.vert").c_str(),
                                           ConstructFullShaderPath("PostProcessing/postProcess.frag").c_str());
+        shaders.fogShader.Load(ConstructFullShaderPath("screenProcess.vert").c_str(),
+                                          ConstructFullShaderPath("PostProcessing/fog.frag").c_str());
     }
 
     void InitializeShaders() {
@@ -96,6 +99,11 @@ namespace Renderer {
         //post processing
         shaders.postProcessingShader.Bind();
         shaders.postProcessingShader.SetInt("screenTexture", 0);
+
+        //fog
+        shaders.fogShader.Bind();
+        shaders.fogShader.SetInt("gPosition", 0);
+        shaders.fogShader.SetInt("screenTexture", 1);
 
         Shader::UnBind();
     }
@@ -144,6 +152,8 @@ namespace Renderer {
         if(!buf) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(0, 0, Core::GetScreenWidth(), Core::GetScreenHeight());
+            GLenum drawBuffer = GL_BACK;
+            glDrawBuffers(1, &drawBuffer);
             return;
         }
 
@@ -159,6 +169,14 @@ namespace Renderer {
         glDrawBuffers(static_cast<GLsizei>(renderTargets.size()), renderTargets.data());
     }
 
+    glm::vec2 GetActiveRenderSize() {
+        if(outputFrameBuffer) {
+            return glm::vec2(outputFrameBuffer->GetWidth(), outputFrameBuffer->GetHeight());
+        }
+
+        return glm::vec2(Core::GetScreenWidth(), Core::GetScreenHeight());
+    }
+
     RenderData ConstructRenderData() {
         RenderData renderData;
         renderData.geometryRenderItems = Scene::GetGeometryRenderItems();
@@ -169,6 +187,10 @@ namespace Renderer {
         renderData.environmentAmbient = Scene::GetEnvironmentAmbient();
         renderData.ppInfo.gamma = PostProcessing::GetGamma();
         renderData.ppInfo.exposure = PostProcessing::GetExposure();
+        renderData.ppInfo.fogStart = PostProcessing::GetFogStart();
+        renderData.ppInfo.fogEnd = PostProcessing::GetFogEnd();
+        renderData.ppInfo.fogColor = PostProcessing::GetFogColor();
+        renderData.ppInfo.fogEnabled = PostProcessing::GetFogEnabled();
 
         return renderData;
     }
@@ -213,7 +235,6 @@ namespace Renderer {
             glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(renderItem.countIndices), GL_UNSIGNED_INT, nullptr);
         }
         Shader::UnBind();
-        BindFrameBuffer(outputFrameBuffer);
     }
 
     void IndirectLightingPass(const RenderData &renderData, const GPUCamera &activeCam) {
@@ -221,7 +242,7 @@ namespace Renderer {
         ClearFramebuffer();
         shaders.indirectLightingShader.Bind();
         shaders.indirectLightingShader.SetVec3("viewPos", activeCam.position);
-        shaders.indirectLightingShader.SetVec2("viewportSize", glm::vec2(Core::GetScreenWidth(), Core::GetScreenHeight()));
+        shaders.indirectLightingShader.SetVec2("viewportSize", GetActiveRenderSize());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.gBuffer.GetColorAttachment("Position"));
@@ -246,11 +267,27 @@ namespace Renderer {
         glDisable(GL_BLEND);
 
         Shader::UnBind();
-        BindFrameBuffer(outputFrameBuffer);
     }
 
-    void PostProcessingPass(const RenderData &renderData) {
+    void PostProcessingPass(const RenderData &renderData, const GPUCamera &activeCam) {
+        if (renderData.ppInfo.fogEnabled) {
+            shaders.fogShader.Bind();
+            shaders.fogShader.SetVec3("viewPos", activeCam.position);
+            shaders.fogShader.SetVec3("fogProperties", glm::vec3(renderData.ppInfo.fogStart, renderData.ppInfo.fogEnd, 1.0f));
+            shaders.fogShader.SetVec3("fogColor", renderData.ppInfo.fogColor);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.gBuffer.GetColorAttachment("Position"));
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, engineFrameBuffers.screenBuffer.GetColorAttachment("ScreenTexture"));
+
+            DrawScreenPlane();
+            Shader::UnBind();
+        }
+
+        BindFrameBuffer(outputFrameBuffer);
         ClearFramebuffer();
+
         shaders.postProcessingShader.Bind();
         shaders.postProcessingShader.SetFloat("exposure", renderData.ppInfo.exposure);
         shaders.postProcessingShader.SetFloat("gamma", renderData.ppInfo.gamma);
@@ -280,9 +317,10 @@ namespace Renderer {
             ubos.transformMatricesBuffer.SetData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.viewMatrix));
             GeometryPass(renderData);
             IndirectLightingPass(renderData, camera);
-//            TODO: blit depth buffer to main output in case of forward rendering
-            PostProcessingPass(renderData);
+            PostProcessingPass(renderData, camera);
         }
+
+        BindFrameBuffer(nullptr);
     }
 
     void Dispose() {
@@ -344,7 +382,9 @@ namespace Renderer {
         auto screenPlane = ResourceManager::GetMeshByIndex(ResourceManager::GetMeshIndexByName("ScreenPlane"));
         glBindVertexArray(screenPlane->GetHandle());
         glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(screenPlane->GetIndicesCount()), GL_UNSIGNED_INT, nullptr);
+        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glBindVertexArray(0);
     }
@@ -353,7 +393,6 @@ namespace Renderer {
         auto lightVolume = ResourceManager::GetMeshByIndex(ResourceManager::GetMeshIndexByName(volumeName));
         if(!lightVolume || lights.empty()) return;
 
-        //TODO: dirty flags optimization
         vbos.lightsBuffer.SetData(0, static_cast<GLsizeiptr>(sizeof(GPULight) * lights.size()), lights.data());
         glBindVertexArray(lightVolume->GetHandle());
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(lightVolume->GetIndicesCount()),

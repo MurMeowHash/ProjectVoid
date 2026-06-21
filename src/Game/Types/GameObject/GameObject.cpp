@@ -4,10 +4,6 @@
 #include "../../ComponentScripts/Transform/Transform.h"
 #include "../../ComponentScripts/Collider/Collider.h"
 #include "../../ComponentScripts/Rigidbody/Rigidbody.h"
-#include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
-#include "../../../Core/Resources/ResourceManager.h"
-#include <nlohmann/json.hpp>
-#include <typeindex>
 #include <algorithm>
 #include <vector>
 #include <ranges>
@@ -72,12 +68,6 @@ void GameObject::UpdateComponentsOwnerName(const std::string& newName) {
 
 void GameObject::SetParentName(std::string targetName) {
     parentName = std::move(targetName);
-    
-    // Після встановлення батька, прив'язуємо Transform до батька
-    auto* transform = GetComponent<Transform>();
-    if(transform && !parentName.empty() && parentName != UNDEFINED_NAME) {
-        transform->AdjustToParent();
-    }
 }
 
 void GameObject::SetGroup(const std::string &group) {
@@ -115,51 +105,6 @@ void GameObject::Dispose() {
         component.second->Dispose();
         delete component.second;
     }
-}
-
-nlohmann::json GameObject::SerializeToJson() const {
-    nlohmann::json objJson;
-    objJson["name"] = name;
-
-    auto meshRenderData = GetComponent<MeshRenderData>();
-    if(meshRenderData && !meshRenderData->meshes.empty()) {
-        // Використовуємо збережену назву моделі, або намагаємося знайти її за мешами
-        std::string modelName = meshRenderData->modelName;
-        if(modelName.empty()) {
-            modelName = ResourceManager::GetModelNameByMeshes(meshRenderData->meshes);
-        }
-        if(!modelName.empty()) {
-            objJson["model"] = modelName;
-        }
-    }
-
-    if(!parentName.empty() && parentName != UNDEFINED_NAME) {
-        objJson["parent"] = parentName;
-    }
-
-    std::string groupName = ObjectGroupManager::GetGroupName(groupCode);
-    if(!groupName.empty() && groupName != "Default") {
-        objJson["group"] = groupName;
-    }
-
-    nlohmann::json componentsArray = nlohmann::json::array();
-    for(const auto &component: components | std::views::values) {
-        std::string typeName = component->GetComponentTypeName();
-        if(typeName.empty() || !ComponentRegistry::Instance().HasSerializer(typeName)) {
-            continue;
-        }
-
-        nlohmann::json compJson;
-        compJson["type"] = typeName;
-        compJson["params"] = ComponentRegistry::Instance().Serialize(typeName, component);
-        componentsArray.push_back(compJson);
-    }
-
-    if(!componentsArray.empty()) {
-        objJson["components"] = componentsArray;
-    }
-
-    return objJson;
 }
 
 std::vector<ObjectComponent*> GameObject::GetAllComponents() const {

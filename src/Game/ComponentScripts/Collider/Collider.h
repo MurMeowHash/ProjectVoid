@@ -1,7 +1,6 @@
 #pragma once
 #include "../ObjectComponent.h"
 #include "../../Types/BoundingBox/AABB.h"
-#include <functional>
 
 struct ColliderParameters {
     bool isTrigger = false;

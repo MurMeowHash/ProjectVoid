@@ -2,9 +2,6 @@
 #include "../../../Engine/Physics/Physics.h"
 #include "../../Types/GameObject/GameObject.h"
 #include "../Collider/Collider.h"
-#include "../ComponentMacros.h"
-#include "../../../Utils/JsonUtils.h"
-#include <nlohmann/json.hpp>
 
 const RigidbodyParameters Rigidbody::DEFAULT_RB_PARAMS = RigidbodyParameters();
 
@@ -106,28 +103,6 @@ void Rigidbody::Dispose() {
     rigidbodyIndex = ABSENT_RESOURCE;
 }
 
-Rigidbody* Rigidbody::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
-    auto rbParams = RigidbodyParameters();
-    SetIfExists(params, "mass", rbParams.mass);
-    SetIfExists(params, "isKinematic", rbParams.isKinematic);
-    SetIfExists(params, "friction", rbParams.friction);
-    SetIfExists(params, "translationConstraints", rbParams.translationConstraints);
-    SetIfExists(params, "rotationConstraints", rbParams.rotationConstraints);
-    SetIfExists(params, "enabled", rbParams.enabled);
-    return owner->AddComponent<Rigidbody>(rbParams);
-}
-
-nlohmann::json Rigidbody::SerializeToJson() const {
-    nlohmann::json params;
-    params["mass"] = mass;
-    params["isKinematic"] = isKinematic;
-    params["friction"] = friction;
-    params["translationConstraints"] = nlohmann::json::array({translationConstraints.x, translationConstraints.y, translationConstraints.z});
-    params["rotationConstraints"] = nlohmann::json::array({rotationConstraints.x, rotationConstraints.y, rotationConstraints.z});
-    params["enabled"] = isEnabled;
-    return params;
-}
-
 void Rigidbody::CreatePhysicsBody() {
     auto owner = GetGameObject();
     if(!owner || !transform) {
@@ -180,5 +155,3 @@ void Rigidbody::SetEnabled(bool enabled) {
         CreatePhysicsBody();
     }
 }
-
-REGISTER_COMPONENT_FROM_JSON(Rigidbody)

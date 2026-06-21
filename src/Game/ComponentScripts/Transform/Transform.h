@@ -1,11 +1,8 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "../../Types/Axis.h"
 #include "../../../Utils/Utils.h"
 #include "../ObjectComponent.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 
 class GameObject;
 
@@ -34,10 +31,6 @@ DEFINE_BASE(void)
 
     void Update() override;
     void AdjustToParent();
-
-    static Transform* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    GET_COMPONENT_TYPE_NAME(Transform)
 private:
     NODISCARD glm::mat4 GetWorldModelMatrix() const;
     void ApplyRotation(glm::mat4 &matrix) const;

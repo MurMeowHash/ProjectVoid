@@ -2,8 +2,6 @@
 
 #include "../ObjectComponent.h"
 #include "../../Types/CreateParameters.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json_fwd.hpp>
 
 class GameObject;
 
@@ -23,8 +21,4 @@ public:
     void SetMaxVerticalAngle(float angle) { maxVerticalAngle = angle; }
     void SetSensitivityX(float sens) { sensitivityX = sens; }
     void SetSensitivityY(float sens) { sensitivityY = sens; }
-    
-    NODISCARD nlohmann::json SerializeToJson() const override;
-    static MouseLook* CreateFromJson(GameObject* owner, const nlohmann::json& params);
-    GET_COMPONENT_TYPE_NAME(MouseLook)
 };

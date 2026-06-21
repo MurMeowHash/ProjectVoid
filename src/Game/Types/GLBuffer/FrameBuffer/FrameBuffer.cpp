@@ -108,7 +108,7 @@ void FrameBuffer::AddColorAttachment(GLBuffer *attachment, BufferType bufType) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    colorAttachments.emplace_back(attachment, true);
+    colorAttachments.emplace_back(attachment, true, colorAttachments.size());
 }
 
 GLuint FrameBuffer::GetColorAttachment(const std::string &attachName) const {

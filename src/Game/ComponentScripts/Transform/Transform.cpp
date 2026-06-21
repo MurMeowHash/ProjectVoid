@@ -2,9 +2,7 @@
 #include "../../Types/GameObject/GameObject.h"
 #include "../../Scene/Scene.h"
 #include <glm/gtc/quaternion.hpp>
-#include "../../../Utils/JsonUtils.h"
-#include "../ComponentMacros.h"
-#include <nlohmann/json.hpp>
+#include "../../Types/Axis.h"
 
 Transform::Transform(const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &scl)
 : ObjectComponent(ENGINE_COMPONENTS_START_PRIORITY + 2), position{pos}, rotation{rot}, scale{scl} {
@@ -43,10 +41,8 @@ glm::vec3 Transform::ToRightVector() const {
     glm::vec3 forward = ToForwardVector();
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     
-    // Обчислюємо правий вектор як перпендикулярний до forward та up
     glm::vec3 rightVector = glm::cross(forward, up);
     
-    // Якщо forward паралельний up (вертикально вгору/вниз), використовуємо альтернативний метод
     if(glm::length(rightVector) < 0.001f) {
         float radiansYaw = glm::radians(rotation.y);
         rightVector.x = glm::cos(radiansYaw);
@@ -139,38 +135,8 @@ void Transform::AdjustToParent() {
     rotation = glm::degrees(eulerAngles);
 }
 
-Transform* Transform::CreateFromJson(GameObject* owner, const nlohmann::json& params) {
-    glm::vec3 pos = DEFAULT_POSITION;
-    glm::vec3 rot = DEFAULT_ROTATION;
-    glm::vec3 scl = DEFAULT_SCALE;
-    
-    SetIfExists(params, "position", pos);
-    SetIfExists(params, "rotation", rot);
-    SetIfExists(params, "scale", scl);
-
-    auto* existingTransform = owner->GetComponent<Transform>();
-    if(existingTransform) {
-        existingTransform->position = pos;
-        existingTransform->rotation = rot;
-        existingTransform->scale = scl;
-        return existingTransform;
-    }
-    
-    return owner->AddComponent<Transform>(pos, rot, scl);
-}
-
-nlohmann::json Transform::SerializeToJson() const {
-    nlohmann::json params;
-    params["position"] = nlohmann::json::array({position.x, position.y, position.z});
-    params["rotation"] = nlohmann::json::array({rotation.x, rotation.y, rotation.z});
-    params["scale"] = nlohmann::json::array({scale.x, scale.y, scale.z});
-    return params;
-}
-
 glm::vec3 Transform::ToUpVector() const {
     glm::vec3 rightVector = ToRightVector();
     glm::vec3 forwardVector = ToForwardVector();
     return glm::cross(rightVector, forwardVector);
 }
-
-REGISTER_COMPONENT_FROM_JSON(Transform)

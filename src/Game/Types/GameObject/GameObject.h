@@ -3,14 +3,12 @@
 #include "../../../Utils/Utils.h"
 #include "../CreateParameters.h"
 #include "../../../Renderer/RenderTypes.h"
-#include "../../ComponentScripts/Camera/Camera.h"
 #include "../../ComponentScripts/ObjectComponent.h"
 #include <unordered_map>
 #include <set>
 #include <vector>
 #include <typeindex>
 #include "../../../Debug/Debug.h"
-#include "../../ComponentScripts/MeshRenderData/MeshRenderData.h"
 #include "../../../Dispose/IDisposable.h"
 #include "../../Scene/Scene.h"
 
@@ -72,8 +70,6 @@ public:
     void Start();
     void Update();
     void Dispose() override;
-    
-    nlohmann::json SerializeToJson() const;
 
     template<typename T, typename... Args> requires std::is_base_of_v<ObjectComponent, T>
     T* AddComponent(Args&& ... args) {

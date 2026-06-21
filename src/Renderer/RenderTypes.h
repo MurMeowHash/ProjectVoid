@@ -39,4 +39,8 @@ struct GPUCameraComparator {
 struct PostProcessingInfo {
     float gamma;
     float exposure;
+    float fogStart;
+    float fogEnd;
+    glm::vec3 fogColor;
+    bool fogEnabled;
 };
